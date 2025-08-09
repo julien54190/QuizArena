@@ -24,8 +24,16 @@
     justify-content: center;
 }
 
+.justify-content-between {
+    justify-content: space-between;
+}
+
 .align-items-center {
     align-items: center;
+}
+
+.gap-8 {
+    gap: 8px;
 }
 
 .gap-12 {
