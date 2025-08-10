@@ -1,13 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Category } from '../../interfaces/category';
-import { CATEGORIES_DATA } from '../../data/categories.data';
+import { Component } from '@angular/core';
+import { SearchBarComponent } from './components/searchbar.component';
 
 
 @Component({
   selector: 'app-accueil',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, SearchBarComponent],
   template: `
     <div class="home-container">
       <div class="home-content">
@@ -16,44 +14,7 @@ import { CATEGORIES_DATA } from '../../data/categories.data';
           <p class="text-sm">Découvrez des milliers de quiz passionnants et testez vos connaissances dans tous les domaines</p>
         </div>
         <!-- Barre de recherche -->
-          <div class="home-panel p-25 card">
-            <div class="flex flex-wrap gap-16">
-              <input
-              [(ngModel)]="searchQuery"
-              (ngModelChange)="searchTerm.set($event); filterQuizzes()"
-              type="text"
-              placeholder="Rechercher un quiz..."
-              class="flex-item search-bar"
-              />
-              <select [ngModel]="categoryFilter()" (ngModelChange)="categoryFilter.set($event); filterQuizzes()" class="flex-item search-bar">
-              <option value="">Toutes les catégories</option>
-              @for (cat of categories(); track cat.name) {
-                <option [value]="cat.name">{{ cat.name }}</option>
-              }
-            </select>
-              <select [ngModel]="difficultyFilter()" (ngModelChange)="difficultyFilter.set($event); filterQuizzes()" class="flex-item search-bar">
-              <option value="">Toutes difficultés</option>
-              <option value="facile">Facile</option>
-              <option value="moyen">Moyen</option>
-              <option value="difficile">Difficile</option>
-            </select>
-            <select [ngModel]="minQuestions()" (ngModelChange)="minQuestions.set($event); filterQuizzes()" class="flex-item search-bar">
-              <option value="0">Min questions</option>
-              <option value="5">5+ questions</option>
-              <option value="10">10+ questions</option>
-              <option value="15">15+ questions</option>
-              <option value="20">20+ questions</option>
-            </select>
-            <select [ngModel]="minScore()" (ngModelChange)="minScore.set($event); filterQuizzes()" class="flex-item search-bar">
-              <option value="0">Min score</option>
-              <option value="50">50%+</option>
-              <option value="60">60%+</option>
-              <option value="70">70%+</option>
-              <option value="80">80%+</option>
-            </select>
-            <button (click)="resetFilters()" class="flex-item btn btn-outline-primary">Reset</button>
-            </div>
-          </div>
+        <app-searchbar (searchChanged)="onSearchChanged($event)"></app-searchbar>
       </div>
     </div>
   `,
@@ -62,28 +23,12 @@ import { CATEGORIES_DATA } from '../../data/categories.data';
   `
 })
 export class AccueilComponent {
-  // Signals pour les filtre
-  searchTerm = signal('');
-  categoryFilter = signal('');
-  difficultyFilter = signal('');
-  minQuestions = signal(0);
-  minScore = signal(0);
-
-  // Liste des catégories
-  categories = signal<Category[]>(CATEGORIES_DATA)
-
-  // Query de recherche
-  searchQuery: string = '';
-
-  filterQuizzes() {}
-
-  resetFilters() {
-    this.searchTerm.set('');
-    this.categoryFilter.set('');
-    this.difficultyFilter.set('');
-    this.minQuestions.set(0);
-    this.minScore.set(0);
-    this.searchQuery = '';
-  }
-
+  // Méthode pour recevoir les changements de recherche du composant enfant
+  onSearchChanged(searchData: {
+    searchTerm: string;
+    categoryFilter: string;
+    difficultyFilter: string;
+    minQuestions: number;
+    minScore: number;
+  }) {}
 }
