@@ -3,3 +3,8 @@
 @use './assets/styles/variables';
 @use './assets/styles/utils';
 @use './assets/styles/thèmes';
+
+
+// Style pour le composant Accueil
+@use './assets/styles/home/home';
+@use './assets/styles/home/search'

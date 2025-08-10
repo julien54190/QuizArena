@@ -9,51 +9,57 @@ import { CATEGORIES_DATA } from '../../data/categories.data';
   selector: 'app-accueil',
   imports: [CommonModule, FormsModule],
   template: `
-    <div>
-      <div>
+    <div class="home-container">
+      <div class="home-content">
+        <div class="text-center mb-20">
+          <h1 class="text-xlg text-bold mb-10">Bienvenue sur QuizArena</h1>
+          <p class="text-sm">Découvrez des milliers de quiz passionnants et testez vos connaissances dans tous les domaines</p>
+        </div>
         <!-- Barre de recherche -->
-          <div>
-            <div>
+          <div class="home-panel p-25 card">
+            <div class="flex flex-wrap gap-16">
               <input
               [(ngModel)]="searchQuery"
               (ngModelChange)="searchTerm.set($event); filterQuizzes()"
               type="text"
               placeholder="Rechercher un quiz..."
-              class=""
+              class="flex-item search-bar"
               />
-              <select [ngModel]="categoryFilter()" (ngModelChange)="categoryFilter.set($event); filterQuizzes()" class="">
+              <select [ngModel]="categoryFilter()" (ngModelChange)="categoryFilter.set($event); filterQuizzes()" class="flex-item search-bar">
               <option value="">Toutes les catégories</option>
               @for (cat of categories(); track cat.name) {
                 <option [value]="cat.name">{{ cat.name }}</option>
               }
             </select>
-              <select [ngModel]="difficultyFilter()" (ngModelChange)="difficultyFilter.set($event); filterQuizzes()" class="">
+              <select [ngModel]="difficultyFilter()" (ngModelChange)="difficultyFilter.set($event); filterQuizzes()" class="flex-item search-bar">
               <option value="">Toutes difficultés</option>
               <option value="facile">Facile</option>
               <option value="moyen">Moyen</option>
               <option value="difficile">Difficile</option>
             </select>
-            <select [ngModel]="minQuestions()" (ngModelChange)="minQuestions.set($event); filterQuizzes()" class="">
+            <select [ngModel]="minQuestions()" (ngModelChange)="minQuestions.set($event); filterQuizzes()" class="flex-item search-bar">
               <option value="0">Min questions</option>
               <option value="5">5+ questions</option>
               <option value="10">10+ questions</option>
               <option value="15">15+ questions</option>
               <option value="20">20+ questions</option>
             </select>
-            <select [ngModel]="minScore()" (ngModelChange)="minScore.set($event); filterQuizzes()" class="">
+            <select [ngModel]="minScore()" (ngModelChange)="minScore.set($event); filterQuizzes()" class="flex-item search-bar">
               <option value="0">Min score</option>
               <option value="50">50%+</option>
               <option value="60">60%+</option>
               <option value="70">70%+</option>
               <option value="80">80%+</option>
             </select>
-            <button (click)="resetFilters()" class="">Reset</button>
+            <button (click)="resetFilters()" class="flex-item btn btn-outline-primary">Reset</button>
             </div>
           </div>
       </div>
     </div>
   `,
-  styles: ``
+  styles: `
+    :host{display:block;}
+  `
 })
 export class AccueilComponent {
   // Signals pour les filtre
