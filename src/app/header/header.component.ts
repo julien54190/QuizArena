@@ -9,7 +9,7 @@ import { HeaderMenuComponent } from './components/header-menu.component';
     <header role="banner">
       <div class="flex align-items-center justify-content-between gap-16 px-12 py-6">
         <a class="flex align-items-center gap-12" routerLink="accueil">
-          <img src="/assets/img/logo.png" alt="Logo"/>
+          <img src="/assets/img/logo.png" alt="Logo" class="logo"/>
           <span class="text-lg text-bold">QuizAréna</span>
         </a>
         <nav class="flex align-items-center gap-16 xs-hide">
@@ -37,8 +37,6 @@ import { HeaderMenuComponent } from './components/header-menu.component';
       top: 0;
       z-index: 50;
     }
-
-    img { width: 50px; height: 50px; }
 
     li a:hover {
       background-color: var(--dark);
