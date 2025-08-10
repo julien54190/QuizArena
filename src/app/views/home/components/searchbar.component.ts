@@ -8,44 +8,99 @@ import { CATEGORIES_DATA } from '../../../data/categories.data';
   selector: 'app-searchbar',
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="home-panel p-25 card">
-      <div class="flex flex-wrap gap-16">
-        <input
-          [(ngModel)]="searchQuery"
-          (ngModelChange)="searchTerm.set($event); onSearchChange()"
-          type="text"
-          placeholder="Rechercher un quiz..."
-          class="flex-item search-bar"
-        />
-        <select [ngModel]="categoryFilter()" (ngModelChange)="categoryFilter.set($event); onSearchChange()" class="flex-item search-bar">
-          <option value="">Toutes les catégories</option>
-          @for (cat of categories(); track cat.name) {
-            <option [value]="cat.name">{{ cat.name }}</option>
-          }
-        </select>
-        <select [ngModel]="difficultyFilter()" (ngModelChange)="difficultyFilter.set($event); onSearchChange()" class="flex-item search-bar">
-          <option value="">Toutes difficultés</option>
-          <option value="facile">Facile</option>
-          <option value="moyen">Moyen</option>
-          <option value="difficile">Difficile</option>
-        </select>
-        <select [ngModel]="minQuestions()" (ngModelChange)="minQuestions.set($event); onSearchChange()" class="flex-item search-bar">
-          <option value="0">Min questions</option>
-          <option value="5">5+ questions</option>
-          <option value="10">10+ questions</option>
-          <option value="15">15+ questions</option>
-          <option value="20">20+ questions</option>
-        </select>
-        <select [ngModel]="minScore()" (ngModelChange)="minScore.set($event); onSearchChange()" class="flex-item search-bar">
-          <option value="0">Min score</option>
-          <option value="50">50%+</option>
-          <option value="60">60%+</option>
-          <option value="70">70%+</option>
-          <option value="80">80%+</option>
-        </select>
-        <button (click)="resetFilters()" class="flex-item btn btn-outline-primary">Reset</button>
-      </div>
+  <div class="home-panel p-25 card" role="search">
+  <div class="flex flex-wrap gap-16">
+    <div class="search-field">
+      <label for="search-input" class="sr-only">Rechercher un quiz</label>
+      <input
+        id="search-input"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="searchTerm.set($event); onSearchChange()"
+        type="text"
+        placeholder="Rechercher un quiz..."
+        class="flex-item search-bar"
+        aria-label="Rechercher un quiz par nom ou description"
+      />
     </div>
+
+    <div class="search-field">
+      <label for="category-select" class="sr-only">Filtrer par catégorie</label>
+      <select
+        id="category-select"
+        [ngModel]="categoryFilter()"
+        (ngModelChange)="categoryFilter.set($event); onSearchChange()"
+        class="flex-item search-bar"
+        aria-label="Filtrer par catégorie"
+      >
+        <option value="">Toutes les catégories</option>
+        @for (cat of categories(); track cat.name) {
+          <option [value]="cat.name">{{ cat.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="search-field">
+      <label for="difficulty-select" class="sr-only">Filtrer par difficulté</label>
+      <select
+        id="difficulty-select"
+        [ngModel]="difficultyFilter()"
+        (ngModelChange)="difficultyFilter.set($event); onSearchChange()"
+        class="flex-item search-bar"
+        aria-label="Filtrer par niveau de difficulté"
+      >
+        <option value="">Toutes difficultés</option>
+        <option value="facile">Facile</option>
+        <option value="moyen">Moyen</option>
+        <option value="difficile">Difficile</option>
+      </select>
+    </div>
+
+    <div class="search-field">
+      <label for="questions-select" class="sr-only">Filtrer par nombre de questions</label>
+      <select
+        id="questions-select"
+        [ngModel]="minQuestions()"
+        (ngModelChange)="minQuestions.set($event); onSearchChange()"
+        class="flex-item search-bar"
+        aria-label="Filtrer par nombre minimum de questions"
+      >
+        <option value="0">Min questions</option>
+        <option value="5">5+ questions</option>
+        <option value="10">10+ questions</option>
+        <option value="15">15+ questions</option>
+        <option value="20">20+ questions</option>
+      </select>
+    </div>
+
+    <div class="search-field">
+      <label for="score-select" class="sr-only">Filtrer par score minimum</label>
+      <select
+        id="score-select"
+        [ngModel]="minScore()"
+        (ngModelChange)="minScore.set($event); onSearchChange()"
+        class="flex-item search-bar"
+        aria-label="Filtrer par score minimum"
+      >
+        <option value="0">Min score</option>
+        <option value="50">50%+</option>
+        <option value="60">60%+</option>
+        <option value="70">70%+</option>
+        <option value="80">80%+</option>
+      </select>
+    </div>
+
+    <div class="flex justify-content-center w-full">
+      <button
+        (click)="resetFilters()"
+        class="btn btn-outline-primary text-semibold"
+        aria-label="Réinitialiser tous les filtres de recherche"
+        type="button"
+      >
+        Réinitialiser les filtres
+      </button>
+    </div>
+  </div>
+  </div>
   `,
   styles: `
     :host { display: block; }
@@ -95,4 +150,4 @@ export class SearchBarComponent {
     this.searchQuery = '';
     this.onSearchChange();
   }
-} 
+}
