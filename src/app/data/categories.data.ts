@@ -1,8 +1,8 @@
-import { Category } from '../interfaces/category';
+import { ICategory } from '../interfaces/category';
 
-export type { Category }
+export type { ICategory }
 
-export const CATEGORIES_DATA: Category[] = [
+export const CATEGORIES_DATA: ICategory[] = [
   {
     id: 1,
     name: 'Histoire',

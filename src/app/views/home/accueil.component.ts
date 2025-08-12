@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { SearchBarComponent } from './components/searchbar.component';
+import { StatbarComponent } from "./components/statbar.component";
 
 
 @Component({
   selector: 'app-accueil',
-  imports: [CommonModule, SearchBarComponent],
+  imports: [CommonModule, SearchBarComponent, StatbarComponent],
   template: `
     <div class="home-container">
       <div class="home-content">
@@ -14,7 +15,9 @@ import { SearchBarComponent } from './components/searchbar.component';
           <p class="text-sm">Découvrez des milliers de quiz passionnants et testez vos connaissances dans tous les domaines</p>
         </div>
         <!-- Barre de recherche -->
-        <app-searchbar (searchChanged)="onSearchChanged($event)"></app-searchbar>
+        <app-searchbar (searchChanged)="onSearchChanged($event)" class="mt-20"></app-searchbar>
+        <!-- Composant Statbar -->
+        <app-statbar class="mt-20"></app-statbar>
       </div>
     </div>
   `,
