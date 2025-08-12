@@ -1,8 +1,8 @@
-import { PlayQuiz } from "../interfaces/quiz";
+import { IPlayQuiz } from "../interfaces/quiz";
 
-export type { PlayQuiz}
+export type { IPlayQuiz}
 
-export const PLAY_QUIZZES_DATA: PlayQuiz[] = [
+export const PLAY_QUIZZES_DATA: IPlayQuiz[] = [
 {
   id: 1,
   title: 'Histoire de France - Révolution',

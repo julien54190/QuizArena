@@ -19,6 +19,17 @@ body {
     background-color: var(--white);
 }
 
+.card-size {
+    width: 350px;
+    height: 250px;
+}
+
+.card-hover:hover{
+  cursor: pointer;
+  border: var(--border-card);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+}
+
 .radius {
     border-radius: var(--radius);
 }
@@ -110,3 +121,29 @@ button[disabled] {
   background: var(--gray-100);
 }
 
+
+// badge
+
+.badge-success{
+  background-color: var(--success);
+}
+
+.badge-warning{
+  background-color: var(--warning);
+}
+
+.badge-danger{
+  background-color: var(--danger);
+}
+
+.badge-info {
+  background-color: var(--info);
+}
+
+.badge-success, .badge-warning, .badge-danger, .badge-info{
+  color: var(--gray-100);
+  border-radius: 12px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}

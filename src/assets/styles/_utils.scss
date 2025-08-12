@@ -48,6 +48,11 @@
     align-items: center;
 }
 
+.align-content-between {
+  align-content: space-between ;
+}
+
+
 .gap-8 {
     gap: 8px;
 }
@@ -86,6 +91,14 @@
 
 .m-20{
     margin: 20px;
+}
+
+.mr-10{
+  margin-right: 10px;
+}
+
+.mr-20 {
+  margin-right: 20px;
 }
 
 .mb-10 {
@@ -148,6 +161,10 @@
 
 .w-full {
     width: 100%;
+}
+
+.h-full{
+  height: 100%;
 }
 
 .xs-w-full{

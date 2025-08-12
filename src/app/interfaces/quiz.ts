@@ -1,4 +1,4 @@
-export interface PlayQuiz {
+export interface IPlayQuiz {
   id: number;
   title: string;
   description: string;
