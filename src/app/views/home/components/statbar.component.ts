@@ -6,26 +6,26 @@ import { CATEGORIES_DATA } from '../../../data/categories.data';
   selector: 'app-statbar',
   imports: [],
   template: `
-        <div class="mt-20 card card-shadow">
-          <div class="flex flex-wrap gap-16">
-            <div class="card w-100 field text-center card-white ">
-              <div>{{ totalQuizzes() }}</div>
-              <div>Quiz disponibles</div>
-            </div>
-            <div class="card w-100 field text-center card-white">
-              <div>{{ totalCategories() }}</div>
-              <div class="text-sm">Catégories</div>
-            </div>
-            <div class="card w-100 field  text-center card-white">
-              <div>{{ averageScore() }}%</div>
-              <div>Score moyen</div>
-            </div>
-            <div class="card w-100 field  text-center card-white">
-              <div>{{ totalPlays() }}</div>
-              <div>Parties jouées</div>
-            </div>
-          </div>
-        </div>
+  <section class="mt-20 card card-shadow" role="region" aria-label="Statistiques de QuizArena">
+    <div class="flex flex-wrap gap-16">
+      <article class="card w-100 field text-center card-white" role="article">
+        <div class="text-lg text-bold" aria-label="Nombre total de quiz disponibles">{{ totalQuizzes() }}</div>
+        <div>Quiz disponibles</div>
+      </article>
+      <article class="card w-100 field text-center card-white" role="article">
+        <div class="text-lg text-bold" aria-label="Nombre total de catégories">{{ totalCategories() }}</div>
+        <div class="text-sm">Catégories</div>
+      </article>
+      <article class="card w-100 field text-center card-white" role="article">
+        <div class="text-lg text-bold" aria-label="Score moyen des utilisateurs">{{ averageScore() }}%</div>
+        <div>Score moyen</div>
+      </article>
+      <article class="card w-100 field text-center card-white" role="article">
+        <div class="text-lg text-bold" aria-label="Nombre total de parties jouées">{{ totalPlays() }}</div>
+        <div>Parties jouées</div>
+      </article>
+    </div>
+  </section>
   `,
   styles: ``
 })
