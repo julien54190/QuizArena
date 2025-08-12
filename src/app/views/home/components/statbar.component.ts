@@ -6,21 +6,21 @@ import { CATEGORIES_DATA } from '../../../data/categories.data';
   selector: 'app-statbar',
   imports: [],
   template: `
-        <div>
-          <div>
-            <div>
+        <div class="mt-20 card card-shadow">
+          <div class="flex flex-wrap gap-16">
+            <div class="card w-100 field text-center card-white ">
               <div>{{ totalQuizzes() }}</div>
               <div>Quiz disponibles</div>
             </div>
-            <div>
+            <div class="card w-100 field text-center card-white">
               <div>{{ totalCategories() }}</div>
               <div class="text-sm">Catégories</div>
             </div>
-            <div>
+            <div class="card w-100 field  text-center card-white">
               <div>{{ averageScore() }}%</div>
               <div>Score moyen</div>
             </div>
-            <div>
+            <div class="card w-100 field  text-center card-white">
               <div>{{ totalPlays() }}</div>
               <div>Parties jouées</div>
             </div>

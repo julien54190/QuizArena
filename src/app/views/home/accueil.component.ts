@@ -15,9 +15,9 @@ import { StatbarComponent } from "./components/statbar.component";
           <p class="text-sm">Découvrez des milliers de quiz passionnants et testez vos connaissances dans tous les domaines</p>
         </div>
         <!-- Barre de recherche -->
-        <app-searchbar (searchChanged)="onSearchChanged($event)" class="mt-20"></app-searchbar>
+        <app-searchbar (searchChanged)="onSearchChanged($event)"></app-searchbar>
         <!-- Composant Statbar -->
-        <app-statbar class="mt-20"></app-statbar>
+        <app-statbar></app-statbar>
       </div>
     </div>
   `,

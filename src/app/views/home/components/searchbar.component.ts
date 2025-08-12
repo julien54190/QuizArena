@@ -8,9 +8,9 @@ import { CATEGORIES_DATA } from '../../../data/categories.data';
   selector: 'app-searchbar',
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="home-panel p-25 card" role="search">
+    <div class="card card-shadow mt-20" role="search">
       <div class="flex flex-wrap gap-16">
-        <div class="search-field">
+        <div class="field">
           <label for="search-input" class="sr-only">Rechercher un quiz</label>
           <input
             id="search-input"
@@ -23,7 +23,7 @@ import { CATEGORIES_DATA } from '../../../data/categories.data';
           />
         </div>
 
-        <div class="search-field">
+        <div class="field">
           <label for="category-select" class="sr-only">Filtrer par catégorie</label>
           <select
             id="category-select"
@@ -39,7 +39,7 @@ import { CATEGORIES_DATA } from '../../../data/categories.data';
           </select>
         </div>
 
-        <div class="search-field">
+        <div class="field">
           <label for="difficulty-select" class="sr-only">Filtrer par difficulté</label>
           <select
             id="difficulty-select"
@@ -55,7 +55,7 @@ import { CATEGORIES_DATA } from '../../../data/categories.data';
           </select>
         </div>
 
-        <div class="search-field">
+        <div class="field">
           <label for="questions-select" class="sr-only">Filtrer par nombre de questions</label>
           <select
             id="questions-select"
@@ -72,7 +72,7 @@ import { CATEGORIES_DATA } from '../../../data/categories.data';
           </select>
         </div>
 
-        <div class="search-field">
+        <div class="field">
           <label for="score-select" class="sr-only">Filtrer par score minimum</label>
           <select
             id="score-select"

@@ -8,8 +8,15 @@ body {
     padding: 24px;
     border-radius: var(--radius);
     border: var(--border);
-    box-shadow: var(--box-shadow);
     background-color: var(--light);
+}
+
+.card-shadow {
+    box-shadow: var(--box-shadow);
+}
+
+.card-white {
+    background-color: var(--white);
 }
 
 .radius {
