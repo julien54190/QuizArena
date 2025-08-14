@@ -1,7 +1,7 @@
-import { Component, computed, Input, signal } from '@angular/core';
-import { IPlayQuiz } from '../../../interfaces/quiz';
-import { PLAY_QUIZZES_DATA } from '../../../data/quiz.data';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SearchService } from '../../../services/search.service';
+import { QuizService } from '../../../services/quiz.service';
 
 @Component({
   selector: 'app-popular-quiz',
@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
     <h2 id="popular-quizzes-title" class="text-center text-xlg">Quiz populaires</h2>
 
     <div class="flex flex-wrap gap-16 filed w-full justify-content-center" role="list" aria-label="Liste des quiz populaires">
-      @for (quiz of filteredQuizzes(); track quiz.id) {
+      @for (quiz of popularQuizzes(); track quiz.id) {
         <article
           (click)="playQuiz(quiz)"
           (keydown.enter)="playQuiz(quiz)"
@@ -37,12 +37,12 @@ import { CommonModule } from '@angular/common';
     </div>
 
     <!-- État vide -->
-    @if (filteredQuizzes().length === 0) {
+    @if (popularQuizzes().length === 0) {
       <div role="status" aria-live="polite" class="text-center card card-white mt-10">
         <div role="img" aria-label="Icône de recherche">🔍</div>
         <h3>Aucun quiz trouvé</h3>
         <p>
-          {{ (searchTerm || categoryFilter || difficultyFilter) ?
+          {{ hasActiveFilters() ?
             'Aucun quiz ne correspond à vos critères de recherche.' :
             'Aucun quiz disponible pour le moment.' }}
         </p>
@@ -53,97 +53,25 @@ import { CommonModule } from '@angular/common';
   styles: ``
 })
 export class PopularQuizComponent {
-  // Données des quiz
-  quizzes = signal<IPlayQuiz[]>(PLAY_QUIZZES_DATA);
+  private searchService = inject(SearchService);
+  private quizService = inject(QuizService);
 
-  // Recevoir les données de recherche du composant parent
-  private _searchTerm = signal('');
-  private _categoryFilter = signal('');
-  private _difficultyFilter = signal('');
+  // Quiz populaires depuis le service
+  popularQuizzes = this.searchService.popularQuizzes;
+  hasActiveFilters = this.searchService.hasActiveFilters;
 
-  @Input() set searchTerm(value: string) {
-    this._searchTerm.set(value);
-  }
-  get searchTerm() {
-    return this._searchTerm();
-  }
-
-  @Input() set categoryFilter(value: string) {
-    this._categoryFilter.set(value);
-  }
-  get categoryFilter() {
-    return this._categoryFilter();
-  }
-
-  @Input() set difficultyFilter(value: string) {
-    this._difficultyFilter.set(value);
-  }
-  get difficultyFilter() {
-    return this._difficultyFilter();
-  }
-
-  // Filtrer les quiz en fonction des critères de recherche
-  filteredQuizzes = computed(() => {
-    const searchTerm = this._searchTerm();
-    const categoryFilter = this._categoryFilter();
-    const difficultyFilter = this._difficultyFilter();
-
-    let filtered = this.quizzes();
-
-    // Filtre par recherche
-    if (searchTerm) {
-      filtered = filtered.filter(quiz =>
-        quiz.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        quiz.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Filtre par catégorie
-    if (categoryFilter) {
-      filtered = filtered.filter(quiz => quiz.category === categoryFilter);
-    }
-
-    // Filtre par difficulté
-    if (difficultyFilter) {
-      filtered = filtered.filter(quiz => quiz.difficulty === difficultyFilter);
-    }
-
-    // Trier par popularité (nombre de parties jouées) et limiter à 6
-    return filtered
-      .sort((a, b) => b.totalPlays - a.totalPlays)
-      .slice(0, 6);
-  })
-
-  playQuiz(quiz: IPlayQuiz) {
-    console.log('Jouer au quiz:', quiz.title);
+  // Méthode pour jouer à un quiz
+  playQuiz(quiz: any) {
+    this.quizService.playQuiz(quiz);
   }
 
   // Obtenir la classe CSS pour la difficulté
   getDifficultyClass(difficulty: string): string {
-    switch (difficulty) {
-      case 'facile': return 'badge-success';
-      case 'moyen': return 'badge-warning';
-      case 'difficile': return 'badge-danger';
-      default: return 'badge-info';
-    }
+    return this.quizService.getDifficultyClass(difficulty);
   }
 
   // Obtenir l'icône selon la catégorie
   getCategoryIcon(category: string): string {
-    switch (category.toLowerCase()) {
-      case 'histoire': return '🏛️';
-      case 'géographie': return '🌍';
-      case 'sciences': return '🔬';
-      case 'littérature': return '📚';
-      case 'sport': return '⚽';
-      case 'musique': return '🎵';
-      case 'cinéma': return '🎬';
-      case 'technologie': return '💻';
-      case 'art': return '🎨';
-      case 'cuisine': return '👨‍🍳';
-      case 'nature': return '🌱'
-      default: return '🎯';
-    }
+    return this.quizService.getCategoryIcon(category);
   }
-
 }

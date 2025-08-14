@@ -1,7 +1,6 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IUser } from '../../../interfaces/user';
-import { USERS_DATA } from '../../../data/users.data';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-best-players',
@@ -54,14 +53,8 @@ import { USERS_DATA } from '../../../data/users.data';
   styles: ``
 })
 export class BestPlayersComponent {
-  // Données des utilisateurs
-  users = signal<IUser[]>(USERS_DATA);
+  private userService = inject(UserService);
 
-  // Top 6 des meilleurs joueurs basé sur le score moyen
-  topPlayers = computed(() => {
-    return this.users()
-      .filter(user => user.status === 'active')
-      .sort((a, b) => b.averageScore - a.averageScore)
-      .slice(0, 3);
-  });
+  // Top 3 des meilleurs joueurs depuis le service
+  topPlayers = this.userService.topPlayers;
 }

@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.2] - 2025-08-14
+
+### 🧪 Testing
+
+- :test_tube: ajout des test et correction du code
+
+## [0.5.1] - 2025-08-14
+
+### 🚜 Refactor
+
+- *(service)* :recycle: refactorisation du code en utilisant les service
+
+## [0.5.0] - 2025-08-14
+
+### 🚀 Features
+
+- *(home)* :sparkles: ajout bouton jouer avec sotn style et sont accessibilité
+
 ## [0.4.0] - 2025-08-14
 
 ### 🚀 Features
