@@ -43,7 +43,7 @@ export const PLAY_QUIZZES_DATA: IPlayQuiz[] = [
   id: 4,
   title: 'Cinéma Classique',
   description: 'Les plus grands films de l\'histoire',
-  category: 'Culture Générale',
+  category: 'Cinéma',
   difficulty: 'moyen',
   questionCount: 18,
   averageScore: 72,

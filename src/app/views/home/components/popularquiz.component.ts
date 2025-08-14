@@ -16,7 +16,7 @@ import { CommonModule } from '@angular/common';
           class="card card-white mt-10 card-size text-center flex flex-col justify-content-between card-hover">
           <div class="flex flex-col justify-content-between h-full">
             <div>
-              <div class="text-lg mb-10">🎯</div>
+              <div class="text-lg mb-10">{{ getCategoryIcon(quiz.category) }}</div>
               <h3 class="text-bold mb-10">{{ quiz.title }}</h3>
               <p class="text-sm">{{ quiz.description }}</p>
             </div>
@@ -27,7 +27,7 @@ import { CommonModule } from '@angular/common';
           </div>
         </div>
       }
-  </div>
+    </div>
 
   <!-- État vide -->
   @if (filteredQuizzes().length === 0) {
@@ -111,13 +111,31 @@ export class PopularQuizComponent {
     console.log('Jouer au quiz:', quiz.title);
   }
 
-  // Obtenir la classe CSS pour la difficulté  // Méthode pour obtenir la classe CSS selon la difficulté
+  // Obtenir la classe CSS pour la difficulté
   getDifficultyClass(difficulty: string): string {
     switch (difficulty) {
       case 'facile': return 'badge-success';
       case 'moyen': return 'badge-warning';
       case 'difficile': return 'badge-danger';
       default: return 'badge-info';
+    }
+  }
+
+  // Obtenir l'icône selon la catégorie
+  getCategoryIcon(category: string): string {
+    switch (category.toLowerCase()) {
+      case 'histoire': return '🏛️';
+      case 'géographie': return '🌍';
+      case 'sciences': return '🔬';
+      case 'littérature': return '📚';
+      case 'sport': return '⚽';
+      case 'musique': return '🎵';
+      case 'cinéma': return '🎬';
+      case 'technologie': return '💻';
+      case 'art': return '🎨';
+      case 'cuisine': return '👨‍🍳';
+      case 'nature': return '🌱'
+      default: return '🎯';
     }
   }
 
