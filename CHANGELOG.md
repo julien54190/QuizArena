@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 ### 💼 Other
 
 - *(home)* :wheelchair: ajout Accessibilité pour les stat
-- *(auth)* :wheelchair: ajout de l'Accessibilité Quiz populaire
+- *(home)* :wheelchair: ajout de l'Accessibilité Quiz populaire
 
 ### 🎨 Styling
 

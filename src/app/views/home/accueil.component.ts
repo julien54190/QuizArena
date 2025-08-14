@@ -1,14 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
-import { SearchBarComponent } from './components/searchbar.component';
-import { StatBarComponent } from './components/statbar.component';
-import { PopularQuizComponent } from './components/popularquiz.component';
+import { PopularQuizComponent } from './components/popular-quiz.component';
+import { SearchBarComponent } from './components/search-bar.component';
+import { StatBarComponent } from './components/stat-bar.component';
+import { BestPlayersComponent } from './components/best-players.component';
+
 
 
 
 @Component({
   selector: 'app-accueil',
-  imports: [CommonModule, SearchBarComponent, StatBarComponent, PopularQuizComponent],
+  imports: [CommonModule, SearchBarComponent, StatBarComponent, PopularQuizComponent, BestPlayersComponent],
   template: `
   <div class="home-container">
     <div class="home-content">
@@ -17,15 +19,18 @@ import { PopularQuizComponent } from './components/popularquiz.component';
         <p class="text-sm">Découvrez des milliers de quiz passionnants et testez vos connaissances dans tous les domaines</p>
       </div>
       <!-- Barre de recherche -->
-      <app-searchbar (searchChanged)="onSearchChanged($event)"></app-searchbar>
+      <app-search-bar (searchChanged)="onSearchChanged($event)"></app-search-bar>
       <!-- Composant Statbar -->
-      <app-statbar></app-statbar>
+      <app-stat-bar></app-stat-bar>
       <!-- Composant PopularQuiz -->
-      <app-popularquiz
+      <app-popular-quiz
         [searchTerm]="searchTerm()"
         [categoryFilter]="categoryFilter()"
         [difficultyFilter]="difficultyFilter()">
-      </app-popularquiz>
+      </app-popular-quiz>
+      <!-- Composant BestPlayer -->
+      <app-best-players></app-best-players>
+
     </div>
   </div>
   `,

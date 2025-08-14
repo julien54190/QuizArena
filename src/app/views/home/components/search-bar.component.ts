@@ -5,7 +5,7 @@ import { ICategory } from '../../../interfaces/category';
 import { CATEGORIES_DATA } from '../../../data/categories.data';
 
 @Component({
-  selector: 'app-searchbar',
+  selector: 'app-search-bar',
   imports: [CommonModule, FormsModule],
   template: `
     <div class="card card-shadow mt-20" role="search">

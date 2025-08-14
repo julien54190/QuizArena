@@ -3,7 +3,7 @@ import { PLAY_QUIZZES_DATA } from '../../../data/quiz.data';
 import { CATEGORIES_DATA } from '../../../data/categories.data';
 
 @Component({
-  selector: 'app-statbar',
+  selector: 'app-stat-bar',
   imports: [],
   template: `
   <section class="mt-20 card card-shadow" role="region" aria-label="Statistiques de QuizArena">

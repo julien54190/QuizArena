@@ -4,7 +4,7 @@ import { PLAY_QUIZZES_DATA } from '../../../data/quiz.data';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-popularquiz',
+  selector: 'app-popular-quiz',
   imports: [CommonModule],
   template: `
   <section class="mt-20 card card-shadow" role="region" aria-labelledby="popular-quizzes-title">
@@ -38,7 +38,7 @@ import { CommonModule } from '@angular/common';
 
     <!-- État vide -->
     @if (filteredQuizzes().length === 0) {
-      <div role="status" aria-live="polite" class="text-center">
+      <div role="status" aria-live="polite" class="text-center card card-white mt-10">
         <div role="img" aria-label="Icône de recherche">🔍</div>
         <h3>Aucun quiz trouvé</h3>
         <p>
