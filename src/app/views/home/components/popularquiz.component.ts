@@ -7,41 +7,48 @@ import { CommonModule } from '@angular/common';
   selector: 'app-popularquiz',
   imports: [CommonModule],
   template: `
-  <div class="mt-20 card card-shadow">
-    <h2 class="text-center text-xlg">Quiz populaires</h2>
-    <div class="flex flex-wrap gap-16 filed w-full justify-content-center">
+  <section class="mt-20 card card-shadow" role="region" aria-labelledby="popular-quizzes-title">
+    <h2 id="popular-quizzes-title" class="text-center text-xlg">Quiz populaires</h2>
+
+    <div class="flex flex-wrap gap-16 filed w-full justify-content-center" role="list" aria-label="Liste des quiz populaires">
       @for (quiz of filteredQuizzes(); track quiz.id) {
-        <div
+        <article
           (click)="playQuiz(quiz)"
-          class="card card-white mt-10 card-size text-center flex flex-col justify-content-between card-hover">
+          (keydown.enter)="playQuiz(quiz)"
+          (keydown.space)="playQuiz(quiz)"
+          class="card card-white mt-10 card-size text-center flex flex-col justify-content-between card-hover"
+          role="listitem"
+          tabindex="0"
+          [attr.aria-label]="'Quiz ' + quiz.title + ' - ' + quiz.category + ' - Difficulté ' + quiz.difficulty"
+          [attr.aria-describedby]="'quiz-desc-' + quiz.id">
           <div class="flex flex-col justify-content-between h-full">
             <div>
-              <div class="text-lg mb-10">{{ getCategoryIcon(quiz.category) }}</div>
+              <div class="text-lg mb-10" role="img" [attr.aria-label]="'Icône ' + quiz.category">{{ getCategoryIcon(quiz.category) }}</div>
               <h3 class="text-bold mb-10">{{ quiz.title }}</h3>
-              <p class="text-sm">{{ quiz.description }}</p>
+              <p id="quiz-desc-{{ quiz.id }}" class="text-sm">{{ quiz.description }}</p>
             </div>
             <div class="mt-auto">
-              <span class="mr-10 text-sm text-semibold badge-info">{{ quiz.questionCount }} questions</span>
-              <span class="text-sm text-semibold" [ngClass]="getDifficultyClass(quiz.difficulty)">{{ quiz.difficulty }}</span>
+              <span class="mr-10 text-sm text-semibold badge-info" role="status" [attr.aria-label]="quiz.questionCount + ' questions'">{{ quiz.questionCount }} questions</span>
+              <span class="text-sm text-semibold" [ngClass]="getDifficultyClass(quiz.difficulty)" role="status" [attr.aria-label]="'Difficulté ' + quiz.difficulty">{{ quiz.difficulty }}</span>
             </div>
           </div>
-        </div>
+        </article>
       }
     </div>
 
-  <!-- État vide -->
-  @if (filteredQuizzes().length === 0) {
-    <div>
-      <div>🔍</div>
-      <div>Aucun quiz trouvé</div>
-      <div>
-        {{ (searchTerm || categoryFilter || difficultyFilter) ?
-          'Aucun quiz ne correspond à vos critères de recherche.' :
-          'Aucun quiz disponible pour le moment.' }}
+    <!-- État vide -->
+    @if (filteredQuizzes().length === 0) {
+      <div role="status" aria-live="polite" class="text-center">
+        <div role="img" aria-label="Icône de recherche">🔍</div>
+        <h3>Aucun quiz trouvé</h3>
+        <p>
+          {{ (searchTerm || categoryFilter || difficultyFilter) ?
+            'Aucun quiz ne correspond à vos critères de recherche.' :
+            'Aucun quiz disponible pour le moment.' }}
+        </p>
       </div>
-    </div>
-  }
-    </div>
+    }
+  </section>
   `,
   styles: ``
 })
