@@ -41,6 +41,7 @@ export class HomeService {
 
   averageScore = computed(() => {
     const scores = this._quizzes().map(quiz => quiz.averageScore);
+    if (scores.length === 0) return 0;
     const total = scores.reduce((acc, score) => acc + score, 0);
     return Math.round(total / scores.length);
   });

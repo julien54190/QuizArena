@@ -44,12 +44,12 @@ export class QuizService {
         moyen: quizzes.filter(q => q.difficulty === 'moyen').length,
         difficile: quizzes.filter(q => q.difficulty === 'difficile').length
       },
-      averageQuestions: Math.round(
+      averageQuestions: quizzes.length > 0 ? Math.round(
         quizzes.reduce((sum, quiz) => sum + quiz.questionCount, 0) / quizzes.length
-      ),
-      averageScore: Math.round(
+      ) : 0,
+      averageScore: quizzes.length > 0 ? Math.round(
         quizzes.reduce((sum, quiz) => sum + quiz.averageScore, 0) / quizzes.length
-      )
+      ) : 0
     };
   });
 

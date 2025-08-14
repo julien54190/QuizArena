@@ -47,15 +47,15 @@ export class UserService {
       active: activeUsers.length,
       suspended: users.filter(u => u.status === 'suspended').length,
       banned: users.filter(u => u.status === 'banned').length,
-      averageScore: Math.round(
+      averageScore: activeUsers.length > 0 ? Math.round(
         activeUsers.reduce((sum, user) => sum + user.averageScore, 0) / activeUsers.length
-      ),
-      averagePlays: Math.round(
+      ) : 0,
+      averagePlays: activeUsers.length > 0 ? Math.round(
         activeUsers.reduce((sum, user) => sum + user.totalPlays, 0) / activeUsers.length
-      ),
-      averageQuizzesCreated: Math.round(
+      ) : 0,
+      averageQuizzesCreated: activeUsers.length > 0 ? Math.round(
         activeUsers.reduce((sum, user) => sum + user.quizzesCreated, 0) / activeUsers.length
-      )
+      ) : 0
     };
   });
 
@@ -86,10 +86,10 @@ export class UserService {
   // Méthode pour obtenir l'icône de médaille selon le classement
   getMedalIcon(index: number): string {
     switch (index) {
-      case 0: return '🥇'; // 1er place - Or
-      case 1: return '🥈'; // 2ème place - Argent
-      case 2: return '🥉'; // 3ème place - Bronze
-      default: return '🏆'; // Autres places
+      case 0: return '🥇'; 
+      case 1: return '🥈';
+      case 2: return '🥉';
+      default: return '🏆';
     }
   }
 

@@ -59,9 +59,9 @@ export class SearchService {
 
   // Méthode pour vérifier si des filtres sont actifs
   hasActiveFilters = computed(() => {
-    return this.homeService.searchTerm() ||
-          this.homeService.categoryFilter() ||
-          this.homeService.difficultyFilter() ||
+    return !!this.homeService.searchTerm() ||
+          !!this.homeService.categoryFilter() ||
+          !!this.homeService.difficultyFilter() ||
           this.homeService.minQuestions() > 0 ||
           this.homeService.minScore() > 0;
   });
