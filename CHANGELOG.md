@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.1] - 2025-08-14
+
+### 🚜 Refactor
+
+- *(service)* :recycle: refactorisation du code en utilisant les service
+
 ## [0.5.0] - 2025-08-14
 
 ### 🚀 Features
