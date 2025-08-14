@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2025-08-14
+
+### 🚀 Features
+
+- *(home)* :sparkles: Ajout de la partie statistiques
+- *(home)* :sparkles: Ajouts des quiz populaire et du systeme de recherche
+
+### 💼 Other
+
+- *(home)* :wheelchair: ajout Accessibilité pour les stat
+- *(auth)* :wheelchair: ajout de l'Accessibilité Quiz populaire
+
+### 🎨 Styling
+
+- *(home)* :lipstick: style des card statistique
+- *(home)* :lipstick: style des pour les quiz populaire
+
 ## [0.3.0] - 2025-08-10
 
 ### 🚀 Features
