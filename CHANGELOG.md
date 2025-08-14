@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 
 - *(home)* :wheelchair: ajout Accessibilité pour les stat
 - *(home)* :wheelchair: ajout de l'Accessibilité Quiz populaire
+- *(home)* :wheelchair: ajout Accessibilité pour best players
 
 ### 🎨 Styling
 

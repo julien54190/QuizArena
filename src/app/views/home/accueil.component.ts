@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { PopularQuizComponent } from './components/popular-quiz.component';
 import { SearchBarComponent } from './components/search-bar.component';
 import { StatBarComponent } from './components/stat-bar.component';
@@ -31,6 +32,20 @@ import { BestPlayersComponent } from './components/best-players.component';
       <!-- Composant BestPlayer -->
       <app-best-players></app-best-players>
 
+      <!-- Section Jouer -->
+      <section class="text-center mt-20" role="region" aria-labelledby="play-section-title">
+        <h2 id="play-section-title" class="sr-only">Section de jeu</h2>
+        <button
+          (click)="goToPlay()"
+          (keydown.enter)="goToPlay()"
+          (keydown.space)="goToPlay()"
+          class="btn btn-primary text-lg"
+          aria-label="Commencer à jouer - Accéder à la page de sélection de quiz"
+          type="button">
+          🎮 Jouer maintenant
+        </button>
+      </section>
+
     </div>
   </div>
   `,
@@ -39,6 +54,8 @@ import { BestPlayersComponent } from './components/best-players.component';
   `
 })
 export class AccueilComponent {
+  private router = inject(Router);
+
   // Signals pour stocker les filtres
   searchTerm = signal('');
   categoryFilter = signal('');
@@ -55,5 +72,10 @@ export class AccueilComponent {
     this.searchTerm.set(searchData.searchTerm);
     this.categoryFilter.set(searchData.categoryFilter);
     this.difficultyFilter.set(searchData.difficultyFilter);
+  }
+
+  // Méthode pour rediriger vers la page jouer
+  goToPlay() {
+    this.router.navigate(['/jouer']);
   }
 }
