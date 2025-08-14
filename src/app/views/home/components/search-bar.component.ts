@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal, Output, EventEmitter } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ICategory } from '../../../interfaces/category';
-import { CATEGORIES_DATA } from '../../../data/categories.data';
+import { HomeService } from '../../../services/home.service';
 
 @Component({
   selector: 'app-search-bar',
@@ -15,7 +14,7 @@ import { CATEGORIES_DATA } from '../../../data/categories.data';
           <input
             id="search-input"
             [(ngModel)]="searchQuery"
-            (ngModelChange)="searchTerm.set($event); onSearchChange()"
+            (ngModelChange)="onSearchChange()"
             type="text"
             placeholder="Rechercher un quiz..."
             class="flex-item search-bar w-full"
@@ -27,13 +26,13 @@ import { CATEGORIES_DATA } from '../../../data/categories.data';
           <label for="category-select" class="sr-only">Filtrer par catégorie</label>
           <select
             id="category-select"
-            [ngModel]="categoryFilter()"
-            (ngModelChange)="categoryFilter.set($event); onSearchChange()"
+            [(ngModel)]="categoryFilter"
+            (ngModelChange)="onSearchChange()"
             class="flex-item search-bar w-full"
             aria-label="Filtrer par catégorie"
           >
             <option value="">Toutes les catégories</option>
-            @for (cat of categories(); track cat.name) {
+            @for (cat of homeService.categories(); track cat.name) {
               <option [value]="cat.name">{{ cat.name }}</option>
             }
           </select>
@@ -43,8 +42,8 @@ import { CATEGORIES_DATA } from '../../../data/categories.data';
           <label for="difficulty-select" class="sr-only">Filtrer par difficulté</label>
           <select
             id="difficulty-select"
-            [ngModel]="difficultyFilter()"
-            (ngModelChange)="difficultyFilter.set($event); onSearchChange()"
+            [(ngModel)]="difficultyFilter"
+            (ngModelChange)="onSearchChange()"
             class="flex-item search-bar w-full"
             aria-label="Filtrer par niveau de difficulté"
           >
@@ -59,8 +58,8 @@ import { CATEGORIES_DATA } from '../../../data/categories.data';
           <label for="questions-select" class="sr-only">Filtrer par nombre de questions</label>
           <select
             id="questions-select"
-            [ngModel]="minQuestions()"
-            (ngModelChange)="minQuestions.set($event); onSearchChange()"
+            [(ngModel)]="minQuestions"
+            (ngModelChange)="onSearchChange()"
             class="flex-item search-bar w-full"
             aria-label="Filtrer par nombre minimum de questions"
           >
@@ -76,8 +75,8 @@ import { CATEGORIES_DATA } from '../../../data/categories.data';
           <label for="score-select" class="sr-only">Filtrer par score minimum</label>
           <select
             id="score-select"
-            [ngModel]="minScore()"
-            (ngModelChange)="minScore.set($event); onSearchChange()"
+            [(ngModel)]="minScore"
+            (ngModelChange)="onSearchChange()"
             class="flex-item search-bar w-full"
             aria-label="Filtrer par score minimum"
           >
@@ -107,47 +106,42 @@ import { CATEGORIES_DATA } from '../../../data/categories.data';
   `
 })
 export class SearchBarComponent {
-  // Signals pour les filtres
-  searchTerm = signal('');
-  categoryFilter = signal('');
-  difficultyFilter = signal('');
-  minQuestions = signal(0);
-  minScore = signal(0);
+  homeService = inject(HomeService);
 
-  // Liste des catégories
-  categories = signal<ICategory[]>(CATEGORIES_DATA);
-
-  // Propriété pour la recherche
+  // Propriétés pour les filtres
   searchQuery: string = '';
+  categoryFilter: string = '';
+  difficultyFilter: string = '';
+  minQuestions: number = 0;
+  minScore: number = 0;
 
-  // Output pour communiquer avec le parent
-  @Output() searchChanged = new EventEmitter<{
-    searchTerm: string;
-    categoryFilter: string;
-    difficultyFilter: string;
-    minQuestions: number;
-    minScore: number;
-  }>();
+  constructor() {
+    // Initialiser les valeurs avec celles du service
+    this.searchQuery = this.homeService.searchTerm();
+    this.categoryFilter = this.homeService.categoryFilter();
+    this.difficultyFilter = this.homeService.difficultyFilter();
+    this.minQuestions = this.homeService.minQuestions();
+    this.minScore = this.homeService.minScore();
+  }
 
-  // Méthode appelée quand les filtres changent
+  // Méthode appelée quand la recherche change
   onSearchChange() {
-    this.searchChanged.emit({
-      searchTerm: this.searchTerm(),
-      categoryFilter: this.categoryFilter(),
-      difficultyFilter: this.difficultyFilter(),
-      minQuestions: this.minQuestions(),
-      minScore: this.minScore()
+    this.homeService.updateSearchFilters({
+      searchTerm: this.searchQuery,
+      categoryFilter: this.categoryFilter,
+      difficultyFilter: this.difficultyFilter,
+      minQuestions: Number(this.minQuestions),
+      minScore: Number(this.minScore)
     });
   }
 
   // Méthode pour réinitialiser les filtres
   resetFilters() {
-    this.searchTerm.set('');
-    this.categoryFilter.set('');
-    this.difficultyFilter.set('');
-    this.minQuestions.set(0);
-    this.minScore.set(0);
+    this.homeService.resetFilters();
     this.searchQuery = '';
-    this.onSearchChange();
+    this.categoryFilter = '';
+    this.difficultyFilter = '';
+    this.minQuestions = 0;
+    this.minScore = 0;
   }
 }

@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { PopularQuizComponent } from './components/popular-quiz.component';
 import { SearchBarComponent } from './components/search-bar.component';
 import { StatBarComponent } from './components/stat-bar.component';
 import { BestPlayersComponent } from './components/best-players.component';
+import { HomeService } from '../../services/home.service';
 
 
 
@@ -20,15 +21,11 @@ import { BestPlayersComponent } from './components/best-players.component';
         <p class="text-sm">Découvrez des milliers de quiz passionnants et testez vos connaissances dans tous les domaines</p>
       </div>
       <!-- Barre de recherche -->
-      <app-search-bar (searchChanged)="onSearchChanged($event)"></app-search-bar>
+      <app-search-bar></app-search-bar>
       <!-- Composant Statbar -->
       <app-stat-bar></app-stat-bar>
       <!-- Composant PopularQuiz -->
-      <app-popular-quiz
-        [searchTerm]="searchTerm()"
-        [categoryFilter]="categoryFilter()"
-        [difficultyFilter]="difficultyFilter()">
-      </app-popular-quiz>
+      <app-popular-quiz></app-popular-quiz>
       <!-- Composant BestPlayer -->
       <app-best-players></app-best-players>
 
@@ -55,24 +52,9 @@ import { BestPlayersComponent } from './components/best-players.component';
 })
 export class AccueilComponent {
   private router = inject(Router);
+  private homeService = inject(HomeService);
 
-  // Signals pour stocker les filtres
-  searchTerm = signal('');
-  categoryFilter = signal('');
-  difficultyFilter = signal('');
 
-  // Méthode pour recevoir les changements de recherche du composant enfant
-  onSearchChanged(searchData: {
-    searchTerm: string;
-    categoryFilter: string;
-    difficultyFilter: string;
-    minQuestions: number;
-    minScore: number;
-  }) {
-    this.searchTerm.set(searchData.searchTerm);
-    this.categoryFilter.set(searchData.categoryFilter);
-    this.difficultyFilter.set(searchData.difficultyFilter);
-  }
 
   // Méthode pour rediriger vers la page jouer
   goToPlay() {

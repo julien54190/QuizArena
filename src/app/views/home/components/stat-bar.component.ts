@@ -1,6 +1,5 @@
-import { Component, computed, signal } from '@angular/core';
-import { PLAY_QUIZZES_DATA } from '../../../data/quiz.data';
-import { CATEGORIES_DATA } from '../../../data/categories.data';
+import { Component, inject } from '@angular/core';
+import { HomeService } from '../../../services/home.service';
 
 @Component({
   selector: 'app-stat-bar',
@@ -30,20 +29,11 @@ import { CATEGORIES_DATA } from '../../../data/categories.data';
   styles: ``
 })
 export class StatBarComponent {
-  quizzes = signal(PLAY_QUIZZES_DATA);
-  categories = signal(CATEGORIES_DATA);
+  private homeService = inject(HomeService);
 
-  totalQuizzes = computed(() => this.quizzes().length);
-  totalCategories = computed(() => this.categories().length);
-
-  averageScore = computed(() => {
-    const scores = this.quizzes().map(quiz => quiz.averageScore);
-    const total = scores.reduce((acc, score) => acc + score, 0);
-    return Math.round(total / scores.length);
-  });
-
-  totalPlays = computed(() => {
-    return this.quizzes().reduce((sum, quiz) => sum + quiz.totalPlays, 0);
-  });
-
+  // Statistiques depuis le service
+  totalQuizzes = this.homeService.totalQuizzes;
+  totalCategories = this.homeService.totalCategories;
+  averageScore = this.homeService.averageScore;
+  totalPlays = this.homeService.totalPlays;
 }
