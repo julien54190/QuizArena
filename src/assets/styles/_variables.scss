@@ -7,9 +7,15 @@
     --primary: #7e22ce;
     --dark: #3b0764;
     --success: #22c55e;
+    --warning: #fcb22b;
     --danger: #dc2626;
     --danger-dark: #921515;
+    --info : #2563eb;
+    --white: #ffffff;
 
     --border: 1px solid var(--gray-100);
+    --border-card: 3px solid var(--primary);
+    --border-light: 1px solid var(--light);
+    --box-shadow: 0 10px 30px var(--text-color);
     --radius: 24px;
 }

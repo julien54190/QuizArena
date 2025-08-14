@@ -5,10 +5,12 @@ import { FooterComponent } from './components/footer.component';
 
 @Component({
   selector: 'app-root',
-  imports: [HeaderComponent, FooterComponent],
+  imports: [HeaderComponent, FooterComponent,RouterOutlet],
   template: `
     <app-header></app-header>
-    <div class="flex-auto flex flex-col"></div>
+    <main id="main-content" class="flex-auto flex flex-col ">
+      <router-outlet></router-outlet>
+    </main>
     <app-footer></app-footer>
     `
 

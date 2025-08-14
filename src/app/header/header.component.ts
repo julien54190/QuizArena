@@ -49,10 +49,6 @@ import { HeaderMenuComponent } from './components/header-menu.component';
       outline-offset: 2px;
     }
 
-    .logo {
-      width: 50px;
-      height: 50px;
-    }
   `
 })
 export class HeaderComponent {
