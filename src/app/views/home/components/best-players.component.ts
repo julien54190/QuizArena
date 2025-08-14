@@ -7,12 +7,12 @@ import { USERS_DATA } from '../../../data/users.data';
   selector: 'app-best-players',
   imports: [CommonModule],
   template: `
-  <div>
-    <h2>Meilleurs joueurs</h2>
-    <div>
+  <div class="mt-20 card card-shadow">
+    <h2 class="text-center text-xlg">Meilleurs joueurs</h2>
+    <div class="flex flex-wrap gap-16 filed w-full justify-content-center">
       <!-- 1er place -->
       @if (topPlayers().length > 0) {
-        <div>
+        <div class="card card-white mt-10 card-size text-center flex flex-col justify-content-between card-hover">
           <div>🥇</div>
           <h3>{{ topPlayers()[0].firstName }} {{ topPlayers()[0].lastName }}</h3>
           <div>
@@ -25,7 +25,7 @@ import { USERS_DATA } from '../../../data/users.data';
 
       <!-- 2ème place -->
       @if (topPlayers().length > 1) {
-        <div>
+        <div class="card card-white mt-10 card-size text-center flex flex-col justify-content-between card-hover">
           <div>🥈</div>
           <h3>{{ topPlayers()[1].firstName }} {{ topPlayers()[1].lastName }}</h3>
           <div>
@@ -38,7 +38,7 @@ import { USERS_DATA } from '../../../data/users.data';
 
       <!-- 3ème place -->
       @if (topPlayers().length > 2) {
-        <div>
+        <div class="card card-white mt-10 card-size text-center flex flex-col justify-content-between card-hover">
           <div>🥉</div>
           <h3>{{ topPlayers()[2].firstName }} {{ topPlayers()[2].lastName }}</h3>
           <div>
@@ -57,7 +57,7 @@ export class BestPlayersComponent {
   // Données des utilisateurs
   users = signal<IUser[]>(USERS_DATA);
 
-  // Top 6 des meilleurs joueurs basé sur le score moyen
+  // Top 3 des meilleurs joueurs 
   topPlayers = computed(() => {
     return this.users()
       .filter(user => user.status === 'active')
