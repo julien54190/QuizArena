@@ -8,12 +8,12 @@ import { CommonModule } from '@angular/common';
   selector: 'app-quiz-list',
   imports: [CommonModule],
   template: `
-    <section>
-      <h2>{{ getCategoryName() }}</h2>
+    <section class="mt-20 card card-shadow">
+      <h2 class="text-center text-xlg">{{ getCategoryName() }}</h2>
 
       @if (categoryStats()) {
-        <div>
-          <p>
+        <div class="text-center mb-20">
+          <p class="text-sm text-muted">
             {{ categoryStats()?.totalQuizzes }} quiz •
             {{ categoryStats()?.totalQuestions }} questions •
             {{ categoryStats()?.totalPlays }} parties jouées •
@@ -25,20 +25,20 @@ import { CommonModule } from '@angular/common';
 
 
       @if (filteredQuizzes().length > 0) {
-        <div>
+        <div class="flex flex-wrap gap-16 filed w-full justify-content-center">
           @for (quiz of filteredQuizzes(); track quiz.id) {
-            <div (click)="selectQuiz(quiz)">
+            <div (click)="selectQuiz(quiz)" class="card card-white mt-10 card-size text-center flex flex-col justify-content-between card-hover">
 
               <div>
-                <h3>{{ quiz.title }}</h3>
-                <span [ngClass]="getDifficultyClass(quiz.difficulty)" role="status" [attr.aria-label]="'Difficulté ' + quiz.difficulty">{{ quiz.difficulty }}</span>
+                <h3 class="text-bold mb-10">{{ quiz.title }}</h3>
+                <span class="text-sm text-semibold" [ngClass]="getDifficultyClass(quiz.difficulty)" role="status" [attr.aria-label]="'Difficulté ' + quiz.difficulty">{{ quiz.difficulty }}</span>
               </div>
 
-              <p>{{ quiz.description }}</p>
+              <p class="text-sm">{{ quiz.description }}</p>
 
-              <div>
-                <span>{{ quiz.questionCount }} questions</span>
-                <span>Score moyen: {{ quiz.averageScore }}%</span>
+              <div class="flex flex-col mb-10">
+                <span class="text-sm">{{ quiz.questionCount }} questions</span>
+                <span class="text-sm text-bold">Score moyen: {{ quiz.averageScore }}%</span>
               </div>
 
               <div>
