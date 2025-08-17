@@ -15,6 +15,9 @@ export const routes: Routes = [
   {
     path: 'jouer',
     component: PlayComponent
+  },
+  {
+    path: 'jouer/:categoryId',
+    component: PlayComponent
   }
-
 ];

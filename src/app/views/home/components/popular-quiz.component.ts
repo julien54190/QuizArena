@@ -19,11 +19,11 @@ import { QuizService } from '../../../services/quiz.service';
           class="card card-white mt-10 card-size text-center flex flex-col justify-content-between card-hover"
           role="listitem"
           tabindex="0"
-          [attr.aria-label]="'Quiz ' + quiz.title + ' - ' + quiz.category + ' - Difficulté ' + quiz.difficulty"
+          [attr.aria-label]="'Quiz ' + quiz.title + ' - ' + quiz.categories.join(', ') + ' - Difficulté ' + quiz.difficulty"
           [attr.aria-describedby]="'quiz-desc-' + quiz.id">
           <div class="flex flex-col justify-content-between h-full">
             <div>
-              <div class="text-lg mb-10" role="img" [attr.aria-label]="'Icône ' + quiz.category">{{ getCategoryIcon(quiz.category) }}</div>
+              <div class="text-lg mb-10" role="img" [attr.aria-label]="'Icône ' + quiz.categories[0]">{{ getCategoryIcon(quiz.categories[0]) }}</div>
               <h3 class="text-bold mb-10">{{ quiz.title }}</h3>
               <p id="quiz-desc-{{ quiz.id }}" class="text-sm">{{ quiz.description }}</p>
             </div>

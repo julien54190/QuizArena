@@ -18,7 +18,7 @@ export class QuizService {
 
     return categories.map(category => ({
       category: category.name,
-      quizzes: quizzes.filter(quiz => quiz.category === category.name)
+      quizzes: quizzes.filter(quiz => quiz.categories.includes(category.name))
     }));
   });
 
@@ -85,5 +85,54 @@ export class QuizService {
   playQuiz(quiz: IPlayQuiz) {
     console.log('Jouer au quiz:', quiz.title);
     // Ici on pourrait ajouter la logique de navigation vers la page de jeu
+  }
+
+  // Méthode pour obtenir le nom de catégorie par ID
+  getCategoryNameById(id: number): string {
+    const categories = [
+      { id: 1, name: 'Histoire' },
+      { id: 2, name: 'Géographie' },
+      { id: 3, name: 'Sciences' },
+      { id: 4, name: 'Culture Générale' },
+      { id: 5, name: 'Sport' },
+      { id: 6, name: 'Technologie' },
+      { id: 7, name: 'Cuisine' },
+      { id: 8, name: 'Nature' },
+      { id: 9, name: 'Cinéma' }
+    ];
+    return categories.find(cat => cat.id === id)?.name || '';
+  }
+
+  // Méthode pour obtenir les quiz d'une catégorie par ID
+  getQuizzesByCategoryId(categoryId: number): IPlayQuiz[] {
+    const categoryName = this.getCategoryNameById(categoryId);
+    return this.allQuizzes().filter(quiz => quiz.categories.includes(categoryName));
+  }
+
+  // Méthode pour obtenir les statistiques d'une catégorie par ID
+  getCategoryStatsById(categoryId: number) {
+    const categoryName = this.getCategoryNameById(categoryId);
+    const categoryQuizzes = this.allQuizzes().filter(quiz =>
+      quiz.categories.includes(categoryName)
+    );
+
+    if (categoryQuizzes.length === 0) {
+      return null;
+    }
+
+    const totalQuestions = categoryQuizzes.reduce((sum, quiz) => sum + quiz.questionCount, 0);
+    const totalPlays = categoryQuizzes.reduce((sum, quiz) => sum + quiz.totalPlays, 0);
+    const averageScore = Math.round(
+      categoryQuizzes.reduce((sum, quiz) => sum + quiz.averageScore, 0) / categoryQuizzes.length
+    );
+
+    return {
+      categoryName,
+      totalQuizzes: categoryQuizzes.length,
+      totalQuestions,
+      totalPlays,
+      averageScore,
+      averageQuestionsPerQuiz: Math.round(totalQuestions / categoryQuizzes.length)
+    };
   }
 }

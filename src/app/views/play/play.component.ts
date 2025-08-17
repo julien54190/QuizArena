@@ -1,24 +1,72 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SelectCategoryComponent } from "./components/select-category.component";
+import { QuizListComponent } from "./components/quiz-list.component";
+import { HomeService } from '../../services/home.service';
+import { QuizService } from '../../services/quiz.service';
 
 @Component({
   selector: 'app-play',
-  imports: [SelectCategoryComponent],
+  imports: [SelectCategoryComponent, QuizListComponent],
   template: `
-  <header class="home-container">
+  <div class="home-container">
     <div class="home-content">
       <div class="text-center mb-20">
         <h1 class="text-xlg text-bold mb-10">Jouer aux Quiz</h1>
-        <p class="text-sm">      Choisissez une catégorie, sélectionnez un quiz et testez vos connaissances !
+        <p class="text-sm">Choisissez une catégorie, sélectionnez un quiz et testez vos connaissances !
         Relevez le défi et améliorez votre score.</p>
       </div>
-      <app-select-category></app-select-category>
-    </div>
-  </header>
 
+      @if (selectedCategoryId()) {
+        <!-- Affichage des quiz de la catégorie sélectionnée -->
+        <div class="text-center mb-20">
+          <button (click)="goBack()" class="btn btn-outline-primary mb-10">
+            ← Retour aux catégories
+          </button>
+          <h2 class="text-lg text-bold">{{ selectedCategory()?.name }}</h2>
+          <p class="text-sm">{{ selectedCategory()?.description }}</p>
+        </div>
+
+        <!-- Affichage des quiz de la catégorie -->
+        <app-quiz-list [categoryId]="selectedCategoryId()!"></app-quiz-list>
+      } @else {
+        <!-- Affichage des catégories -->
+        <app-select-category></app-select-category>
+      }
+    </div>
+  </div>
   `,
   styles: ``
 })
 export class PlayComponent {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private homeService = inject(HomeService);
+  private quizService = inject(QuizService);
 
+  // Signaux pour la gestion de l'état
+  selectedCategoryId = signal<string | null>(null);
+
+  // Données exposées
+  categories = this.homeService.categories;
+
+  // Computed pour la catégorie sélectionnée
+  selectedCategory = computed(() => {
+    const categoryId = this.selectedCategoryId();
+    if (!categoryId) return null;
+    return this.categories().find(cat => cat.id.toString() === categoryId);
+  });
+
+  constructor() {
+    // Écouter les changements de paramètres de route
+    this.route.params.subscribe(params => {
+      const categoryId = params['categoryId'];
+      this.selectedCategoryId.set(categoryId || null);
+    });
+  }
+
+  // Méthodes
+  goBack(): void {
+    this.router.navigate(['/jouer']);
+  }
 }

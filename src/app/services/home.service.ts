@@ -25,7 +25,17 @@ export class HomeService {
   // Données exposées
   quizzes = this._quizzes.asReadonly();
   users = this._users.asReadonly();
-  categories = this._categories.asReadonly();
+
+    // Catégories avec le nombre de quiz calculé dynamiquement
+  categories = computed(() => {
+    const categoriesData = this._categories();
+    const quizzesData = this._quizzes();
+
+    return categoriesData.map(category => ({
+      ...category,
+      quizCount: quizzesData.filter(quiz => quiz.categories.includes(category.name)).length
+    }));
+  });
 
   // Filtres exposés
   searchTerm = this._searchTerm.asReadonly();

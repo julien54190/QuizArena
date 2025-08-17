@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { HomeService } from '../../../services/home.service';
 import { ICategory } from '../../../interfaces/category';
 
@@ -38,15 +39,16 @@ import { ICategory } from '../../../interfaces/category';
 })
 export class SelectCategoryComponent {
   private homeService = inject(HomeService);
+  private router = inject(Router);
 
-    // Données exposées
-    categories = this.homeService.categories;
+  // Données exposées
+  categories = this.homeService.categories;
 
-    // Méthodes
-    selectCategory(category: ICategory): void {
-      console.log('Navigation vers la catégorie:', category.name);
-
-    }
+  // Méthodes
+  selectCategory(category: ICategory): void {
+    console.log('Navigation vers la catégorie:', category.name);
+    this.router.navigate(['/jouer', category.id]);
+  }
 }
 
 
