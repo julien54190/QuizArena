@@ -8,12 +8,12 @@ import { CommonModule } from '@angular/common';
   selector: 'app-quiz-list',
   imports: [CommonModule],
   template: `
-    <section class="mt-20 card card-shadow">
-      <h2 class="text-center text-xlg">{{ getCategoryName() }}</h2>
+    <section class="mt-20 card card-shadow" role="main" aria-labelledby="category-title">
+      <h2 id="category-title" class="text-center text-xlg">{{ getCategoryName() }}</h2>
 
       @if (categoryStats()) {
-        <div class="text-center mb-20">
-          <p class="text-sm text-muted">
+        <div class="text-center mb-20" role="status" aria-live="polite">
+          <p class="text-sm text-muted" id="category-stats">
             {{ categoryStats()?.totalQuizzes }} quiz •
             {{ categoryStats()?.totalQuestions }} questions •
             {{ categoryStats()?.totalPlays }} parties jouées •
@@ -22,21 +22,31 @@ import { CommonModule } from '@angular/common';
         </div>
       }
 
-
-
       @if (filteredQuizzes().length > 0) {
-        <div class="flex flex-wrap gap-16 filed w-full justify-content-center">
+        <div class="flex flex-wrap gap-16 filed w-full justify-content-center" role="list" [attr.aria-label]="'Liste des quiz de la catégorie ' + getCategoryName()">
           @for (quiz of filteredQuizzes(); track quiz.id) {
-            <div (click)="selectQuiz(quiz)" class="card card-white mt-10 card-size text-center flex flex-col justify-content-between card-hover">
+            <div
+              (click)="selectQuiz(quiz)"
+              (keydown.enter)="selectQuiz(quiz)"
+              (keydown.space)="selectQuiz(quiz)"
+              class="card card-white mt-10 card-size text-center flex flex-col justify-content-between card-hover"
+              role="listitem"
+              tabindex="0"
+              [attr.aria-label]="'Quiz ' + quiz.title + ' - ' + quiz.categories.join(', ') + ' - Difficulté ' + quiz.difficulty"
+              [attr.aria-describedby]="'quiz-desc-' + quiz.id + ' quiz-stats-' + quiz.id">
 
               <div>
-                <h3 class="text-bold mb-10">{{ quiz.title }}</h3>
-                <span class="text-sm text-semibold" [ngClass]="getDifficultyClass(quiz.difficulty)" role="status" [attr.aria-label]="'Difficulté ' + quiz.difficulty">{{ quiz.difficulty }}</span>
+                <h3 class="text-bold mb-10" id="quiz-title-{{ quiz.id }}">{{ quiz.title }}</h3>
+                <span
+                  class="text-sm text-semibold"
+                  [ngClass]="getDifficultyClass(quiz.difficulty)"
+                  role="status"
+                  [attr.aria-label]="'Difficulté ' + quiz.difficulty">{{ quiz.difficulty }}</span>
               </div>
 
-              <p class="text-sm">{{ quiz.description }}</p>
+              <p class="text-sm" id="quiz-desc-{{ quiz.id }}">{{ quiz.description }}</p>
 
-              <div class="flex flex-col mb-10">
+              <div class="flex flex-col mb-10" id="quiz-stats-{{ quiz.id }}">
                 <span class="text-sm">{{ quiz.questionCount }} questions</span>
                 <span class="text-sm text-bold">Score moyen: {{ quiz.averageScore }}%</span>
               </div>
@@ -48,7 +58,7 @@ import { CommonModule } from '@angular/common';
           }
         </div>
       } @else {
-        <div>
+        <div role="status" aria-live="polite">
           <p>Aucun quiz disponible pour cette catégorie.</p>
         </div>
       }
