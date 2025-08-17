@@ -2,19 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.6.0] - 2025-08-14
+## [0.7.0] - 2025-08-17
 
 ### 🚀 Features
 
 - *(play)* :sparkles: ajout de la partie catégotie
+- *(play)* :sparkles: ajout des quizz par catégorie
 
 ### 💼 Other
 
 - *(play)* :wheelchair: ajout de la partie Accessibilité pour choisir categorie
+- *(play)* :wheelchair: ajout de la partie Accessibilité pour les quizz dans categorie
 
 ### 🎨 Styling
 
 - *(play)* :lipstick: ajout style pour les catégories
+- *(play)* :lipstick: ajout style pour les quizz dans catégorie
 
 ## [0.5.2] - 2025-08-14
 
