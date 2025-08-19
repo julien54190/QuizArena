@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.1] - 2025-08-19
+
+### 🧪 Testing
+
+- :test_tube: ajout des test partie play  et correction du code
+
 ## [0.8.0] - 2025-08-19
 
 ### 🚀 Features

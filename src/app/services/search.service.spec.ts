@@ -11,7 +11,7 @@ describe('SearchService', () => {
       id: 1,
       title: 'Histoire de France',
       description: 'Testez vos connaissances sur l\'histoire',
-      category: 'Histoire',
+      categories: ['Histoire'],
       difficulty: 'facile' as const,
       questionCount: 15,
       averageScore: 78,
@@ -23,7 +23,7 @@ describe('SearchService', () => {
       id: 2,
       title: 'Football Champions',
       description: 'Les légendes du ballon rond',
-      category: 'Sport',
+      categories: ['Sport'],
       difficulty: 'facile' as const,
       questionCount: 15,
       averageScore: 88,
@@ -35,7 +35,7 @@ describe('SearchService', () => {
       id: 3,
       title: 'Programmation Web',
       description: 'HTML, CSS, JavaScript et plus',
-      category: 'Technologie',
+      categories: ['Technologie'],
       difficulty: 'difficile' as const,
       questionCount: 25,
       averageScore: 58,
@@ -88,7 +88,7 @@ describe('SearchService', () => {
       homeService.categoryFilter.and.returnValue('Sport');
       const result = service.filteredQuizzes();
       expect(result.length).toBe(1);
-      expect(result[0].category).toBe('Sport');
+      expect(result[0].categories).toContain('Sport');
     });
 
     it('should filter by difficulty', () => {

@@ -13,7 +13,7 @@ describe('PopularQuizComponent', () => {
     id: 1,
     title: 'Test Quiz',
     description: 'Test Description',
-    category: 'Sport',
+    categories: ['Sport'],
     difficulty: 'facile' as const,
     questionCount: 10,
     averageScore: 75,
