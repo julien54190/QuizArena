@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.0] - 2025-08-19
+
+### 🚀 Features
+
+- *(play)* :sparkles: ajout de la partie pour repondre au quiz
+
+### 🐛 Bug Fixes
+
+- *(play)* :bug: correction ou ca arriver a 11/10 pour les question quand affichage resultat
+- *(play)* :bug: correction du style sur mobile
+
+### 💼 Other
+
+- *(play)* :wheelchair: ajout de l'accessibiliter pour la partie repondre au quiz
+
+### 🎨 Styling
+
+- *(play)* :lipstick: mise en forme de la partie repondre au quiz
+
 ## [0.7.0] - 2025-08-17
 
 ### 🚀 Features
