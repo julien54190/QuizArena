@@ -29,7 +29,7 @@ export class SearchService {
 
     // Filtre par catégorie
     if (categoryFilter) {
-      filtered = filtered.filter(quiz => quiz.category === categoryFilter);
+      filtered = filtered.filter(quiz => quiz.categories.includes(categoryFilter));
     }
 
     // Filtre par difficulté
