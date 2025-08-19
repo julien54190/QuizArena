@@ -1,3 +1,18 @@
+export interface IQuestion {
+  id: number;
+  question: string;
+  options: string[];
+  correctAnswer: number; // Index de la bonne réponse dans options
+  explanation?: string;
+}
+
+export interface IQuizAnswer {
+  questionId: number;
+  selectedAnswer: number;
+  isCorrect: boolean;
+  timeSpent: number; // en secondes
+}
+
 export interface IPlayQuiz {
   id: number;
   title: string;
@@ -10,5 +25,16 @@ export interface IPlayQuiz {
   creator: string;
   createdAt: string;
   image?: string;
+  questions?: IQuestion[]; // Questions du quiz
+}
+
+export interface IQuizSession {
+  quizId: number;
+  startTime: Date;
+  endTime?: Date;
+  answers: IQuizAnswer[];
+  currentQuestionIndex: number;
+  isCompleted: boolean;
+  score?: number;
 }
 

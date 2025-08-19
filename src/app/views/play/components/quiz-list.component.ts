@@ -92,7 +92,7 @@ export class QuizListComponent {
   // Méthodes
   selectQuiz(quiz: IPlayQuiz): void {
     console.log('Sélection du quiz:', quiz.title);
-    //this.router.navigate(['/jouer', quiz.id]);
+    this.router.navigate(['/jouer/quiz', quiz.id]);
   }
 
   // Obtenir la classe CSS pour la difficulté

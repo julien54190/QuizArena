@@ -4,10 +4,11 @@ import { SelectCategoryComponent } from "./components/select-category.component"
 import { QuizListComponent } from "./components/quiz-list.component";
 import { HomeService } from '../../services/home.service';
 import { QuizService } from '../../services/quiz.service';
+import { QuizGameComponent } from './components/quiz-game.component';
 
 @Component({
   selector: 'app-play',
-  imports: [SelectCategoryComponent, QuizListComponent],
+  imports: [SelectCategoryComponent, QuizListComponent, QuizGameComponent],
   template: `
   <div class="home-container">
     <div class="home-content">
@@ -17,7 +18,10 @@ import { QuizService } from '../../services/quiz.service';
         Relevez le défi et améliorez votre score.</p>
       </div>
 
-      @if (selectedCategoryId()) {
+      @if (selectedQuizId()) {
+        <!-- Affichage du jeu -->
+        <app-quiz-game [quizId]="selectedQuizId()!"></app-quiz-game>
+      } @else if (selectedCategoryId()) {
         <!-- Affichage des quiz de la catégorie sélectionnée -->
         <div class="text-center mb-20">
           <button (click)="goBack()" class="btn btn-outline-primary mb-10">
@@ -46,6 +50,7 @@ export class PlayComponent {
 
   // Signaux pour la gestion de l'état
   selectedCategoryId = signal<string | null>(null);
+  selectedQuizId = signal<number | null>(null);
 
   // Données exposées
   categories = this.homeService.categories;
@@ -62,11 +67,23 @@ export class PlayComponent {
     this.route.params.subscribe(params => {
       const categoryId = params['categoryId'];
       this.selectedCategoryId.set(categoryId || null);
+
+      const quizIdParam = params['quizId'];
+      this.selectedQuizId.set(quizIdParam ? Number(quizIdParam) : null);
     });
   }
 
   // Méthodes
   goBack(): void {
-    this.router.navigate(['/jouer']);
+    // Si on est dans un quiz, retour à la liste de la catégorie si possible, sinon aux catégories
+    if (this.selectedQuizId()) {
+      if (this.selectedCategoryId()) {
+        this.router.navigate(['/jouer', this.selectedCategoryId()!]);
+      } else {
+        this.router.navigate(['/jouer']);
+      }
+    } else {
+      this.router.navigate(['/jouer']);
+    }
   }
 }
