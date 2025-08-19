@@ -22,7 +22,7 @@ import { CommonModule } from '@angular/common';
               <div class="progress-fill" [style.width.%]="sessionProgress().percentage"></div>
             </div>
             <div class="flex justify-content-between align-items-center mt-10">
-              <span class="text-sm text-semibold">Question {{ sessionProgress().current + 1 }} sur {{ sessionProgress().total }}</span>
+              <span class="text-sm text-semibold">Question {{ displayQuestionNumber() }} sur {{ sessionProgress().total }}</span>
               <span class="text-sm text-semibold">{{ sessionProgress().percentage }}%</span>
             </div>
           </div>
@@ -275,5 +275,13 @@ export class QuizGameComponent implements OnInit, OnDestroy {
 
   getScoreMessage(score: number): string {
     return this.quizService.getScoreMessage(score);
+  }
+
+  // Empêche d'afficher 11/10 lorsque la session est terminée
+  displayQuestionNumber(): number {
+    const session = this.currentSession();
+    const progress = this.sessionProgress();
+    if (!session) return 0;
+    return session.isCompleted ? progress.total : progress.current + 1;
   }
 }
