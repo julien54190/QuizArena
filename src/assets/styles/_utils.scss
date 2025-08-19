@@ -2,6 +2,14 @@
     display: flex;
 }
 
+.none{
+    display: none;
+}
+
+.block {
+    display: block;
+}
+
 .flex-1 {
     flex: 1;
 }
@@ -118,6 +126,10 @@
     margin-top: 20px;
 }
 
+.mt-30 {
+    margin-top: 30px;
+}
+
 .my-2 {
   margin-top: 2px;
   margin-bottom: 2px;
@@ -126,6 +138,11 @@
 .my-10 {
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+.my-20 {
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 

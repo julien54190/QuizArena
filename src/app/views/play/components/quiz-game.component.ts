@@ -8,138 +8,147 @@ import { CommonModule } from '@angular/common';
   selector: 'app-quiz-game',
   imports: [CommonModule],
   template: `
-  <div>
-    @if (currentSession()) {
-      <div>
-        <div>
-          <button (click)="quitQuiz()">← Quitter le quiz</button>
-        </div>
+    <div class="quiz-game-container card card-shadow">
+      @if (currentSession()) {
+        <div class="quiz-header">
+          <div class="flex justify-content-between align-items-center mb-20">
+            <button (click)="quitQuiz()" class="btn btn-outline-primary">← Quitter le quiz</button>
+          </div>
 
-        <h1>{{ currentQuiz()?.title }}</h1>
+          <h1 class="text-center text-xlg text-bold mb-10">{{ currentQuiz()?.title }}</h1>
 
-        <div>
-          <div>
-            <span>Question {{ sessionProgress().current + 1 }} sur {{ sessionProgress().total }}</span>
-            <span>{{ sessionProgress().percentage }}%</span>
+          <div class="progress-container mb-20">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="sessionProgress().percentage"></div>
+            </div>
+            <div class="flex justify-content-between align-items-center mt-10">
+              <span class="text-sm text-semibold">Question {{ sessionProgress().current + 1 }} sur {{ sessionProgress().total }}</span>
+              <span class="text-sm text-semibold">{{ sessionProgress().percentage }}%</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      @if (currentQuestion()) {
-        <div>
-          <div>
-            <div>
-              <h2>{{ currentQuestion()?.question }}</h2>
-            </div>
+        @if (currentQuestion()) {
+          <div class="card card-white mt-30">
+            <div class="p-25">
+              <div class="mb-20">
+                <h2 class="text-lg text-bold">{{ currentQuestion()?.question }}</h2>
+              </div>
 
-            <div>
-              @for (option of currentQuestion()?.options; track $index) {
-                <div>
-                  <input
-                    type="radio"
-                    [id]="'option-' + $index"
-                    name="quiz-option"
-                    [value]="$index"
-                    [checked]="selectedAnswer() === $index"
-                    (change)="selectAnswer($index)"
-                    [disabled]="showFeedback()">
+              <div class="flex flex-col gap-16">
+                @for (option of currentQuestion()?.options; track $index) {
+                  <div class="flex align-items-center gap-12">
+                    <input
+                      type="radio"
+                      [id]="'option-' + $index"
+                      name="quiz-option"
+                      [value]="$index"
+                      [checked]="selectedAnswer() === $index"
+                      (change)="selectAnswer($index)"
+                      [disabled]="showFeedback()"
+                      class="none">
 
-                  <label [for]="'option-' + $index">
-                    <span>{{ option }}</span>
-                    @if (showFeedback() && $index === currentQuestion()?.correctAnswer) {
-                      <span>✓</span>
-                    }
-                    @if (showFeedback() && selectedAnswer() === $index && $index !== currentQuestion()?.correctAnswer) {
-                      <span>✗</span>
-                    }
-                  </label>
-                </div>
-              }
-            </div>
-
-            @if (showFeedback()) {
-              <div>
-                <div>
-                  @if (lastAnswer()?.isCorrect) {
-                    <span>✓ Correct !</span>
-                  } @else {
-                    <span>✗ Incorrect</span>
-                  }
-                </div>
-                @if (currentQuestion()?.explanation) {
-                  <div>
-                    <p>{{ currentQuestion()?.explanation }}</p>
+                    <label
+                      [for]="'option-' + $index"
+                      class="option-label flex align-items-center flex-1 p-12 radius mr-10"
+                      [class.selected]="selectedAnswer() === $index"
+                      [class.correct]="showFeedback() && $index === currentQuestion()?.correctAnswer"
+                      [class.incorrect]="showFeedback() && selectedAnswer() === $index && $index !== currentQuestion()?.correctAnswer">
+                      <span class="flex-1">{{ option }}</span>
+                      @if (showFeedback() && $index === currentQuestion()?.correctAnswer) {
+                        <span class="text-bold feedback-icon">✓</span>
+                      }
+                      @if (showFeedback() && selectedAnswer() === $index && $index !== currentQuestion()?.correctAnswer) {
+                        <span class="text-bold feedback-icon">✗</span>
+                      }
+                    </label>
                   </div>
                 }
               </div>
-            }
 
-            <div>
-              @if (!showFeedback()) {
-                <button (click)="submitAnswer()" [disabled]="selectedAnswer() === null">
-                  Valider
-                </button>
-              } @else {
-                <button (click)="nextQuestion()">
-                  Question suivante
-                </button>
-              }
-            </div>
-          </div>
-        </div>
-      } @else if (currentSession()?.isCompleted) {
-        <div>
-          <div>
-            <h2>Quiz terminé !</h2>
-
-            <div>
-              <div>
-                <span>{{ currentSession()?.score }}%</span>
-              </div>
-              <p>{{ getScoreMessage(currentSession()?.score || 0) }}</p>
-            </div>
-
-            <div>
-              <div>
-                <span>Réponses correctes :</span>
-                <span>{{ getCorrectAnswers() }} / {{ sessionProgress().total }}</span>
-              </div>
-              <div>
-                <span>Temps total :</span>
-                <span>{{ getTotalTime() }}</span>
-              </div>
-              @if (performanceStats()) {
-                <div>
-                  <span>Temps moyen :</span>
-                  <span>{{ performanceStats()?.averageTime }}s</span>
+              @if (showFeedback()) {
+                <div class="card mt-20" [class]="lastAnswer()?.isCorrect ? 'correct-feedback' : 'incorrect-feedback'">
+                  <div class="text-center mb-10">
+                    @if (lastAnswer()?.isCorrect) {
+                      <span class="text-lg text-bold">✓ Correct !</span>
+                    } @else {
+                      <span class="text-lg text-bold">✗ Incorrect</span>
+                    }
+                  </div>
+                  @if (currentQuestion()?.explanation) {
+                    <div class="p-12 radius explanation">
+                      <p class="text-sm explanation-text">{{ currentQuestion()?.explanation }}</p>
+                    </div>
+                  }
                 </div>
               }
-            </div>
 
-            @if (improvementSuggestions().length > 0) {
-              <div>
-                <h3>Suggestions d'amélioration :</h3>
-                <ul>
-                  @for (suggestion of improvementSuggestions(); track $index) {
-                    <li>{{ suggestion }}</li>
-                  }
-                </ul>
+              <div class="text-center mt-20">
+                @if (!showFeedback()) {
+                  <button (click)="submitAnswer()" [disabled]="selectedAnswer() === null" class="btn btn-primary">
+                    Valider
+                  </button>
+                } @else {
+                  <button (click)="nextQuestion()" class="btn btn-primary">
+                    Question suivante
+                  </button>
+                }
               </div>
-            }
-
-            <div>
-              <button (click)="restartQuiz()">Recommencer</button>
-              <button (click)="quitQuiz()">Retour aux quiz</button>
             </div>
           </div>
+        } @else if (currentSession()?.isCompleted) {
+          <div class="card card-white">
+            <div class="text-center p-25">
+              <h2 class="text-center text-xlg text-bold mb-20">Quiz terminé !</h2>
+
+              <div class="text-center mb-20">
+                <div class="flex align-items-center justify-content-center score-circle radius" [class]="getScoreClass(currentSession()?.score || 0)">
+                  <span class="text-xlg text-bold">{{ currentSession()?.score }}%</span>
+                </div>
+                <p class="text-lg text-semibold mt-10">{{ getScoreMessage(currentSession()?.score || 0) }}</p>
+              </div>
+
+              <div class="flex justify-content-between mb-20">
+                <div class="stat-item text-center">
+                  <span class="stat-label block text-sm mb-10">Réponses correctes :</span>
+                  <span class="block text-lg text-bold">{{ getCorrectAnswers() }} / {{ sessionProgress().total }}</span>
+                </div>
+                <div class="text-center">
+                  <span class="stat-label block text-sm mb-10">Temps total :</span>
+                  <span class="block text-lg text-bold">{{ getTotalTime() }}</span>
+                </div>
+                @if (performanceStats()) {
+                  <div class="text-center">
+                    <span class="stat-label block text-sm mb-10">Temps moyen :</span>
+                    <span class="block text-lg text-bold">{{ performanceStats()?.averageTime }}s</span>
+                  </div>
+                }
+              </div>
+
+              @if (improvementSuggestions().length > 0) {
+                <div class="suggestions-container card my-20 ">
+                  <h3 class="text-lg text-bold mb-10">Suggestions d'amélioration :</h3>
+                  <ul>
+                    @for (suggestion of improvementSuggestions(); track $index) {
+                      <li class="suggestion-item text-sm ">{{ suggestion }}</li>
+                    }
+                  </ul>
+                </div>
+              }
+
+              <div class="flex justify-content-center gap-16">
+                <button (click)="restartQuiz()" class="btn btn-primary">Recommencer</button>
+                <button (click)="quitQuiz()" class="btn btn-outline-primary">Retour aux quiz</button>
+              </div>
+            </div>
+          </div>
+        }
+      } @else {
+        <div class="card card-white text-center p-25">
+          <p class="text-lg text-semibold">Chargement du quiz...</p>
         </div>
       }
-    } @else {
-      <div>
-        <p>Chargement du quiz...</p>
-      </div>
-    }
-  </div>
+    </div>
   `,
   styles: ``
 })
