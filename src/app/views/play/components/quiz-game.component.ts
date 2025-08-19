@@ -32,7 +32,7 @@ import { CommonModule } from '@angular/common';
           <div class="card card-white mt-30">
             <div class="p-25">
               <div class="mb-20">
-                <h2 class="text-lg text-bold">{{ currentQuestion()?.question }}</h2>
+                <h2 class="text-lg text-bold xs-text-normal">{{ currentQuestion()?.question }}</h2>
               </div>
 
               <div class="flex flex-col gap-16">
@@ -108,7 +108,7 @@ import { CommonModule } from '@angular/common';
                 <p class="text-lg text-semibold mt-10">{{ getScoreMessage(currentSession()?.score || 0) }}</p>
               </div>
 
-              <div class="flex justify-content-between mb-20">
+              <div class="flex justify-content-between mb-20 xs-flex-col">
                 <div class="stat-item text-center">
                   <span class="stat-label block text-sm mb-10">Réponses correctes :</span>
                   <span class="block text-lg text-bold">{{ getCorrectAnswers() }} / {{ sessionProgress().total }}</span>
@@ -127,7 +127,7 @@ import { CommonModule } from '@angular/common';
 
               @if (improvementSuggestions().length > 0) {
                 <div class="suggestions-container card my-20 ">
-                  <h3 class="text-lg text-bold mb-10">Suggestions d'amélioration :</h3>
+                  <h3 class="text-lg text-bold mb-10 xs-text-normal">Suggestions d'amélioration :</h3>
                   <ul>
                     @for (suggestion of improvementSuggestions(); track $index) {
                       <li class="suggestion-item text-sm ">{{ suggestion }}</li>
@@ -136,7 +136,7 @@ import { CommonModule } from '@angular/common';
                 </div>
               }
 
-              <div class="flex justify-content-center gap-16">
+              <div class="flex justify-content-center gap-16 xs-flex-col">
                 <button (click)="restartQuiz()" class="btn btn-primary">Recommencer</button>
                 <button (click)="quitQuiz()" class="btn btn-outline-primary">Retour aux quiz</button>
               </div>

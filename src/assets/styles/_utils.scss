@@ -206,6 +206,19 @@
     }
 }
 
+.xs-flex-col {
+    @media screen and (max-width: 920px) {
+        flex-direction: column;
+    }
+}
+
+.xs-text-normal {
+  @media screen and (max-width: 920px) {
+    font-size: 1rem;
+
+  }
+}
+
 .field {
   flex: 1;
   min-width: 200px;
