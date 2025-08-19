@@ -1,25 +1,32 @@
 import { Component, Input, inject, computed, signal, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { QuizService } from '../../../services/quiz.service';
-import { IPlayQuiz, IQuestion, IQuizSession } from '../../../interfaces/quiz';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-quiz-game',
   imports: [CommonModule],
   template: `
-    <div class="quiz-game-container card card-shadow">
+    <section class="quiz-game-container card card-shadow" role="main" aria-labelledby="quiz-title">
       @if (currentSession()) {
         <div class="quiz-header">
           <div class="flex justify-content-between align-items-center mb-20">
             <button (click)="quitQuiz()" class="btn btn-outline-primary">← Quitter le quiz</button>
           </div>
 
-          <h1 class="text-center text-xlg text-bold mb-10">{{ currentQuiz()?.title }}</h1>
+          <h1 id="quiz-title" class="text-center text-xlg text-bold mb-10">{{ currentQuiz()?.title }}</h1>
 
           <div class="progress-container mb-20">
             <div class="progress-bar">
-              <div class="progress-fill" [style.width.%]="sessionProgress().percentage"></div>
+              <div
+                class="progress-fill"
+                [style.width.%]="sessionProgress().percentage"
+                role="progressbar"
+                aria-label="Progression du quiz"
+                [attr.aria-valuemin]="0"
+                [attr.aria-valuenow]="sessionProgress().current"
+                [attr.aria-valuemax]="sessionProgress().total">
+              </div>
             </div>
             <div class="flex justify-content-between align-items-center mt-10">
               <span class="text-sm text-semibold">Question {{ displayQuestionNumber() }} sur {{ sessionProgress().total }}</span>
@@ -29,13 +36,13 @@ import { CommonModule } from '@angular/common';
         </div>
 
         @if (currentQuestion()) {
-          <div class="card card-white mt-30">
+          <div class="card card-white mt-30" role="region" aria-labelledby="question-text">
             <div class="p-25">
               <div class="mb-20">
-                <h2 class="text-lg text-bold xs-text-normal">{{ currentQuestion()?.question }}</h2>
+                <h2 id="question-text" class="text-lg text-bold">{{ currentQuestion()?.question }}</h2>
               </div>
 
-              <div class="flex flex-col gap-16">
+              <div class="flex flex-col gap-16" role="radiogroup" [attr.aria-labelledby]="'question-text'">
                 @for (option of currentQuestion()?.options; track $index) {
                   <div class="flex align-items-center gap-12">
                     <input
@@ -46,14 +53,17 @@ import { CommonModule } from '@angular/common';
                       [checked]="selectedAnswer() === $index"
                       (change)="selectAnswer($index)"
                       [disabled]="showFeedback()"
-                      class="none">
+                      class="sr-only">
 
                     <label
                       [for]="'option-' + $index"
                       class="option-label flex align-items-center flex-1 p-12 radius mr-10"
                       [class.selected]="selectedAnswer() === $index"
                       [class.correct]="showFeedback() && $index === currentQuestion()?.correctAnswer"
-                      [class.incorrect]="showFeedback() && selectedAnswer() === $index && $index !== currentQuestion()?.correctAnswer">
+                      [class.incorrect]="showFeedback() && selectedAnswer() === $index && $index !== currentQuestion()?.correctAnswer"
+                      tabindex="0"
+                      (keydown.enter)="selectAnswer($index)"
+                      (keydown.space)="selectAnswer($index)">
                       <span class="flex-1">{{ option }}</span>
                       @if (showFeedback() && $index === currentQuestion()?.correctAnswer) {
                         <span class="text-bold feedback-icon">✓</span>
@@ -67,7 +77,7 @@ import { CommonModule } from '@angular/common';
               </div>
 
               @if (showFeedback()) {
-                <div class="card mt-20" [class]="lastAnswer()?.isCorrect ? 'correct-feedback' : 'incorrect-feedback'">
+                <div class="card mt-20" [class]="lastAnswer()?.isCorrect ? 'correct-feedback' : 'incorrect-feedback'" aria-live="polite">
                   <div class="text-center mb-10">
                     @if (lastAnswer()?.isCorrect) {
                       <span class="text-lg text-bold">✓ Correct !</span>
@@ -97,9 +107,9 @@ import { CommonModule } from '@angular/common';
             </div>
           </div>
         } @else if (currentSession()?.isCompleted) {
-          <div class="card card-white">
+          <div class="card card-white" role="region" aria-labelledby="results-title">
             <div class="text-center p-25">
-              <h2 class="text-center text-xlg text-bold mb-20">Quiz terminé !</h2>
+              <h2 id="results-title" class="text-center text-xlg text-bold mb-20">Quiz terminé !</h2>
 
               <div class="text-center mb-20">
                 <div class="flex align-items-center justify-content-center score-circle radius" [class]="getScoreClass(currentSession()?.score || 0)">
@@ -108,7 +118,7 @@ import { CommonModule } from '@angular/common';
                 <p class="text-lg text-semibold mt-10">{{ getScoreMessage(currentSession()?.score || 0) }}</p>
               </div>
 
-              <div class="flex justify-content-between mb-20 xs-flex-col">
+              <div class="flex justify-content-between mb-20">
                 <div class="stat-item text-center">
                   <span class="stat-label block text-sm mb-10">Réponses correctes :</span>
                   <span class="block text-lg text-bold">{{ getCorrectAnswers() }} / {{ sessionProgress().total }}</span>
@@ -127,7 +137,7 @@ import { CommonModule } from '@angular/common';
 
               @if (improvementSuggestions().length > 0) {
                 <div class="suggestions-container card my-20 ">
-                  <h3 class="text-lg text-bold mb-10 xs-text-normal">Suggestions d'amélioration :</h3>
+                  <h3 class="text-lg text-bold mb-10">Suggestions d'amélioration :</h3>
                   <ul>
                     @for (suggestion of improvementSuggestions(); track $index) {
                       <li class="suggestion-item text-sm ">{{ suggestion }}</li>
@@ -136,7 +146,7 @@ import { CommonModule } from '@angular/common';
                 </div>
               }
 
-              <div class="flex justify-content-center gap-16 xs-flex-col">
+              <div class="flex justify-content-center gap-16">
                 <button (click)="restartQuiz()" class="btn btn-primary">Recommencer</button>
                 <button (click)="quitQuiz()" class="btn btn-outline-primary">Retour aux quiz</button>
               </div>
@@ -148,7 +158,7 @@ import { CommonModule } from '@angular/common';
           <p class="text-lg text-semibold">Chargement du quiz...</p>
         </div>
       }
-    </div>
+    </section>
   `,
   styles: ``
 })
@@ -157,6 +167,7 @@ export class QuizGameComponent implements OnInit, OnDestroy {
 
   private quizService = inject(QuizService);
   private router = inject(Router);
+
 
   // Signaux pour l'état du jeu
   selectedAnswer = signal<number | null>(null);
@@ -203,6 +214,8 @@ export class QuizGameComponent implements OnInit, OnDestroy {
     if (quiz && !quiz.questions) {
       quiz.questions = this.quizService.getQuizQuestions(this.quizId);
     }
+
+
   }
 
   // Sélectionner une réponse
