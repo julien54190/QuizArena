@@ -1,10 +1,11 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SelectCategoryComponent } from "./components/select-category.component";
 import { QuizListComponent } from "./components/quiz-list.component";
+import { QuizGameComponent } from './components/quiz-game.component';
 import { HomeService } from '../../services/home.service';
 import { QuizService } from '../../services/quiz.service';
-import { QuizGameComponent } from './components/quiz-game.component';
+import { SeoService } from '../../services/seo.service';
 
 @Component({
   selector: 'app-play',
@@ -42,11 +43,12 @@ import { QuizGameComponent } from './components/quiz-game.component';
   `,
   styles: ``
 })
-export class PlayComponent {
+export class PlayComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private homeService = inject(HomeService);
   private quizService = inject(QuizService);
+  private seoService = inject(SeoService);
 
   // Signaux pour la gestion de l'état
   selectedCategoryId = signal<string | null>(null);
@@ -62,6 +64,11 @@ export class PlayComponent {
     return this.categories().find(cat => cat.id.toString() === categoryId);
   });
 
+  ngOnInit(): void {
+    // SEO par défaut pour la page play
+    this.seoService.setPlayPage();
+  }
+
   constructor() {
     // Écouter les changements de paramètres de route
     this.route.params.subscribe(params => {
@@ -70,6 +77,14 @@ export class PlayComponent {
 
       const quizIdParam = params['quizId'];
       this.selectedQuizId.set(quizIdParam ? Number(quizIdParam) : null);
+
+      // Mettre à jour le SEO selon les paramètres
+      if (categoryId && !quizIdParam) {
+        const category = this.categories().find(cat => cat.id.toString() === categoryId);
+        if (category) {
+          this.seoService.setCategoryPage(category.name);
+        }
+      }
     });
   }
 
