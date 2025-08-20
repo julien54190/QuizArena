@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.10.0] - 2025-08-20
+
+### 🚀 Features
+
+- *(seo)* :sparkles: ajout du seo pour acceuil et quiz
+
 ## [0.9.0] - 2025-08-20
 
 ### 🚀 Features
