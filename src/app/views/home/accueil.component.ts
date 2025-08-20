@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { PopularQuizComponent } from './components/popular-quiz.component';
 import { SearchBarComponent } from './components/search-bar.component';
 import { StatBarComponent } from './components/stat-bar.component';
 import { BestPlayersComponent } from './components/best-players.component';
 import { HomeService } from '../../services/home.service';
+import { SeoService } from '../../services/seo.service';
 
 
 
@@ -50,11 +51,14 @@ import { HomeService } from '../../services/home.service';
     :host{display:block;}
   `
 })
-export class AccueilComponent {
+export class AccueilComponent implements OnInit {
   private router = inject(Router);
   private homeService = inject(HomeService);
+  private seoService = inject(SeoService);
 
-
+  ngOnInit(): void {
+    this.seoService.setHomePage();
+  }
 
   // Méthode pour rediriger vers la page jouer
   goToPlay() {

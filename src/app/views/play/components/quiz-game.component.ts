@@ -1,6 +1,7 @@
 import { Component, Input, inject, computed, signal, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { QuizService } from '../../../services/quiz.service';
+import { SeoService } from '../../../services/seo.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -167,7 +168,7 @@ export class QuizGameComponent implements OnInit, OnDestroy {
 
   private quizService = inject(QuizService);
   private router = inject(Router);
-
+  private seoService = inject(SeoService);
 
   // Signaux pour l'état du jeu
   selectedAnswer = signal<number | null>(null);
@@ -215,7 +216,10 @@ export class QuizGameComponent implements OnInit, OnDestroy {
       quiz.questions = this.quizService.getQuizQuestions(this.quizId);
     }
 
-
+    // SEO: titre/meta
+    if (quiz) {
+      this.seoService.setQuizPage(quiz.title, quiz.description, quiz.categories);
+    }
   }
 
   // Sélectionner une réponse
