@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { SearchService } from '../../../services/search.service';
 import { QuizService } from '../../../services/quiz.service';
 
@@ -55,6 +56,7 @@ import { QuizService } from '../../../services/quiz.service';
 export class PopularQuizComponent {
   private searchService = inject(SearchService);
   private quizService = inject(QuizService);
+  private router = inject(Router);
 
   // Quiz populaires depuis le service
   popularQuizzes = this.searchService.popularQuizzes;
@@ -62,7 +64,11 @@ export class PopularQuizComponent {
 
   // Méthode pour jouer à un quiz
   playQuiz(quiz: any) {
+    // Appeler le service pour logger
     this.quizService.playQuiz(quiz);
+
+    // Naviguer vers la page de jeu avec l'ID du quiz
+    this.router.navigate(['/jouer/quiz', quiz.id]);
   }
 
   // Obtenir la classe CSS pour la difficulté

@@ -1,4 +1,5 @@
 import { Injectable, computed, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { IPlayQuiz, IQuestion, IQuizAnswer, IQuizSession } from '../interfaces/quiz';
 import { HomeService } from './home.service';
 import { getQuizQuestions as getQuestionsFromData } from '../data/questions.data';
@@ -7,7 +8,10 @@ import { getQuizQuestions as getQuestionsFromData } from '../data/questions.data
   providedIn: 'root'
 })
 export class QuizService {
-  constructor(private homeService: HomeService) {}
+  constructor(
+    private homeService: HomeService,
+    private router?: Router
+  ) {}
 
   // Signal pour la session de quiz actuelle
   private currentSession = signal<IQuizSession | null>(null);
@@ -86,9 +90,14 @@ export class QuizService {
   }
 
   // Méthode pour jouer à un quiz
-  playQuiz(quiz: IPlayQuiz) {
+  playQuiz(quiz: IPlayQuiz, navigate: boolean = false) {
     console.log('Jouer au quiz:', quiz.title);
-    // Ici on pourrait ajouter la logique de navigation vers la page de jeu
+
+    if (navigate && this.router) {
+      this.router.navigate(['/jouer/quiz', quiz.id]);
+    }
+
+    return quiz.id;
   }
 
   // Méthode pour obtenir un quiz par ID

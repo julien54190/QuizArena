@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.9.0] - 2025-08-20
+
+### 🚀 Features
+
+- *(home/play)* :sparkles: connection quiz populaire au quiz
+
+### 🧪 Testing
+
+- :test_tube: ajout des test partie play  et correction du code
+
 ## [0.8.0] - 2025-08-19
 
 ### 🚀 Features
