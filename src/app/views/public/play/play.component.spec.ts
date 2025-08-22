@@ -3,8 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { signal } from '@angular/core';
 import { PlayComponent } from './play.component';
-import { HomeService } from '../../services/home.service';
-import { QuizService } from '../../services/quiz.service';
+import { HomeService } from '../../../services/home.service';
+import { QuizService } from '../../../services/quiz.service';
 
 describe('PlayComponent', () => {
   let component: PlayComponent;

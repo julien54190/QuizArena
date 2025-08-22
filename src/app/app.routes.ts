@@ -1,28 +1,20 @@
 import { Routes } from '@angular/router';
-import { AccueilComponent } from './views/home/accueil.component';
-import { PlayComponent } from './views/play/play.component';
+import { UsersComponent } from './views/users/users.component';
 
 export const routes: Routes = [
+	{
+		path: '',
+		redirectTo: 'accueil',
+		pathMatch: 'full'
+	},
+	{
+		path: '',
+		loadChildren: () => import('./views/public/public.routes').then(m => m.publicRoutes)
+	},
+
   {
-    path: '',
-    redirectTo: 'accueil',
-    pathMatch: 'full'
-  },
-  {
-    path: 'accueil',
-    component: AccueilComponent
-  },
-  {
-    path: 'jouer',
-    component: PlayComponent
-  },
-  {
-    path: 'jouer/:categoryId',
-    component: PlayComponent
+  path: 'tableau-de-bord',
+  component: UsersComponent
   }
-  ,
-  {
-    path: 'jouer/quiz/:quizId',
-    component: PlayComponent
-  }
+
 ];

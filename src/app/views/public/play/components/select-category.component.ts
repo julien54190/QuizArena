@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { HomeService } from '../../../services/home.service';
-import { ICategory } from '../../../interfaces/category';
+import { HomeService } from '../../../../services/home.service';
+import { ICategory } from '../../../../interfaces/category';
 
 @Component({
   selector: 'app-select-category',

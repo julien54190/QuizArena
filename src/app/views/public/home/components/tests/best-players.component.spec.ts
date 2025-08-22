@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BestPlayersComponent } from './best-players.component';
-import { UserService } from '../../../services/user.service';
+import { BestPlayersComponent } from '../best-players.component';
+import { UserService } from '../../../../../services/user.service';
 
 describe('BestPlayersComponent', () => {
   let component: BestPlayersComponent;

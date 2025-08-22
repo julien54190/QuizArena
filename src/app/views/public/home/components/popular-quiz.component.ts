@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { SearchService } from '../../../services/search.service';
-import { QuizService } from '../../../services/quiz.service';
+import { SearchService } from '../../../../services/search.service';
+import { QuizService } from '../../../../services/quiz.service';
 
 @Component({
   selector: 'app-popular-quiz',

@@ -1,7 +1,7 @@
 import { Component, Input, inject, computed, signal, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { QuizService } from '../../../services/quiz.service';
-import { SeoService } from '../../../services/seo.service';
+import { QuizService } from '../../../../services/quiz.service';
+import { SeoService } from '../../../../services/seo.service';
 import { CommonModule } from '@angular/common';
 
 @Component({

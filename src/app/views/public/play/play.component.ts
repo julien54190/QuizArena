@@ -3,9 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SelectCategoryComponent } from "./components/select-category.component";
 import { QuizListComponent } from "./components/quiz-list.component";
 import { QuizGameComponent } from './components/quiz-game.component';
-import { HomeService } from '../../services/home.service';
-import { QuizService } from '../../services/quiz.service';
-import { SeoService } from '../../services/seo.service';
+import { HomeService } from '../../../services/home.service';
+import { QuizService } from '../../../services/quiz.service';
+import { SeoService } from '../../../services/seo.service';
 
 @Component({
   selector: 'app-play',
@@ -90,15 +90,11 @@ export class PlayComponent implements OnInit {
 
   // Méthodes
   goBack(): void {
-    // Si on est dans un quiz, retour à la liste de la catégorie si possible, sinon aux catégories
-    if (this.selectedQuizId()) {
-      if (this.selectedCategoryId()) {
-        this.router.navigate(['/jouer', this.selectedCategoryId()!]);
-      } else {
-        this.router.navigate(['/jouer']);
-      }
-    } else {
-      this.router.navigate(['/jouer']);
-    }
+    this.router.navigate(
+      this.selectedQuizId() && this.selectedCategoryId()
+        ? ['/jouer', this.selectedCategoryId()!]
+        : ['/jouer']
+    );
   }
+
 }

@@ -5,8 +5,8 @@ import { PopularQuizComponent } from './components/popular-quiz.component';
 import { SearchBarComponent } from './components/search-bar.component';
 import { StatBarComponent } from './components/stat-bar.component';
 import { BestPlayersComponent } from './components/best-players.component';
-import { HomeService } from '../../services/home.service';
-import { SeoService } from '../../services/seo.service';
+import { HomeService } from '../../../services/home.service';
+import { SeoService } from '../../../services/seo.service';
 
 
 

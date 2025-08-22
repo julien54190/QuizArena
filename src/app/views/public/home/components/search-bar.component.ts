@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HomeService } from '../../../services/home.service';
+import { HomeService } from '../../../../services/home.service';
 
 @Component({
   selector: 'app-search-bar',

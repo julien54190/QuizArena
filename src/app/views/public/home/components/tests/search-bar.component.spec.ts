@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { SearchBarComponent } from './search-bar.component';
-import { HomeService } from '../../../services/home.service';
+import { SearchBarComponent } from '../search-bar.component';
+import { HomeService } from '../../../../../services/home.service';
 
 describe('SearchBarComponent', () => {
   let component: SearchBarComponent;

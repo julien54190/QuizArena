@@ -1,7 +1,7 @@
 import { Component, Input, inject, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { QuizService } from '../../../services/quiz.service';
-import { IPlayQuiz } from '../../../interfaces/quiz';
+import { QuizService } from '../../../../services/quiz.service';
+import { IPlayQuiz } from '../../../../interfaces/quiz';
 import { CommonModule } from '@angular/common';
 
 @Component({

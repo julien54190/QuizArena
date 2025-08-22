@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PopularQuizComponent } from './popular-quiz.component';
-import { SearchService } from '../../../services/search.service';
-import { QuizService } from '../../../services/quiz.service';
+import { PopularQuizComponent } from '../popular-quiz.component';
+import { SearchService } from '../../../../../services/search.service';
+import { QuizService } from '../../../../../services/quiz.service';
 
 describe('PopularQuizComponent', () => {
   let component: PopularQuizComponent;

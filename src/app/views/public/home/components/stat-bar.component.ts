@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { HomeService } from '../../../services/home.service';
+import { HomeService } from '../../../../services/home.service';
 
 @Component({
   selector: 'app-stat-bar',

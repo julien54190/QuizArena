@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { StatBarComponent } from './stat-bar.component';
-import { HomeService } from '../../../services/home.service';
+import { StatBarComponent } from '../stat-bar.component';
+import { HomeService } from '../../../../../services/home.service';
 
 describe('StatBarComponent', () => {
   let component: StatBarComponent;
