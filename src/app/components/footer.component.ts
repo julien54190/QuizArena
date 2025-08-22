@@ -59,6 +59,7 @@ import { Component } from '@angular/core';
         height: 40px;
       }
 
+
       span {
         font-size: 1.2rem;
       }

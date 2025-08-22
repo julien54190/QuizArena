@@ -9,69 +9,89 @@ import { RouterModule } from '@angular/router';
   selector: 'app-side-bar',
   imports: [CommonModule, RouterModule],
   template: `
-  <div>
-    <!-- Menu latéral -->
-    <aside>
-      <div>
-        <div>
-          <div>
-            <i class="fas fa-user"></i>
-          </div>
-          <div>
-            <h3>{{ currentUser()?.firstName }} {{ currentUser()?.lastName }}</h3>
-            <p>{{ currentUser()?.role }}</p>
+      <aside class="flex flex-col h-screen sidebar" role="complementary" aria-label="Menu de navigation utilisateur">
+        <div class="p-25 sidebar-header">
+          <div class="flex align-items-center gap-16">
+            <div class="flex justify-content-center align-items-center avatar" role="img">
+              <img [src]="currentUser()?.avatar" alt="Avatar de {{ currentUser()?.firstName }} {{ currentUser()?.lastName }}">
+            </div>
+            <div class="text-semibold">
+              <h3 id="user-name">{{ currentUser()?.firstName }} {{ currentUser()?.lastName }}</h3>
+              <p id="user-role">{{ currentUser()?.role }}</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <nav>
-        <ul>
-          <li>
-            <a routerLink="tableau-de-bord" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-              <i class="fas fa-tachometer-alt"></i>
-              <span>Tableau de bord</span>
-            </a>
-          </li>
-          <li>
-            <a routerLink="profil" routerLinkActive="active">
-              <i class="fas fa-user-edit"></i>
-              <span>Mon profil</span>
-            </a>
-          </li>
-          <li>
-            <a routerLink="statistiques" routerLinkActive="active">
-              <i class="fas fa-chart-bar"></i>
-              <span>Mes statistiques</span>
-            </a>
-          </li>
-          <li>
-            <a routerLink="creer-quiz" routerLinkActive="active">
-              <i class="fas fa-plus-circle"></i>
-              <span>Créer un quiz</span>
-            </a>
-          </li>
-          <li>
-            <a routerLink="abonnement" routerLinkActive="active">
-              <i class="fas fa-credit-card"></i>
-              <span>Mon abonnement</span>
-            </a>
-          </li>
-          <li>
-            <a routerLink="parametres" routerLinkActive="active">
-              <i class="fas fa-cog"></i>
-              <span>Paramètres</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
+        <nav class="flex-1 py-24" role="navigation" aria-labelledby="user-name">
+          <ul role="list">
+            <li role="listitem">
+              <a routerLink="tableau-de-bord"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{exact: true}"
+                  class="flex align-items-center gap-12 py-12 px-24 nav-link"
+                  aria-label="Aller au tableau de bord">
+                <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
+                <span>Tableau de bord</span>
+              </a>
+            </li>
+            <li role="listitem">
+              <a routerLink="profil"
+                  routerLinkActive="active"
+                  class="flex align-items-center gap-12 py-12 px-24 nav-link"
+                  aria-label="Gérer mon profil">
+                <i class="fas fa-user-edit" aria-hidden="true"></i>
+                <span>Mon profil</span>
+              </a>
+            </li>
+            <li role="listitem">
+              <a routerLink="statistiques"
+                  routerLinkActive="active"
+                  class="flex align-items-center gap-12 py-12 px-24 nav-link"
+                  aria-label="Voir mes statistiques">
+                <i class="fas fa-chart-bar" aria-hidden="true"></i>
+                <span>Mes statistiques</span>
+              </a>
+            </li>
+            <li role="listitem">
+              <a routerLink="creer-quiz"
+                  routerLinkActive="active"
+                  class="flex align-items-center gap-12 py-12 px-24 nav-link"
+                  aria-label="Créer un nouveau quiz">
+                <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                <span>Créer un quiz</span>
+              </a>
+            </li>
+            <li role="listitem">
+              <a routerLink="abonnement"
+                  routerLinkActive="active"
+                  class="flex align-items-center gap-12 py-12 px-24 nav-link"
+                  aria-label="Gérer mon abonnement">
+                <i class="fas fa-credit-card" aria-hidden="true"></i>
+                <span>Mon abonnement</span>
+              </a>
+            </li>
+            <li role="listitem">
+              <a routerLink="parametres"
+                  routerLinkActive="active"
+                  class="flex align-items-center gap-12 py-12 px-24 nav-link"
+                  aria-label="Accéder aux paramètres">
+                <i class="fas fa-cog" aria-hidden="true"></i>
+                <span>Paramètres</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
 
-      <div>
-        <button  (click)="logout()">
-          <i class="fas fa-sign-out-alt"></i>
-          <span>Déconnexion</span>
-        </button>
-      </div>
-    </aside>
+        <div class="p-25 sidebar-footer">
+          <button (click)="logout()"
+                  class="btn btn-danger flex align-items-center gap-12 w-full"
+                  aria-label="Se déconnecter">
+            <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+            <span>Déconnexion</span>
+          </button>
+        </div>
+      </aside>
+
   `,
   styles: ``
 })
@@ -88,6 +108,7 @@ export class SideBarComponent {
 			firstName: 'Jean',
 			lastName: 'Dupont',
 			username: 'jeandupont',
+      avatar:'https://mockmind-api.uifaces.co/content/human/80.jpg',
 			email: 'jean.dupont@email.com',
 			role: 'user',
 			status: 'active',
