@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.11.0] - 2025-08-22
+
+### 🚀 Features
+
+- *(user)* :sparkles: ajout de la side-bar pour les utilisateur
+
+### 💼 Other
+
+- *(sidebar)* :wheelchair: ajout de l'accessibilité
+
+### 🎨 Styling
+
+- *(sidebar)* :lipstick: ajout du style et du responsive
+
 ## [0.10.0] - 2025-08-20
 
 ### 🚀 Features
