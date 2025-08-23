@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.12.0] - 2025-08-23
+
+### 🚀 Features
+
+- *(user)* :sparkles: ajout du dashboard
+
+### 🐛 Bug Fixes
+
+- *(user)* :bug: correction faute de frappe dans une classe css
+
+### 💼 Other
+
+- *(user)* :wheelchair: ajout de l'accessibilité pour le dashboard
+
+### 🚜 Refactor
+
+- *(user)* :recycle: partage en interface/service et data
+
+### 🎨 Styling
+
+- *(user)* :lipstick: ajout du style dashboard
+
 ## [0.11.0] - 2025-08-22
 
 ### 🚀 Features
