@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.13.0] - 2025-08-23
+
+### 🚀 Features
+
+- *(user)* :sparkles: ajout affichage du profil d'un utilisteur par un autre
+
 ## [0.12.0] - 2025-08-23
 
 ### 🚀 Features
