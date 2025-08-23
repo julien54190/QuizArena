@@ -9,114 +9,171 @@ interface Badge { name: string; icon: string; hint?: string; }
   selector: 'app-user-dashboard',
 	imports: [CommonModule],
 	template: `
-		<div class="home-container">
+		<main class="home-container" role="main" aria-labelledby="dashboard-title">
 			<div class="home-content p-10">
 				<header class="text-center mb-20">
-					<h1 class="text-xlg text-bold mb-10">Tableau de bord</h1>
-					<p class="text-sm">Bienvenue dans votre espace personnel, {{ currentUser()?.firstName }} !</p>
+					<h1 id="dashboard-title" class="text-xlg text-bold mb-10">Tableau de bord</h1>
+					<p class="text-sm" aria-live="polite">Bienvenue dans votre espace personnel, {{ currentUser()?.firstName }} !</p>
 				</header>
 
 				<!-- Statistiques -->
-				<section class="mt-20 card card-shadow" role="region" aria-label="Statistiques personnelles">
-					<div class="flex flex-wrap gap-16">
-						<article class="card w-full field text-center card-white card-hover" role="article">
-							<div class="text-lg text-bold" aria-label="Nombre de quiz joués">{{ currentUser()?.totalPlays || 0 }}</div>
-							<div class="text-sm">Quiz joués</div>
+				<section class="mt-20 card card-shadow" role="region" aria-labelledby="stats-title">
+					<h2 id="stats-title" class="sr-only">Statistiques personnelles</h2>
+					<div class="flex flex-wrap gap-16" role="list" aria-label="Statistiques de l'utilisateur">
+						<article class="card w-full field text-center card-white card-hover" role="listitem" tabindex="0">
+							<div class="text-lg text-bold" aria-label="Nombre de quiz joués" aria-describedby="quiz-joues-desc">{{ currentUser()?.totalPlays || 0 }}</div>
+							<div id="quiz-joues-desc" class="text-sm">Quiz joués</div>
 						</article>
-						<article class="card w-full field text-center card-white card-hover" role="article">
-							<div class="text-lg text-bold" aria-label="Score moyen">{{ currentUser()?.averageScore || 0 }}%</div>
-							<div class="text-sm">Score moyen</div>
+						<article class="card w-full field text-center card-white card-hover" role="listitem" tabindex="0">
+							<div class="text-lg text-bold" aria-label="Score moyen" aria-describedby="score-moyen-desc">{{ currentUser()?.averageScore || 0 }}%</div>
+							<div id="score-moyen-desc" class="text-sm">Score moyen</div>
 						</article>
-						<article class="card w-full field text-center card-white card-hover" role="article">
-							<div class="text-lg text-bold" aria-label="Nombre de quiz créés">{{ currentUser()?.quizzesCreated || 0 }}</div>
-							<div class="text-sm">Quiz créés</div>
+						<article class="card w-full field text-center card-white card-hover" role="listitem" tabindex="0">
+							<div class="text-lg text-bold" aria-label="Nombre de quiz créés" aria-describedby="quiz-crees-desc">{{ currentUser()?.quizzesCreated || 0 }}</div>
+							<div id="quiz-crees-desc" class="text-sm">Quiz créés</div>
 						</article>
-						<article class="card w-full field text-center card-white card-hover" role="article">
-							<div class="text-lg text-bold" aria-label="Plan actuel">{{ currentUser()?.plan || 'Gratuit' }}</div>
-							<div class="text-sm">Plan actuel</div>
+						<article class="card w-full field text-center card-white card-hover" role="listitem" tabindex="0">
+							<div class="text-lg text-bold" aria-label="Plan actuel" aria-describedby="plan-actuel-desc">{{ currentUser()?.plan || 'Gratuit' }}</div>
+							<div id="plan-actuel-desc" class="text-sm">Plan actuel</div>
 						</article>
 					</div>
 				</section>
 
 				<!-- Actions rapides -->
-				<section class="mt-20" role="region" aria-label="Actions rapides">
-					<h2 class="text-lg text-bold mb-20 text-center">Actions rapides</h2>
-					<div class="flex flex-wrap gap-16">
-						<button (click)="navigateTo('creer-quiz')" class="card card-white card-hover text-center flex flex-col justify-content-between" aria-label="Créer un quiz">
-							<div class="text-primary text-lg">
+				<section class="mt-20" role="region" aria-labelledby="actions-title">
+					<h2 id="actions-title" class="text-lg text-bold mb-20 text-center">Actions rapides</h2>
+					<div class="flex flex-wrap gap-16" role="list" aria-label="Actions rapides disponibles">
+						<button
+							(click)="navigateTo('creer-quiz')"
+							(keydown.enter)="navigateTo('creer-quiz')"
+							(keydown.space)="navigateTo('creer-quiz')"
+							class="card card-white card-hover text-center flex flex-col justify-content-between"
+							aria-label="Créer un quiz"
+							aria-describedby="creer-quiz-desc"
+							role="listitem"
+							tabindex="0">
+							<div class="text-primary text-lg" aria-hidden="true">
 								<i class="fas fa-plus-circle"></i>
 							</div>
 							<div>
 								<h3 class="text-semibold mb-10">Créer un quiz</h3>
-								<p class="text-sm">Créez votre propre quiz et partagez-le avec la communauté</p>
+								<p id="creer-quiz-desc" class="text-sm">Créez votre propre quiz et partagez-le avec la communauté</p>
 							</div>
 						</button>
 
-						<button (click)="navigateTo('statistiques')" class="card card-white card-hover text-center flex flex-col justify-content-between" aria-label="Voir mes statistiques">
-							<div class="text-primary text-lg">
+						<button
+							(click)="navigateTo('statistiques')"
+							(keydown.enter)="navigateTo('statistiques')"
+							(keydown.space)="navigateTo('statistiques')"
+							class="card card-white card-hover text-center flex flex-col justify-content-between"
+							aria-label="Voir mes statistiques"
+							aria-describedby="stats-desc"
+							role="listitem"
+							tabindex="0">
+							<div class="text-primary text-lg" aria-hidden="true">
 								<i class="fas fa-chart-line"></i>
 							</div>
 							<div>
 								<h3 class="text-semibold mb-10">Voir mes stats</h3>
-								<p class="text-sm">Analysez vos performances et votre progression</p>
+								<p id="stats-desc" class="text-sm">Analysez vos performances et votre progression</p>
 							</div>
 						</button>
 
-						<button (click)="navigateTo('profil')" class="card card-white card-hover text-center flex flex-col justify-content-between" aria-label="Modifier mon profil">
-							<div class="text-primary text-lg">
+						<button
+							(click)="navigateTo('profil')"
+							(keydown.enter)="navigateTo('profil')"
+							(keydown.space)="navigateTo('profil')"
+							class="card card-white card-hover text-center flex flex-col justify-content-between"
+							aria-label="Modifier mon profil"
+							aria-describedby="profil-desc"
+							role="listitem"
+							tabindex="0">
+							<div class="text-primary text-lg" aria-hidden="true">
 								<i class="fas fa-user-edit"></i>
 							</div>
 							<div>
 								<h3 class="text-semibold mb-10">Modifier mon profil</h3>
-								<p class="text-sm">Mettez à jour vos informations personnelles</p>
+								<p id="profil-desc" class="text-sm">Mettez à jour vos informations personnelles</p>
 							</div>
 						</button>
 
-						<button (click)="navigateTo('abonnement')" class="card card-white card-hover text-center flex flex-col justify-content-between" aria-label="Gérer l'abonnement">
-							<div class="text-primary text-lg">
+						<button
+							(click)="navigateTo('abonnement')"
+							(keydown.enter)="navigateTo('abonnement')"
+							(keydown.space)="navigateTo('abonnement')"
+							class="card card-white card-hover text-center flex flex-col justify-content-between"
+							aria-label="Gérer l'abonnement"
+							aria-describedby="abonnement-desc"
+							role="listitem"
+							tabindex="0">
+							<div class="text-primary text-lg" aria-hidden="true">
 								<i class="fas fa-credit-card"></i>
 							</div>
 							<div>
 								<h3 class="text-semibold mb-10">Gérer l'abonnement</h3>
-								<p class="text-sm">Passez à un plan supérieur pour plus de fonctionnalités</p>
+								<p id="abonnement-desc" class="text-sm">Passez à un plan supérieur pour plus de fonctionnalités</p>
 							</div>
 						</button>
 					</div>
 				</section>
 
 				<!-- Expérience -->
-				<section class="mt-20 card card-shadow" role="region" aria-label="Progression d'expérience">
+				<section class="mt-20 card card-shadow" role="region" aria-labelledby="experience-title">
 					<div class="flex justify-content-between align-items-center mb-20">
-						<h2 class="text-lg text-bold">Mon expérience</h2>
-						<span class="badge-info">Niveau {{ level() }}</span>
+						<h2 id="experience-title" class="text-lg text-bold">Mon expérience</h2>
+						<span class="badge-info" aria-label="Niveau actuel">{{ level() }}</span>
 					</div>
-					<div class="experience-bar" role="progressbar" aria-valuemin="0" [attr.aria-valuenow]="xpPercent()" aria-valuemax="100" [attr.aria-label]="'Progression niveau: ' + xpPercent() + '%'">
-						<div class="experience-fill" [style.width.%]="xpPercent()"></div>
+					<div
+						class="experience-bar"
+						role="progressbar"
+						aria-valuemin="0"
+						[attr.aria-valuenow]="xpPercent()"
+						aria-valuemax="100"
+						[attr.aria-valuetext]="'Progression: ' + xpPercent() + '%. ' + currentXp() + ' points d experience sur ' + nextLevelXp() + ' requis pour le niveau suivant.'"
+						aria-labelledby="experience-title">
+						<div class="experience-fill" [style.width.%]="xpPercent()" aria-hidden="true"></div>
 					</div>
-					<div class="flex justify-content-between mt-10">
+					<div class="flex justify-content-between mt-10" aria-live="polite">
 						<span class="text-sm">XP: {{ currentXp() }} / {{ nextLevelXp() }}</span>
 						<span class="text-sm">Reste: {{ nextLevelXp() - currentXp() }} XP</span>
 					</div>
 				</section>
 
 				<!-- Badges -->
-				<section class="mt-20" role="region" aria-label="Badges et récompenses">
+				<section class="mt-20" role="region" aria-labelledby="badges-title">
+					<h2 id="badges-title" class="sr-only">Badges et récompenses</h2>
 					<div class="flex flex-wrap gap-16">
-						<div class="card card-white flex-1">
-							<h2 class="text-lg text-bold mb-20">Badges gagnés</h2>
-							<div class="flex flex-wrap gap-12">
-								<div *ngFor="let b of badgesUnlocked()" class="badge-chip badge-chip--unlocked" [title]="getUnlockedBadgeTitle(b)">
-									<i [class]="b.icon"></i>
+						<div class="card card-white flex-1" role="region" aria-labelledby="badges-unlocked-title">
+							<h3 id="badges-unlocked-title" class="text-lg text-bold mb-20">Badges gagnés</h3>
+							<div class="flex flex-wrap gap-12" role="list" aria-label="Badges débloqués">
+								<div
+									*ngFor="let b of badgesUnlocked(); trackBy: trackByBadge"
+									class="badge-chip badge-chip--unlocked"
+									[title]="getUnlockedBadgeTitle(b)"
+									role="listitem"
+									tabindex="0"
+									[attr.aria-label]="'Badge débloqué: ' + b.name"
+									[attr.aria-describedby]="'badge-desc-' + b.name">
+									<i [class]="b.icon" aria-hidden="true"></i>
 									<span class="text-sm">{{ b.name }}</span>
+									<span id="badge-desc-{{ b.name }}" class="sr-only">{{ b.hint || 'Badge obtenu grâce à vos performances' }}</span>
 								</div>
 							</div>
 						</div>
-						<div class="card card-white flex-1">
-							<h2 class="text-lg text-bold mb-20">À débloquer</h2>
-							<div class="flex flex-wrap gap-12">
-								<div *ngFor="let b of badgesLocked()" class="badge-chip badge-chip--locked" [title]="getLockedBadgeTitle(b)">
-									<i [class]="b.icon"></i>
+						<div class="card card-white flex-1" role="region" aria-labelledby="badges-locked-title">
+							<h3 id="badges-locked-title" class="text-lg text-bold mb-20">À débloquer</h3>
+							<div class="flex flex-wrap gap-12" role="list" aria-label="Badges à débloquer">
+								<div
+									*ngFor="let b of badgesLocked(); trackBy: trackByBadge"
+									class="badge-chip badge-chip--locked"
+									[title]="getLockedBadgeTitle(b)"
+									role="listitem"
+									tabindex="0"
+									[attr.aria-label]="'Badge à débloquer: ' + b.name"
+									[attr.aria-describedby]="'badge-locked-desc-' + b.name">
+									<i [class]="b.icon" aria-hidden="true"></i>
 									<span class="text-sm">{{ b.name }}</span>
+									<span id="badge-locked-desc-{{ b.name }}" class="sr-only">{{ b.hint || 'Atteignez l\'objectif indiqué pour débloquer ce badge' }}</span>
 								</div>
 							</div>
 						</div>
@@ -124,46 +181,47 @@ interface Badge { name: string; icon: string; hint?: string; }
 				</section>
 
 				<!-- Activité récente -->
-				<section class="mt-20 card card-shadow" role="region" aria-label="Activité récente">
-					<h2 class="text-lg text-bold mb-20">Activité récente</h2>
-					<div class="activity-list">
-						<div *ngFor="let activity of recentActivities()" class=" flex align-items-center gap-16 p-25 activity-item">
-							<div class="flex align-items-center justify-centent-center activity-icon">
+				<section class="mt-20 card card-shadow" role="region" aria-labelledby="activity-title">
+					<h2 id="activity-title" class="text-lg text-bold mb-20">Activité récente</h2>
+					<div class="activity-list" role="list" aria-label="Activités récentes">
+						<div
+							*ngFor="let activity of recentActivities(); trackBy: trackByActivity"
+							class="flex align-items-center gap-16 p-25 activity-item"
+							role="listitem"
+							tabindex="0">
+							<div class="flex align-items-center justify-content-center activity-icon" aria-hidden="true">
 								<i [class]="activity.icon"></i>
 							</div>
 							<div class="activity-content">
 								<p class="activity-text">{{ activity.text }}</p>
-								<span class="activity-time text-sm">{{ activity.time }}</span>
+								<time class="activity-time text-sm" [attr.datetime]="getActivityDateTime(activity.time)">{{ activity.time }}</time>
 							</div>
 						</div>
 					</div>
 				</section>
 			</div>
-		</div>
+		</main>
 	`,
 	styles: [`
 		:host { display: block; }
 
-  @media (max-width: 768px) {
-    .flex-wrap {
-      flex-direction: column;
-  }
+		@media (max-width: 768px) {
+			.flex-wrap {
+				flex-direction: column;
+			}
 
-  .gap-16 {
-    gap: 12px;
-  }
+			.gap-16 {
+				gap: 12px;
+			}
 
-  .badge-info {
-    text-align: center;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 60px;
-  }
-}
-
-
-
+			.badge-info {
+				text-align: center;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				min-width: 60px;
+			}
+		}
 	`]
 })
 export class UserDashboardComponent {
@@ -219,7 +277,34 @@ export class UserDashboardComponent {
 		return `À débloquer: ${b.name} — ${b.hint ?? 'Atteignez l\'objectif indiqué pour débloquer ce badge'}`;
 	}
 
-	navigateTo(route: string) { this.router.navigate([`/tableau-de-bord/${route}`]); }
+	// Fonctions pour l'accessibilité
+	trackByBadge(index: number, badge: Badge): string {
+		return badge.name;
+	}
+
+	trackByActivity(index: number, activity: any): string {
+		return activity.text + activity.time;
+	}
+
+	getActivityDateTime(timeString: string): string {
+		// Convertit les descriptions de temps en dates ISO pour l'accessibilité
+		const now = new Date();
+		if (timeString.includes('heures')) {
+			const hours = parseInt(timeString.match(/(\d+)/)?.[1] || '0');
+			now.setHours(now.getHours() - hours);
+		} else if (timeString.includes('jour')) {
+			const days = parseInt(timeString.match(/(\d+)/)?.[1] || '0');
+			now.setDate(now.getDate() - days);
+		} else if (timeString.includes('semaine')) {
+			const weeks = parseInt(timeString.match(/(\d+)/)?.[1] || '0');
+			now.setDate(now.getDate() - (weeks * 7));
+		}
+		return now.toISOString();
+	}
+
+	navigateTo(route: string) {
+		this.router.navigate([`/tableau-de-bord/${route}`]);
+	}
 }
 
 
