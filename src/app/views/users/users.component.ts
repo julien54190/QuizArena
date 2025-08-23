@@ -8,7 +8,7 @@ import { UserDashboardComponent } from "./components/user-dashboard.component";
   template: `
   <div class="flex">
     <app-side-bar></app-side-bar>
-    <main class="flex-1">
+    <main class="flex-1 home-container p-10">
       <app-user-dashboard></app-user-dashboard>
     </main>
   </div>
