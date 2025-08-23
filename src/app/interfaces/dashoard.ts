@@ -55,3 +55,17 @@ export interface IUserExperience {
   totalXp: number;
   levelTitle: string;
 }
+
+export interface IPublicUserProfile {
+  id: number;
+  firstName: string;
+  lastName: string;
+  username: string;
+  avatar?: string;
+  stats: IUserStats;
+  experience: IUserExperience;
+  unlockedBadges: IBadge[];
+  recentActivities: IUserActivity[];
+  isOwnProfile: boolean;
+  canEdit: boolean;
+}

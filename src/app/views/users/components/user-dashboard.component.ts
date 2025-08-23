@@ -3,7 +3,6 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { DashboardService } from '../../../services/dashboard.service';
 
-
 @Component({
   selector: 'app-user-dashboard',
 	imports: [CommonModule],
@@ -42,24 +41,25 @@ import { DashboardService } from '../../../services/dashboard.service';
 				<section class="mt-20" role="region" aria-labelledby="actions-title">
 					<h2 id="actions-title" class="text-lg text-bold mb-20 text-center">Actions rapides</h2>
 					<div class="flex flex-wrap gap-16" role="list" aria-label="Actions rapides disponibles">
-						<button
-							*ngFor="let action of dashboardService.availableActions(); trackBy: dashboardService.trackByAction"
-							(click)="navigateTo(action.route)"
-							(keydown.enter)="navigateTo(action.route)"
-							(keydown.space)="navigateTo(action.route)"
-							class="card card-white card-hover text-center flex flex-col justify-content-between"
-							[attr.aria-label]="action.title"
-							[attr.aria-describedby]="'action-desc-' + action.id"
-							role="listitem"
-							tabindex="0">
-							<div class="text-primary text-lg" aria-hidden="true">
-								<i [class]="action.icon"></i>
-							</div>
-							<div>
-								<h3 class="text-semibold mb-10">{{ action.title }}</h3>
-								<p [id]="'action-desc-' + action.id" class="text-sm">{{ action.description }}</p>
-							</div>
-						</button>
+						@for (action of dashboardService.availableActions(); track dashboardService.trackByAction($index, action)) {
+							<button
+								(click)="navigateTo(action.route)"
+								(keydown.enter)="navigateTo(action.route)"
+								(keydown.space)="navigateTo(action.route)"
+								class="card card-white card-hover text-center flex flex-col justify-content-between"
+								[attr.aria-label]="action.title"
+								[attr.aria-describedby]="'action-desc-' + action.id"
+								role="listitem"
+								tabindex="0">
+								<div class="text-primary text-lg" aria-hidden="true">
+									<i [class]="action.icon"></i>
+								</div>
+								<div>
+									<h3 class="text-semibold mb-10">{{ action.title }}</h3>
+									<p [id]="'action-desc-' + action.id" class="text-sm">{{ action.description }}</p>
+								</div>
+							</button>
+						}
 					</div>
 				</section>
 
@@ -67,7 +67,7 @@ import { DashboardService } from '../../../services/dashboard.service';
 				<section class="mt-20 card card-shadow" role="region" aria-labelledby="experience-title">
 					<div class="flex justify-content-between align-items-center mb-20">
 						<h2 id="experience-title" class="text-lg text-bold">Mon expérience</h2>
-						<span class="badge-info" aria-label="Niveau actuel">niveau {{ dashboardService.userExperience()?.level || 1 }}</span>
+						<span class="badge-info" aria-label="Niveau actuel">Niveau: {{ dashboardService.userExperience()?.level || 1 }}</span>
 					</div>
 					<div
 						class="experience-bar"
@@ -92,35 +92,37 @@ import { DashboardService } from '../../../services/dashboard.service';
 						<div class="card card-white flex-1" role="region" aria-labelledby="badges-unlocked-title">
 							<h3 id="badges-unlocked-title" class="text-lg text-bold mb-20">Badges gagnés</h3>
 							<div class="flex flex-wrap gap-12" role="list" aria-label="Badges débloqués">
-								<div
-									*ngFor="let badge of dashboardService.unlockedBadges(); trackBy: dashboardService.trackByBadge"
-									class="badge-chip badge-chip--unlocked"
-									[title]="dashboardService.getBadgeTitle(badge)"
-									role="listitem"
-									tabindex="0"
-									[attr.aria-label]="'Badge débloqué: ' + badge.name"
-									[attr.aria-describedby]="'badge-desc-' + badge.id">
-									<i [class]="badge.icon" aria-hidden="true"></i>
-									<span class="text-sm">{{ badge.name }}</span>
-									<span [id]="'badge-desc-' + badge.id" class="sr-only">{{ badge.hint || 'Badge obtenu grâce à vos performances' }}</span>
-								</div>
+								@for (badge of dashboardService.unlockedBadges(); track dashboardService.trackByBadge($index, badge)) {
+									<div
+										class="badge-chip badge-chip--unlocked"
+										[title]="dashboardService.getBadgeTitle(badge)"
+										role="listitem"
+										tabindex="0"
+										[attr.aria-label]="'Badge débloqué: ' + badge.name"
+										[attr.aria-describedby]="'badge-desc-' + badge.id">
+										<i [class]="badge.icon" aria-hidden="true"></i>
+										<span class="text-sm">{{ badge.name }}</span>
+										<span [id]="'badge-desc-' + badge.id" class="sr-only">{{ badge.hint || 'Badge obtenu grâce à vos performances' }}</span>
+									</div>
+								}
 							</div>
 						</div>
 						<div class="card card-white flex-1" role="region" aria-labelledby="badges-locked-title">
 							<h3 id="badges-locked-title" class="text-lg text-bold mb-20">À débloquer</h3>
 							<div class="flex flex-wrap gap-12" role="list" aria-label="Badges à débloquer">
-								<div
-									*ngFor="let badge of dashboardService.lockedBadges(); trackBy: dashboardService.trackByBadge"
-									class="badge-chip badge-chip--locked"
-									[title]="dashboardService.getBadgeTitle(badge)"
-									role="listitem"
-									tabindex="0"
-									[attr.aria-label]="'Badge à débloquer: ' + badge.name"
-									[attr.aria-describedby]="'badge-locked-desc-' + badge.id">
-									<i [class]="badge.icon" aria-hidden="true"></i>
-									<span class="text-sm">{{ badge.name }}</span>
-									<span [id]="'badge-locked-desc-' + badge.id" class="sr-only">{{ badge.hint || 'Atteignez l\'objectif indiqué pour débloquer ce badge' }}</span>
-								</div>
+								@for (badge of dashboardService.lockedBadges(); track dashboardService.trackByBadge($index, badge)) {
+									<div
+										class="badge-chip badge-chip--locked"
+										[title]="dashboardService.getBadgeTitle(badge)"
+										role="listitem"
+										tabindex="0"
+										[attr.aria-label]="'Badge à débloquer: ' + badge.name"
+										[attr.aria-describedby]="'badge-locked-desc-' + badge.id">
+										<i [class]="badge.icon" aria-hidden="true"></i>
+										<span class="text-sm">{{ badge.name }}</span>
+										<span [id]="'badge-locked-desc-' + badge.id" class="sr-only">{{ badge.hint || 'Atteignez l\'objectif indiqué pour débloquer ce badge' }}</span>
+									</div>
+								}
 							</div>
 						</div>
 					</div>
@@ -130,19 +132,20 @@ import { DashboardService } from '../../../services/dashboard.service';
 				<section class="mt-20 card card-shadow" role="region" aria-labelledby="activity-title">
 					<h2 id="activity-title" class="text-lg text-bold mb-20">Activité récente</h2>
 					<div class="activity-list" role="list" aria-label="Activités récentes">
-						<div
-							*ngFor="let activity of dashboardService.activities(); trackBy: dashboardService.trackByActivity"
-							class="flex align-items-center gap-16 p-25 activity-item"
-							role="listitem"
-							tabindex="0">
-							<div class="flex align-items-center justify-content-center activity-icon" aria-hidden="true">
-								<i [class]="activity.icon"></i>
+						@for (activity of dashboardService.activities(); track dashboardService.trackByActivity($index, activity)) {
+							<div
+								class="flex align-items-center gap-16 p-25 activity-item"
+								role="listitem"
+								tabindex="0">
+								<div class="flex align-items-center justify-content-center activity-icon" aria-hidden="true">
+									<i [class]="activity.icon"></i>
+								</div>
+								<div class="activity-content">
+									<p class="activity-text">{{ activity.text }}</p>
+									<time class="activity-time text-sm" [attr.datetime]="dashboardService.getActivityDateTime(activity.time)">{{ activity.time }}</time>
+								</div>
 							</div>
-							<div class="activity-content">
-								<p class="activity-text">{{ activity.text }}</p>
-								<time class="activity-time text-sm" [attr.datetime]="dashboardService.getActivityDateTime(activity.time)">{{ activity.time }}</time>
-							</div>
-						</div>
+						}
 					</div>
 				</section>
 			</div>

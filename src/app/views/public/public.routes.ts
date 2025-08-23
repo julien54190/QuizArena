@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { AccueilComponent } from './home/accueil.component';
 import { PlayComponent } from './play/play.component';
+import { PublicProfileComponent } from '../users/components/public-profile.component';
 
 export const publicRoutes: Routes = [
 	{
@@ -18,5 +19,9 @@ export const publicRoutes: Routes = [
 	{
 		path: 'jouer/quiz/:quizId',
 		component: PlayComponent
+	},
+	{
+		path: 'profil/:userId',
+		component: PublicProfileComponent
 	}
 ];
