@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.14.0] - 2025-09-03
+
+### 🚀 Features
+
+- *(user)* :sparkles: ajout partie modification user
+- *(user/seo)* :sparkles: ajout seo  partie modification user et dashboard user
+
+### 💼 Other
+
+- *(user)* :wheelchair: ajout accessibilite  partie modification user
+
+### 🎨 Styling
+
+- *(user)* :lipstick: ajout style  partie modification user
+
 ## [0.13.0] - 2025-08-23
 
 ### 🚀 Features
