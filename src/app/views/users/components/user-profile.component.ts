@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy } from '@angular/core';
 import { UserLayoutComponent } from '../shared/user-layout.component';
 import { IUser } from '../../../interfaces/user';
 import { FormsModule } from '@angular/forms';
+import { inject } from '@angular/core';
+import { SeoService } from '../../../services/seo.service';
 
 @Component({
   selector: 'app-user-profile',
@@ -111,7 +113,8 @@ import { FormsModule } from '@angular/forms';
     </app-user-layout>
   `,
 })
-export class UserProfileComponent {
+export class UserProfileComponent implements OnInit, OnDestroy {
+	private seo = inject(SeoService);
 	user = signal<IUser>({
 		id: 1,
 		firstName: 'Jean',
@@ -125,6 +128,19 @@ export class UserProfileComponent {
 		totalPlays: 42,
 		averageScore: 78
 	});
+
+	ngOnInit(): void {
+		const currentUser = this.user();
+		this.seo.updateSEO({
+			title: `Mon profil - ${currentUser.firstName} ${currentUser.lastName} | QuizArena`,
+			description: `Gérez vos informations personnelles, votre plan (${currentUser.plan}) et vos préférences sur QuizArena.`,
+			keywords: 'profil utilisateur, paramètres, compte, sécurité, préférences'
+		});
+	}
+
+	ngOnDestroy(): void {
+		this.seo.resetToDefault();
+	}
 
 	updateUser(property: keyof IUser, value: any) {
 		this.user.update(current => ({

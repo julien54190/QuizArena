@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { DashboardService } from '../../../services/dashboard.service';
+import { SeoService } from '../../../services/seo.service';
 
 @Component({
   selector: 'app-user-dashboard',
@@ -173,9 +174,23 @@ import { DashboardService } from '../../../services/dashboard.service';
 		}
 	`]
 })
-export class UserDashboardComponent {
+export class UserDashboardComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   protected dashboardService = inject(DashboardService);
+  private seo = inject(SeoService);
+
+  ngOnInit(): void {
+    const firstName = this.dashboardService.currentUser()?.firstName || 'Utilisateur';
+    this.seo.updateSEO({
+      title: `Tableau de bord - ${firstName} | QuizArena`,
+      description: `Consultez vos statistiques personnelles, vos badges, vos actions rapides et votre progression d'expérience sur QuizArena.`,
+      keywords: 'tableau de bord, statistiques, badges, progression, actions rapides'
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.seo.resetToDefault();
+  }
 
 	navigateTo(route: string) {
 		this.router.navigate([`/tableau-de-bord/${route}`]);
