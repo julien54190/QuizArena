@@ -25,7 +25,7 @@ import { RouterModule } from '@angular/router';
         <nav class="flex-1 py-24" role="navigation" aria-labelledby="user-name">
           <ul role="list">
             <li role="listitem">
-              <a routerLink="/tableau-de-bord"
+              <a routerLink="/users/tableau-de-bord"
                   routerLinkActive="active"
                   [routerLinkActiveOptions]="{exact: true}"
                   class="flex align-items-center gap-12 py-12 px-24 nav-link"
@@ -35,7 +35,7 @@ import { RouterModule } from '@angular/router';
               </a>
             </li>
             <li role="listitem">
-              <a routerLink="/profil"
+              <a routerLink="/users/profil"
                   routerLinkActive="active"
                   class="flex align-items-center gap-12 py-12 px-24 nav-link"
                   aria-label="Gérer mon profil">
@@ -44,7 +44,7 @@ import { RouterModule } from '@angular/router';
               </a>
             </li>
             <li role="listitem">
-              <a routerLink="/statistiques"
+              <a routerLink="/users/statistiques"
                   routerLinkActive="active"
                   class="flex align-items-center gap-12 py-12 px-24 nav-link"
                   aria-label="Voir mes statistiques">
@@ -53,7 +53,7 @@ import { RouterModule } from '@angular/router';
               </a>
             </li>
             <li role="listitem">
-              <a routerLink="/creer-quiz"
+              <a routerLink="/users/creer-quiz"
                   routerLinkActive="active"
                   class="flex align-items-center gap-12 py-12 px-24 nav-link"
                   aria-label="Créer un nouveau quiz">
@@ -62,7 +62,7 @@ import { RouterModule } from '@angular/router';
               </a>
             </li>
             <li role="listitem">
-              <a routerLink="/abonnement"
+              <a routerLink="/users/abonnement"
                   routerLinkActive="active"
                   class="flex align-items-center gap-12 py-12 px-24 nav-link"
                   aria-label="Gérer mon abonnement">
@@ -71,7 +71,7 @@ import { RouterModule } from '@angular/router';
               </a>
             </li>
             <li role="listitem">
-              <a routerLink="/parametres"
+              <a routerLink="/users/parametres"
                   routerLinkActive="active"
                   class="flex align-items-center gap-12 py-12 px-24 nav-link"
                   aria-label="Accéder aux paramètres">

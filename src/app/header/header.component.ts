@@ -16,7 +16,7 @@ import { HeaderMenuComponent } from './components/header-menu.component';
           <ul class="flex align-items-center gap-12" role="list">
             <li role="listitem"><a routerLink="/accueil" routerLinkActive="active-link" aria-label="Aller à la page d'accueil">Accueil</a></li>
             <li role="listitem"><a routerLink="/jouer" routerLinkActive="active-link" aria-label="Commencer à jouer">Jouer</a></li>
-            <li role="listitem"><a routerLink="tableau-de-bord" routerLinkActive="active-link" aria-label="Accéder à mon espace personnel">Mon espace</a></li>
+            <li role="listitem"><a routerLink="users/tableau-de-bord" routerLinkActive="active-link" aria-label="Accéder à mon espace personnel">Mon espace</a></li>
             <li role="listitem"><a routerLink="/admin/tableau-de-bord" routerLinkActive="active-link" aria-label="Accéder à l'administration">Admin</a></li>
             <li role="listitem"><a class="btn btn-outline-primary" routerLink="/connexion" routerLinkActive="active-link" aria-label="Se connecter">Connexion</a></li>
             <li role="listitem"><a class="btn btn-primary" routerLink="/inscription" routerLinkActive="active-link" aria-label="Créer un compte">Inscription</a></li>

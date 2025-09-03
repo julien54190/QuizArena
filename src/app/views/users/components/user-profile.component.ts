@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, signal, OnInit, OnDestroy } from '@angular/core';
-import { UserLayoutComponent } from '../shared/user-layout.component';
 import { IUser } from '../../../interfaces/user';
 import { FormsModule } from '@angular/forms';
 import { inject } from '@angular/core';
@@ -8,9 +7,8 @@ import { SeoService } from '../../../services/seo.service';
 
 @Component({
   selector: 'app-user-profile',
-  imports: [CommonModule, UserLayoutComponent,FormsModule],
+  imports: [CommonModule, FormsModule],
   template: `
-    <app-user-layout>
 
 		<main class="home-container" role="main" aria-labelledby="profile-title">
 			<div class="home-content p-10">
@@ -109,9 +107,8 @@ import { SeoService } from '../../../services/seo.service';
 					</div>
 				</section>
 			</div>
-		</main>
-    </app-user-layout>
-  `,
+				</main>
+	`,
 })
 export class UserProfileComponent implements OnInit, OnDestroy {
 	private seo = inject(SeoService);

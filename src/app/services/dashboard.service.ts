@@ -191,19 +191,38 @@ export class DashboardService {
     }
   }
 
+  // Timestamps mémorisés pour éviter les changements constants
+  private memoizedTimestamps = new Map<string, string>();
+
   getActivityDateTime(timeString: string): string {
-    const now = new Date();
+    // Vérifier si le timestamp est déjà mémorisé
+    if (this.memoizedTimestamps.has(timeString)) {
+      return this.memoizedTimestamps.get(timeString)!;
+    }
+
+    // Calculer le timestamp une seule fois
+    let timestamp: number;
+    const now = Date.now();
+
     if (timeString.includes('heures')) {
       const hours = parseInt(timeString.match(/(\d+)/)?.[1] || '0');
-      now.setHours(now.getHours() - hours);
+      timestamp = now - (hours * 60 * 60 * 1000);
     } else if (timeString.includes('jour')) {
       const days = parseInt(timeString.match(/(\d+)/)?.[1] || '0');
-      now.setDate(now.getDate() - days);
+      timestamp = now - (days * 24 * 60 * 60 * 1000);
     } else if (timeString.includes('semaine')) {
       const weeks = parseInt(timeString.match(/(\d+)/)?.[1] || '0');
-      now.setDate(now.getDate() - (weeks * 7));
+      timestamp = now - (weeks * 7 * 24 * 60 * 60 * 1000);
+    } else {
+      // Pour les autres cas, utiliser un timestamp fixe
+      timestamp = now - (24 * 60 * 60 * 1000);
     }
-    return now.toISOString();
+
+    // Mémoriser le résultat
+    const result = new Date(timestamp).toISOString();
+    this.memoizedTimestamps.set(timeString, result);
+
+    return result;
   }
 
   // Méthodes de mise à jour (pour les futures fonctionnalités)

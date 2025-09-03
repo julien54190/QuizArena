@@ -1,16 +1,14 @@
 import { Component, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UserLayoutComponent } from '../shared/user-layout.component';
 import { inject } from '@angular/core';
 import { SeoService } from '../../../services/seo.service';
 
 @Component({
 	selector: 'app-usercreate-quiz',
 	standalone: true,
-	imports: [CommonModule, FormsModule, UserLayoutComponent],
+	imports: [CommonModule, FormsModule],
 	template: `
-		<app-user-layout>
 			<div class="home-content p-10">
 				<header class="text-center mb-20">
 					<h1 class="text-xlg text-bold mb-10">Créer un quiz</h1>
@@ -175,8 +173,7 @@ import { SeoService } from '../../../services/seo.service';
 						<button class="btn btn-primary py-12 px-24" (click)="publishQuiz()">Publier le quiz</button>
 					</div>
 				</section>
-			</div>
-		</app-user-layout>
+					</div>
 	`,
 })
 export class UserCreateQuizComponent implements OnInit, OnDestroy {

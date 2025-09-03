@@ -1,13 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserLayoutComponent } from '../shared/user-layout.component';
 
 @Component({
-  selector: 'app-user-parametre',
-  standalone: true,
-  imports: [CommonModule, UserLayoutComponent],
-  template: `
-    <app-user-layout>
+	selector: 'app-user-parametre',
+	standalone: true,
+	imports: [CommonModule],
+	template: `
       <main class="home-container" role="main" aria-labelledby="coming-title">
         <div class="home-content p-10">
           <section class="card card-shadow text-center" role="region" aria-labelledby="coming-title">
@@ -20,9 +18,8 @@ import { UserLayoutComponent } from '../shared/user-layout.component';
             </div>
           </section>
         </div>
-      </main>
-    </app-user-layout>
-  `
+      		</main>
+	`
 })
 export class UserParametreComponent {
 

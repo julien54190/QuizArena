@@ -1,14 +1,20 @@
 import { Component } from '@angular/core';
-import { UserLayoutComponent } from "./shared/user-layout.component";
-import { UserDashboardComponent } from "./components/user-dashboard.component";
+import { CommonModule } from '@angular/common';
+import { SideBarComponent } from "./shared/side-bar.component";
+import { SideBarMobileComponent } from "./shared/components/side-bar-mobile.component";
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-users',
-  imports: [UserLayoutComponent, UserDashboardComponent],
+  imports: [CommonModule, SideBarComponent, SideBarMobileComponent, RouterOutlet],
   template: `
-    <app-user-layout>
-      <app-user-dashboard></app-user-dashboard>
-    </app-user-layout>
+    <app-side-bar-mobile></app-side-bar-mobile>
+    <div class="flex">
+      <app-side-bar></app-side-bar>
+      <main class="flex-1 home-container p-10">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
   `,
   styles: ``
 })
