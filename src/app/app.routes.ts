@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { UsersComponent } from './views/users/users.component';
+import { UserProfileComponent } from './views/users/components/user-profile.component';
 
 export const routes: Routes = [
 	{
@@ -15,6 +16,10 @@ export const routes: Routes = [
   {
   path: 'tableau-de-bord',
   component: UsersComponent
+  },
+  {
+    path: 'profil',
+    component: UserProfileComponent
   }
 
 ];

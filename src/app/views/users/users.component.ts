@@ -1,18 +1,14 @@
 import { Component } from '@angular/core';
-import { SideBarComponent } from "./shared/side-bar.component";
+import { UserLayoutComponent } from "./shared/user-layout.component";
 import { UserDashboardComponent } from "./components/user-dashboard.component";
 
 @Component({
   selector: 'app-users',
-  imports: [SideBarComponent, UserDashboardComponent],
+  imports: [UserLayoutComponent, UserDashboardComponent],
   template: `
-  <div class="flex">
-    <app-side-bar></app-side-bar>
-    <main class="flex-1 home-container p-10">
+    <app-user-layout>
       <app-user-dashboard></app-user-dashboard>
-    </main>
-  </div>
-
+    </app-user-layout>
   `,
   styles: ``
 })

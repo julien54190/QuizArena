@@ -40,7 +40,7 @@ import { DashboardService } from '../../../services/dashboard.service';
 				<!-- Actions rapides -->
 				<section class="mt-20" role="region" aria-labelledby="actions-title">
 					<h2 id="actions-title" class="text-lg text-bold mb-20 text-center">Actions rapides</h2>
-					<div class="flex flex-wrap gap-16" role="list" aria-label="Actions rapides disponibles">
+					<div class="flex flex-wrap gap-16 justify-content-center  " role="list" aria-label="Actions rapides disponibles">
 						@for (action of dashboardService.availableActions(); track dashboardService.trackByAction($index, action)) {
 							<button
 								(click)="navigateTo(action.route)"
