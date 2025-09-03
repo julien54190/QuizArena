@@ -19,8 +19,9 @@ import { UserLayoutComponent } from '../shared/user-layout.component';
 					<h2 class="text-lg text-bold mb-20">Informations générales</h2>
 					<div class="flex flex-wrap gap-16">
 						<div class="field">
+							<label>Titre du quiz</label>
 							<input
-								class="w-full"
+								class="w-full p-12 radius"
 								type="text"
 								[ngModel]="quizData().title"
 								(ngModelChange)="updateQuizData('title', $event)"
@@ -29,6 +30,7 @@ import { UserLayoutComponent } from '../shared/user-layout.component';
 						</div>
 
 						<div class="field">
+							<label>Description du quiz</label>
 							<textarea
 								class="w-full p-12 radius"
 								[ngModel]="quizData().description"
@@ -39,6 +41,7 @@ import { UserLayoutComponent } from '../shared/user-layout.component';
 						</div>
 
 						<div class="field">
+							<label>Catégorie</label>
 							<select class="w-full p-12 radius" [ngModel]="quizData().category" (ngModelChange)="updateQuizData('category', $event)">
 								<option value="">Sélectionner une catégorie</option>
 								<option value="culture-generale">Culture Générale</option>
@@ -53,6 +56,7 @@ import { UserLayoutComponent } from '../shared/user-layout.component';
 						</div>
 
 						<div class="field">
+							<label>Difficulté</label>
 							<select class="w-full p-12 radius" [ngModel]="quizData().difficulty" (ngModelChange)="updateQuizData('difficulty', $event)">
 								<option value="">Sélectionner la difficulté</option>
 								<option value="facile">Facile</option>
@@ -76,6 +80,7 @@ import { UserLayoutComponent } from '../shared/user-layout.component';
 
 							<div class="flex flex-wrap gap-16">
 								<div class="field w-full">
+									<label>Type de question</label>
 									<select class="w-full p-12 radius" [ngModel]="question.type" (ngModelChange)="handleTypeChange(i, $event)">
 										<option value="simple">Question simple</option>
 										<option value="musique">Musique</option>
@@ -85,28 +90,36 @@ import { UserLayoutComponent } from '../shared/user-layout.component';
 								</div>
 
 								<div class="field w-full">
-									<input class="w-full" type="text" [ngModel]="question.text" (ngModelChange)="updateQuestion(i, 'text', $event)" placeholder="Votre question...">
+									<label>Question</label>
+									<input class="w-full p-12 radius" type="text" [ngModel]="question.text" (ngModelChange)="updateQuestion(i, 'text', $event)" placeholder="Votre question...">
 								</div>
 
 								<div class="field w-full" *ngIf="question.type === 'musique'">
+									<label>Fichier audio</label>
 									<input type="file" accept="audio/*" (change)="onMediaSelected(i, $event)">
 									<audio *ngIf="question.mediaUrl" [src]="question.mediaUrl" controls></audio>
 								</div>
 
 								<div class="field w-full" *ngIf="question.type === 'photo'">
+									<label>Image</label>
 									<input type="file" accept="image/*" (change)="onMediaSelected(i, $event)">
-									<img *ngIf="question.mediaUrl" [src]="question.mediaUrl" alt="aperçu" class="w-full" style="max-width: 200px; height: auto;">
+									<img *ngIf="question.mediaUrl" [src]="question.mediaUrl" alt="Aperçu de l'image de la question" class="w-full" style="max-width: 200px; height: auto;">
 								</div>
 
 								<div class="field w-full" *ngIf="question.type === 'ordre'">
-									<textarea class="w-full" [ngModel]="question.orderItems.join('\n')" (ngModelChange)="onOrderItemsChange(i, $event)" rows="4" placeholder="Une ligne par élément à remettre en ordre"></textarea>
+									<label>Éléments à remettre en ordre</label>
+									<textarea class="w-full p-12 radius" [ngModel]="question.orderItems.join('\n')" (ngModelChange)="onOrderItemsChange(i, $event)" rows="4" placeholder="Une ligne par élément à remettre en ordre"></textarea>
 								</div>
 
 								<div class="w-full" *ngIf="question.type !== 'ordre'">
+									<label>Réponses possibles</label>
 									<div class="flex flex-col gap-12">
 										<div class="flex align-items-center gap-12" *ngFor="let answer of question.answers; let j = index">
-											<input class="flex-1" type="text" [ngModel]="answer.text" (ngModelChange)="updateAnswer(i, j, 'text', $event)" placeholder="Réponse...">
-											<input type="radio" [name]="'correct-' + i" [checked]="answer.isCorrect" (change)="setCorrectAnswer(i, j)">
+											<input class="flex-1 p-12 radius" type="text" [ngModel]="answer.text" (ngModelChange)="updateAnswer(i, j, 'text', $event)" placeholder="Réponse...">
+											<label class="flex align-items-center gap-8">
+												<input type="radio" [name]="'correct-' + i" [checked]="answer.isCorrect" (change)="setCorrectAnswer(i, j)">
+												<span class="text-sm">Bonne réponse</span>
+											</label>
 										</div>
 									</div>
 								</div>
