@@ -9,4 +9,8 @@
 @use './assets/styles/home/home';
 
 // Style pour le composant quiz
-@use './assets/styles/quiz/quiz'
+@use './assets/styles/quiz/quiz';
+
+// Style pour le composant user
+@use './assets/styles/users/sideBar';
+@use './assets/styles/users/dashboard'

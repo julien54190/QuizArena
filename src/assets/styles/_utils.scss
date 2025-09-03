@@ -163,6 +163,11 @@
     padding-left: 12px;
 }
 
+.px-24 {
+    padding-right: 24px;
+    padding-left: 24px;
+}
+
 .pr-10{
     padding-right: 10px;
 }
@@ -170,6 +175,16 @@
 .py-6 {
     padding-top: 6px;
     padding-bottom: 6px;
+}
+
+.py-12 {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.py-24 {
+    padding-top: 24px;
+    padding-bottom: 24px;
 }
 
 .w-half{
@@ -182,6 +197,10 @@
 
 .h-full{
   height: 100%;
+}
+
+.h-screen {
+    height: 100vh;
 }
 
 .xs-w-full{
@@ -218,6 +237,8 @@
 
   }
 }
+
+
 
 .field {
   flex: 1;

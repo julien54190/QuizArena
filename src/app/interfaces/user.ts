@@ -3,6 +3,7 @@ export interface IUser {
   firstName: string;
   lastName: string;
   username: string;
+  avatar?: string;
   email: string;
   role: 'user' | 'moderator' | 'admin';
   status: 'active' | 'suspended' | 'banned';

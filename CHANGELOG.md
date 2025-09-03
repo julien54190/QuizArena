@@ -2,6 +2,96 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.16.0] - 2025-09-03
+
+### 🚀 Features
+
+- *(user)* :sparkles: ajout partie abonnement user
+
+### 🐛 Bug Fixes
+
+- *(user/routes,et recharge date contunue dashboard)* :bug: amelioration et correction des route pour user, et erreur de charment date dans Dashbord.service
+
+### 💼 Other
+
+- *(user)* :wheelchair: ajout accessibilite  partie abonement user
+
+### 🎨 Styling
+
+- *(user)* :lipstick: ajout style  partie abonement user
+
+## [0.15.0] - 2025-09-03
+
+### 🚀 Features
+
+- *(user)* :sparkles: ajout partie creer quiz user
+
+### 💼 Other
+
+- *(user)* :wheelchair: ajout accessibilite  partie create quiz user
+
+### 🎨 Styling
+
+- *(user)* :lipstick: ajout style  partie create quizz user
+- *(sidebar)* :lipstick: amélioration responsive sideBar
+
+## [0.14.0] - 2025-09-03
+
+### 🚀 Features
+
+- *(user)* :sparkles: ajout partie modification user
+- *(user/seo)* :sparkles: ajout seo  partie modification user et dashboard user
+
+### 💼 Other
+
+- *(user)* :wheelchair: ajout accessibilite  partie modification user
+
+### 🎨 Styling
+
+- *(user)* :lipstick: ajout style  partie modification user
+
+## [0.13.0] - 2025-08-23
+
+### 🚀 Features
+
+- *(user)* :sparkles: ajout affichage du profil d'un utilisteur par un autre
+
+## [0.12.0] - 2025-08-23
+
+### 🚀 Features
+
+- *(user)* :sparkles: ajout du dashboard
+
+### 🐛 Bug Fixes
+
+- *(user)* :bug: correction faute de frappe dans une classe css
+
+### 💼 Other
+
+- *(user)* :wheelchair: ajout de l'accessibilité pour le dashboard
+
+### 🚜 Refactor
+
+- *(user)* :recycle: partage en interface/service et data
+
+### 🎨 Styling
+
+- *(user)* :lipstick: ajout du style dashboard
+
+## [0.11.0] - 2025-08-22
+
+### 🚀 Features
+
+- *(user)* :sparkles: ajout de la side-bar pour les utilisateur
+
+### 💼 Other
+
+- *(sidebar)* :wheelchair: ajout de l'accessibilité
+
+### 🎨 Styling
+
+- *(sidebar)* :lipstick: ajout du style et du responsive
+
 ## [0.10.0] - 2025-08-20
 
 ### 🚀 Features
