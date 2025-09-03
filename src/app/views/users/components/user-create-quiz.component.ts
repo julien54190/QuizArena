@@ -9,76 +9,74 @@ import { UserLayoutComponent } from '../shared/user-layout.component';
 	imports: [CommonModule, FormsModule, UserLayoutComponent],
 	template: `
 		<app-user-layout>
-			<div>
-				<header>
-					<h1>Créer un quiz</h1>
-					<p>Partagez vos connaissances avec la communauté</p>
+			<div class="home-content p-10">
+				<header class="text-center mb-20">
+					<h1 class="text-xlg text-bold mb-10">Créer un quiz</h1>
+					<p class="text-sm">Partagez vos connaissances avec la communauté</p>
 				</header>
 
-				<div>
-					<div>
-						<h2>Informations générales</h2>
-						<div>
-							<div>
-								<input
-									type="text"
-									[ngModel]="quizData().title"
-									(ngModelChange)="updateQuizData('title', $event)"
-									placeholder="Ex: Culture Générale"
-								>
-							</div>
+				<section class="card card-shadow mt-20">
+					<h2 class="text-lg text-bold mb-20">Informations générales</h2>
+					<div class="flex flex-wrap gap-16">
+						<div class="field">
+							<input
+								class="w-full"
+								type="text"
+								[ngModel]="quizData().title"
+								(ngModelChange)="updateQuizData('title', $event)"
+								placeholder="Ex: Culture Générale"
+							>
+						</div>
 
-							<div>
-								<textarea
-									[ngModel]="quizData().description"
-									(ngModelChange)="updateQuizData('description', $event)"
-									rows="3"
-									placeholder="Décrivez votre quiz..."
-								></textarea>
-							</div>
+						<div class="field">
+							<textarea
+								class="w-full p-12 radius"
+								[ngModel]="quizData().description"
+								(ngModelChange)="updateQuizData('description', $event)"
+								rows="3"
+								placeholder="Décrivez votre quiz..."
+							></textarea>
+						</div>
 
-							<div>
-								<select
-									[ngModel]="quizData().category"
-									(ngModelChange)="updateQuizData('category', $event)"
-								>
-									<option value="">Sélectionner une catégorie</option>
-									<option value="culture-generale">Culture Générale</option>
-									<option value="histoire">Histoire</option>
-									<option value="geographie">Géographie</option>
-									<option value="sciences">Sciences</option>
-									<option value="litterature">Littérature</option>
-									<option value="sport">Sport</option>
-									<option value="cinema">Cinéma</option>
-									<option value="musique">Musique</option>
-								</select>
-							</div>
+						<div class="field">
+							<select class="w-full p-12 radius" [ngModel]="quizData().category" (ngModelChange)="updateQuizData('category', $event)">
+								<option value="">Sélectionner une catégorie</option>
+								<option value="culture-generale">Culture Générale</option>
+								<option value="histoire">Histoire</option>
+								<option value="geographie">Géographie</option>
+								<option value="sciences">Sciences</option>
+								<option value="litterature">Littérature</option>
+								<option value="sport">Sport</option>
+								<option value="cinema">Cinéma</option>
+								<option value="musique">Musique</option>
+							</select>
+						</div>
 
-							<div>
-								<select
-									[ngModel]="quizData().difficulty"
-									(ngModelChange)="updateQuizData('difficulty', $event)"
-								>
-									<option value="">Sélectionner la difficulté</option>
-									<option value="facile">Facile</option>
-									<option value="moyen">Moyen</option>
-									<option value="difficile">Difficile</option>
-								</select>
-							</div>
+						<div class="field">
+							<select class="w-full p-12 radius" [ngModel]="quizData().difficulty" (ngModelChange)="updateQuizData('difficulty', $event)">
+								<option value="">Sélectionner la difficulté</option>
+								<option value="facile">Facile</option>
+								<option value="moyen">Moyen</option>
+								<option value="difficile">Difficile</option>
+							</select>
 						</div>
 					</div>
+				</section>
 
-					<div>
-						<h2>Questions</h2>
-						<div>
-							<div *ngFor="let question of quizData().questions; let i = index">
-								<div>
-									<h3>Question {{ i + 1 }}</h3>
-									<button (click)="removeQuestion(i)">Supprimer</button>
-								</div>
+				<section class="card card-shadow mt-20">
+					<h2 class="text-lg text-bold mb-20">Questions</h2>
+					<div class="flex flex-col gap-16">
+						<div class="card card-white" *ngFor="let question of quizData().questions; let i = index">
+							<div class="flex justify-content-between align-items-center mb-20">
+								<h3 class="text-semibold">Question {{ i + 1 }}</h3>
+								<button class="btn btn-danger btn-sm" (click)="removeQuestion(i)">
+									Supprimer
+								</button>
+							</div>
 
-								<div>
-									<select [ngModel]="question.type" (ngModelChange)="handleTypeChange(i, $event)">
+							<div class="flex flex-wrap gap-16">
+								<div class="field w-full">
+									<select class="w-full p-12 radius" [ngModel]="question.type" (ngModelChange)="handleTypeChange(i, $event)">
 										<option value="simple">Question simple</option>
 										<option value="musique">Musique</option>
 										<option value="photo">Photo</option>
@@ -86,84 +84,82 @@ import { UserLayoutComponent } from '../shared/user-layout.component';
 									</select>
 								</div>
 
-								<div>
-									<div>
-										<input
-											type="text"
-											[ngModel]="question.text"
-											(ngModelChange)="updateQuestion(i, 'text', $event)"
-											placeholder="Votre question..."
-										>
-									</div>
+								<div class="field w-full">
+									<input class="w-full" type="text" [ngModel]="question.text" (ngModelChange)="updateQuestion(i, 'text', $event)" placeholder="Votre question...">
+								</div>
 
-									<!-- Musique -->
-									<div *ngIf="question.type === 'musique'">
-										<input type="file" accept="audio/*" (change)="onMediaSelected(i, $event)">
-										<audio *ngIf="question.mediaUrl" [src]="question.mediaUrl" controls></audio>
-									</div>
+								<div class="field w-full" *ngIf="question.type === 'musique'">
+									<input type="file" accept="audio/*" (change)="onMediaSelected(i, $event)">
+									<audio *ngIf="question.mediaUrl" [src]="question.mediaUrl" controls></audio>
+								</div>
 
-									<!-- Photo -->
-									<div *ngIf="question.type === 'photo'">
-										<input type="file" accept="image/*" (change)="onMediaSelected(i, $event)">
-										<img *ngIf="question.mediaUrl" [src]="question.mediaUrl" alt="aperçu" style="max-width: 200px; height: auto;">
-									</div>
+								<div class="field w-full" *ngIf="question.type === 'photo'">
+									<input type="file" accept="image/*" (change)="onMediaSelected(i, $event)">
+									<img *ngIf="question.mediaUrl" [src]="question.mediaUrl" alt="aperçu" class="w-full" style="max-width: 200px; height: auto;">
+								</div>
 
-									<!-- Ordre -->
-									<div *ngIf="question.type === 'ordre'">
-										<textarea [ngModel]="question.orderItems.join('\n')" (ngModelChange)="onOrderItemsChange(i, $event)" rows="4" placeholder="Une ligne par élément à remettre en ordre"></textarea>
-									</div>
+								<div class="field w-full" *ngIf="question.type === 'ordre'">
+									<textarea class="w-full" [ngModel]="question.orderItems.join('\n')" (ngModelChange)="onOrderItemsChange(i, $event)" rows="4" placeholder="Une ligne par élément à remettre en ordre"></textarea>
+								</div>
 
-									<div *ngIf="question.type !== 'ordre'">
-										<div *ngFor="let answer of question.answers; let j = index">
-											<div>
-												<input
-													type="text"
-													[ngModel]="answer.text"
-													(ngModelChange)="updateAnswer(i, j, 'text', $event)"
-													placeholder="Réponse..."
-												>
-												<input
-													type="radio"
-													[name]="'correct-' + i"
-													[checked]="answer.isCorrect"
-													(change)="setCorrectAnswer(i, j)"
-												>
-											</div>
+								<div class="w-full" *ngIf="question.type !== 'ordre'">
+									<div class="flex flex-col gap-12">
+										<div class="flex align-items-center gap-12" *ngFor="let answer of question.answers; let j = index">
+											<input class="flex-1" type="text" [ngModel]="answer.text" (ngModelChange)="updateAnswer(i, j, 'text', $event)" placeholder="Réponse...">
+											<input type="radio" [name]="'correct-' + i" [checked]="answer.isCorrect" (change)="setCorrectAnswer(i, j)">
 										</div>
 									</div>
 								</div>
 							</div>
 						</div>
 
-						<button (click)="addQuestion()">Ajouter une question</button>
-					</div>
-
-					<div>
-						<h2>Paramètres</h2>
-						<div>
-							<div>
-								<div>
-									<h3>Quiz public</h3>
-									<p>Rendre ce quiz visible par tous les utilisateurs</p>
-								</div>
-								<input type="checkbox" [ngModel]="quizData().isPublic" (ngModelChange)="updateQuizData('isPublic', $event)">
-							</div>
-
-							<div>
-								<div>
-									<h3>Autoriser les commentaires</h3>
-									<p>Permettre aux utilisateurs de commenter ce quiz</p>
-								</div>
-								<input type="checkbox" [ngModel]="quizData().allowComments" (ngModelChange)="updateQuizData('allowComments', $event)">
-							</div>
+						<div class="mt-20">
+							<button class="btn btn-outline-primary" (click)="addQuestion()">Ajouter une question</button>
 						</div>
 					</div>
+				</section>
 
-					<div>
-						<button (click)="saveDraft()">Sauvegarder brouillon</button>
-						<button (click)="publishQuiz()">Publier le quiz</button>
+				<section class="card card-shadow mt-20">
+					<h2 class="text-lg text-bold mb-20">Paramètres</h2>
+					<div class="flex flex-col gap-16">
+						<div class="card card-white flex justify-content-between align-items-center">
+							<div>
+								<h3 class="text-semibold my-2">Quiz public</h3>
+								<p class="text-sm">Rendre ce quiz visible par tous les utilisateurs</p>
+							</div>
+							<button
+								class="flex align-items-center gap-8 p-8 radius"
+								[class]="quizData().isPublic ? 'text-primary' : 'text-gray-700'"
+								(click)="updateQuizData('isPublic', !quizData().isPublic)"
+							>
+								<i class="fas" [class]="quizData().isPublic ? 'fa-eye' : 'fa-eye-slash'"></i>
+								<span class="text-sm">{{ quizData().isPublic ? 'Public' : 'Privé' }}</span>
+							</button>
+						</div>
+
+						<div class="card card-white flex justify-content-between align-items-center">
+							<div>
+								<h3 class="text-semibold my-2">Autoriser les commentaires</h3>
+								<p class="text-sm">Permettre aux utilisateurs de commenter ce quiz</p>
+							</div>
+							<button
+								class="flex align-items-center gap-8 p-8 radius"
+								[class]="quizData().allowComments ? 'text-primary' : 'text-gray-700'"
+								(click)="updateQuizData('allowComments', !quizData().allowComments)"
+							>
+								<i class="fas" [class]="quizData().allowComments ? 'fa-comment' : 'fa-comment-slash'"></i>
+								<span class="text-sm">{{ quizData().allowComments ? 'Activé' : 'Désactivé' }}</span>
+							</button>
+						</div>
 					</div>
-				</div>
+				</section>
+
+				<section class="mt-20">
+					<div class="flex gap-16 justify-content-center">
+						<button class="btn btn-outline-primary py-12 px-24" (click)="saveDraft()">Sauvegarder brouillon</button>
+						<button class="btn btn-primary py-12 px-24" (click)="publishQuiz()">Publier le quiz</button>
+					</div>
+				</section>
 			</div>
 		</app-user-layout>
 	`,
