@@ -1,7 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserLayoutComponent } from '../shared/user-layout.component';
+import { inject } from '@angular/core';
+import { SeoService } from '../../../services/seo.service';
 
 @Component({
 	selector: 'app-usercreate-quiz',
@@ -177,7 +179,8 @@ import { UserLayoutComponent } from '../shared/user-layout.component';
 		</app-user-layout>
 	`,
 })
-export class UserCreateQuizComponent {
+export class UserCreateQuizComponent implements OnInit, OnDestroy {
+	private seo = inject(SeoService);
 	quizData = signal({
 		title: '',
 		description: '',
@@ -200,6 +203,18 @@ export class UserCreateQuizComponent {
 			}
 		]
 	});
+
+	ngOnInit(): void {
+		this.seo.updateSEO({
+			title: 'Créer un quiz - QuizArena',
+			description: 'Créez et partagez vos propres quiz sur QuizArena. Ajoutez des questions, des médias et des réponses pour tester les connaissances de la communauté.',
+			keywords: 'créer quiz, créer questionnaire, partager connaissances, quiz personnalisé, questions médias'
+		});
+	}
+
+	ngOnDestroy(): void {
+		this.seo.resetToDefault();
+	}
 
 	updateQuizData(property: string, value: any) {
 		this.quizData.update(current => ({

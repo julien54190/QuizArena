@@ -91,9 +91,12 @@ import { RouterModule } from '@angular/router';
           </button>
         </div>
       </aside>
-
   `,
-  styles: ``
+  styles: [`
+    @media (max-width: 920px) {
+      :host { display: none; }
+    }
+  `]
 })
 export class SideBarComponent {
   private userService = inject(UserService);
