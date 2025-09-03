@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.15.0] - 2025-09-03
+
+### 🚀 Features
+
+- *(user)* :sparkles: ajout partie creer quiz user
+
+### 💼 Other
+
+- *(user)* :wheelchair: ajout accessibilite  partie create quiz user
+
+### 🎨 Styling
+
+- *(user)* :lipstick: ajout style  partie create quizz user
+- *(sidebar)* :lipstick: amélioration responsive sideBar
+
 ## [0.14.0] - 2025-09-03
 
 ### 🚀 Features
