@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { SeoService } from '../../services/seo.service';
 
 @Component({
   selector: 'app-register',
@@ -124,11 +125,24 @@ import { RouterModule } from '@angular/router';
     }
   `
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit, OnDestroy {
   selectedRole = signal<'standard' | 'student' | 'company'>('standard');
+  private seo = inject(SeoService);
 
   selectRole(role: 'standard' | 'student' | 'company') {
     this.selectedRole.set(role);
+  }
+
+  ngOnInit(): void {
+    this.seo.updateSEO({
+      title: 'Créer un compte - QuizArena',
+      description: "Inscrivez-vous pour rejoindre la communauté QuizArena et commencer à jouer.",
+      keywords: 'inscription, compte, QuizArena'
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.seo.resetToDefault();
   }
 }
 

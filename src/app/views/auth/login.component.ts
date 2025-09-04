@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { SeoService } from '../../services/seo.service';
 
 @Component({
   selector: 'app-login',
@@ -52,8 +53,21 @@ import { RouterModule } from '@angular/router';
     }
   `
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit, OnDestroy {
   isLoading = signal(false);
+  private seo = inject(SeoService);
+
+  ngOnInit(): void {
+    this.seo.updateSEO({
+      title: 'Connexion - QuizArena',
+      description: 'Connectez-vous à votre compte QuizArena pour continuer.',
+      keywords: 'connexion, login, QuizArena'
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.seo.resetToDefault();
+  }
 }
 
 
