@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { SeoService } from '../../services/seo.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
-  standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
   <div class="home-container">
@@ -18,19 +18,29 @@ import { SeoService } from '../../services/seo.service';
     <section class="card card-shadow mt-20">
       <h2 class="text-lg text-bold mb-20">Identifiants</h2>
 
-      <form class="flex flex-col gap-16" aria-labelledby="login-title">
+      <form class="flex flex-col gap-16" aria-labelledby="login-title" (submit)="onSubmit($event)">
         <div class="field w-full">
           <label for="email">Adresse e-mail</label>
-          <input class="w-full p-12 radius" id="email" name="email" type="email" autocomplete="email" placeholder="exemple@domaine.com" required>
+          <input #emailRef class="w-full p-12 radius" id="email" name="email" type="email" autocomplete="email" placeholder="exemple@domaine.com" required (blur)="touchedEmail.set(true)" [style.borderColor]="touchedEmail() && !(emailRef?.validity?.valid) ? 'var(--danger)' : undefined">
+          @if (touchedEmail() && !(emailRef?.validity?.valid)) {
+            <p class="error">Veuillez renseigner une adresse e-mail valide.</p>
+          }
         </div>
 
         <div class="field w-full">
           <label for="password">Mot de passe</label>
-          <input class="w-full p-12 radius" id="password" name="password" type="password" autocomplete="current-password" placeholder="********" required>
+          <input #passwordRef class="w-full p-12 radius" id="password" name="password" type="password" autocomplete="current-password" placeholder="********" required (blur)="touchedPassword.set(true)" [style.borderColor]="touchedPassword() && !passwordRef.value.trim() ? 'var(--danger)' : undefined">
+          @if (touchedPassword() && !passwordRef.value.trim()) {
+            <p class="error">Le mot de passe est requis.</p>
+          }
         </div>
 
+        @if (authError()) {
+          <div class="error">{{ authError() }}</div>
+        }
+
         <div class="mt-20">
-          <button class="btn btn-primary py-12 px-24 w-full" type="submit">Connexion</button>
+          <button class="btn btn-primary py-12 px-24 w-full" type="submit" [disabled]="!(emailRef?.validity?.valid) || !(passwordRef?.value?.trim())">Connexion</button>
         </div>
 
         <div class="flex justify-content-center align-items-center gap-12 mt-20">
@@ -56,6 +66,11 @@ import { SeoService } from '../../services/seo.service';
 export class LoginComponent implements OnInit, OnDestroy {
   isLoading = signal(false);
   private seo = inject(SeoService);
+  private auth = inject(AuthService);
+  private router = inject(Router);
+  touchedEmail = signal(false);
+  touchedPassword = signal(false);
+  authError = signal<string>('');
 
   ngOnInit(): void {
     this.seo.updateSEO({
@@ -67,6 +82,24 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.seo.resetToDefault();
+  }
+
+  async onSubmit(event: Event) {
+    event.preventDefault();
+    const form = event.target as HTMLFormElement;
+    const email = (form.querySelector('#email') as HTMLInputElement)?.value?.trim();
+    const password = (form.querySelector('#password') as HTMLInputElement)?.value?.trim();
+    if (!email || !password) return;
+    this.isLoading.set(true);
+    try {
+      const res = await this.auth.login(email, password);
+      this.authError.set(res.success ? '' : (res.message || 'Adresse e-mail ou mot de passe incorrect'));
+      if (res.success) {
+        this.router.navigate(['/users', 'tableau-de-bord']);
+      }
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 }
 

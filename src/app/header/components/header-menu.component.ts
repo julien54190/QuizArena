@@ -52,7 +52,7 @@ export class HeaderMenuComponent {
     name: 'jouer',
   },
   {
-    path: 'users/tableau-de-bord',
+    path: '/tableau-de-bord',
     name: 'Mon espace',
   },
   {

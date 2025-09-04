@@ -47,37 +47,37 @@ import { UserService } from '../../../../services/user.service';
       <nav class="flex-1 py-24" role="navigation" aria-labelledby="user-name">
         <ul role="list">
           <li role="listitem">
-            <a routerLink="/users/tableau-de-bord" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="flex align-items-center gap-12 py-12 px-24 nav-link" (click)="closeSidebar()" aria-label="Aller au tableau de bord">
+            <a routerLink="/tableau-de-bord" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="flex align-items-center gap-12 py-12 px-24 nav-link" (click)="closeSidebar()" aria-label="Aller au tableau de bord">
               <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
               <span>Tableau de bord</span>
             </a>
           </li>
           <li role="listitem">
-            <a routerLink="/users/profil" routerLinkActive="active" class="flex align-items-center gap-12 py-12 px-24 nav-link" (click)="closeSidebar()" aria-label="Gérer mon profil">
+            <a routerLink="/profil" routerLinkActive="active" class="flex align-items-center gap-12 py-12 px-24 nav-link" (click)="closeSidebar()" aria-label="Gérer mon profil">
               <i class="fas fa-user-edit" aria-hidden="true"></i>
               <span>Mon profil</span>
             </a>
           </li>
           <li role="listitem">
-            <a routerLink="/users/statistiques" routerLinkActive="active" class="flex align-items-center gap-12 py-12 px-24 nav-link" (click)="closeSidebar()" aria-label="Voir mes statistiques">
+            <a routerLink="/statistiques" routerLinkActive="active" class="flex align-items-center gap-12 py-12 px-24 nav-link" (click)="closeSidebar()" aria-label="Voir mes statistiques">
               <i class="fas fa-chart-bar" aria-hidden="true"></i>
               <span>Mes statistiques</span>
             </a>
           </li>
           <li role="listitem">
-            <a routerLink="/users/creer-quiz" routerLinkActive="active" class="flex align-items-center gap-12 py-12 px-24 nav-link" (click)="closeSidebar()" aria-label="Créer un nouveau quiz">
+            <a routerLink="/creer-quiz" routerLinkActive="active" class="flex align-items-center gap-12 py-12 px-24 nav-link" (click)="closeSidebar()" aria-label="Créer un nouveau quiz">
               <i class="fas fa-plus-circle" aria-hidden="true"></i>
               <span>Créer un quiz</span>
             </a>
           </li>
           <li role="listitem">
-            <a routerLink="/users/abonnement" routerLinkActive="active" class="flex align-items-center gap-12 py-12 px-24 nav-link" (click)="closeSidebar()" aria-label="Gérer mon abonnement">
+            <a routerLink="/abonnement" routerLinkActive="active" class="flex align-items-center gap-12 py-12 px-24 nav-link" (click)="closeSidebar()" aria-label="Gérer mon abonnement">
               <i class="fas fa-credit-card" aria-hidden="true"></i>
               <span>Mon abonnement</span>
             </a>
           </li>
           <li role="listitem">
-            <a routerLink="/users/parametres" routerLinkActive="active" class="flex align-items-center gap-12 py-12 px-24 nav-link" (click)="closeSidebar()" aria-label="Accéder aux paramètres">
+            <a routerLink="/parametres" routerLinkActive="active" class="flex align-items-center gap-12 py-12 px-24 nav-link" (click)="closeSidebar()" aria-label="Accéder aux paramètres">
               <i class="fas fa-cog" aria-hidden="true"></i>
               <span>Paramètres</span>
             </a>
