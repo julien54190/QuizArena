@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
-import { RegisterComponent } from './views/auth/register.component';
-import { LoginComponent } from './views/auth/login.component';
+// Routes d'auth chargées en lazy
 
 export const routes: Routes = [
 	{
@@ -17,11 +16,7 @@ export const routes: Routes = [
 		loadChildren: () => import('./views/users/users.routes').then(m => m.routes)
 	},
   {
-    path:  'inscription',
-    component: RegisterComponent
-  },
-  {
-    path: 'connexion',
-    component: LoginComponent
+    path: 'auth',
+    loadChildren: () => import('./views/auth/auth.routes').then(m => m.authRoutes)
   }
 ];
