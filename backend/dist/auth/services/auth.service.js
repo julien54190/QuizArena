@@ -46,19 +46,23 @@ exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/services/prisma.service");
 const bcrypt = __importStar(require("bcryptjs"));
+const jwt = __importStar(require("jsonwebtoken"));
 let AuthService = class AuthService {
     prisma;
     constructor(prisma) {
         this.prisma = prisma;
     }
+    get prismaClient() {
+        return this.prisma;
+    }
     async register(dto) {
-        const existing = await this.prisma.user.findUnique({
+        const existing = await this.prismaClient.user.findUnique({
             where: { email: dto.email },
         });
         if (existing)
             throw new common_1.BadRequestException('Email déjà utilisé');
         const hashed = await bcrypt.hash(dto.password, 10);
-        const user = await this.prisma.user.create({
+        const user = await this.prismaClient.user.create({
             data: {
                 email: dto.email,
                 password: hashed,
@@ -81,6 +85,28 @@ let AuthService = class AuthService {
             },
         });
         return user;
+    }
+    async login(dto) {
+        const user = await this.prismaClient.user.findUnique({
+            where: { email: dto.email },
+        });
+        if (!user) {
+            throw new common_1.UnauthorizedException('Email ou mot de passe incorrect');
+        }
+        const isPasswordValid = await bcrypt.compare(dto.password, user.password);
+        if (!isPasswordValid) {
+            throw new common_1.UnauthorizedException('Email ou mot de passe incorrect');
+        }
+        const token = jwt.sign({
+            userId: user.id,
+            email: user.email,
+            role: user.role,
+        }, process.env.JWT_SECRET || 'fallback-secret', { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
+        const { password, ...userWithoutPassword } = user;
+        return {
+            user: userWithoutPassword,
+            token,
+        };
     }
 };
 exports.AuthService = AuthService;
