@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { RegisterComponent } from './views/auth/register.component';
 
 export const routes: Routes = [
 	{
@@ -13,5 +14,9 @@ export const routes: Routes = [
 	{
 		path: 'users',
 		loadChildren: () => import('./views/users/users.routes').then(m => m.routes)
-	}
+	},
+  {
+    path: 'inscription',
+    component: RegisterComponent
+  }
 ];
