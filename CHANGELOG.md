@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.17.0] - 2025-09-04
+
+### 🚀 Features
+
+- *(auth)* :sparkles: ajout du formulaire inscription
+- *(auth)* :sparkles: ajout du formulaire connexion
+- *(auth)* :sparkles: ajout du seo connexion et inscription
+- *(auth)* :sparkles: AuthService avec register() et login()
+
+### 💼 Other
+
+- *(auth)* :wheelchair: ajout accessibilite  connexion et inscription
+
+### 🎨 Styling
+
+- *(auth)* :lipstick: style pour la page connexion
+
 ## [0.16.0] - 2025-09-03
 
 ### 🚀 Features
