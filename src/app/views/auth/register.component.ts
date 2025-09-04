@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-register',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   template: `
   <div class="home-container">
   <div class="home-content p-10">
@@ -47,21 +48,21 @@ import { Component, signal } from '@angular/core';
           <h3 class="text-semibold my-2">Type de compte</h3>
           <div class="flex flex-wrap gap-16">
             <label class="card card-white flex align-items-center gap-12 p-12 radius"
-                   [class]="selectedRole() === 'standard' ? 'card card-white flex align-items-center gap-12 p-12 radius text-primary' : 'card card-white flex align-items-center gap-12 p-12 radius'">
+                  [class]="selectedRole() === 'standard' ? 'card card-white flex align-items-center gap-12 p-12 radius text-primary' : 'card card-white flex align-items-center gap-12 p-12 radius'">
               <input class="sr-only" type="radio" name="role" [checked]="selectedRole() === 'standard'" (change)="selectRole('standard')" value="standard">
               <i class="fas" [class]="selectedRole() === 'standard' ? 'fa-dot-circle' : 'fa-circle'"></i>
               <span class="text-sm">Standard</span>
             </label>
 
             <label class="card card-white flex align-items-center gap-12 p-12 radius"
-                   [class]="selectedRole() === 'student' ? 'card card-white flex align-items-center gap-12 p-12 radius text-primary' : 'card card-white flex align-items-center gap-12 p-12 radius'">
+                  [class]="selectedRole() === 'student' ? 'card card-white flex align-items-center gap-12 p-12 radius text-primary' : 'card card-white flex align-items-center gap-12 p-12 radius'">
               <input class="sr-only" type="radio" name="role" [checked]="selectedRole() === 'student'" (change)="selectRole('student')" value="student">
               <i class="fas" [class]="selectedRole() === 'student' ? 'fa-dot-circle' : 'fa-circle'"></i>
               <span class="text-sm">Étudiant</span>
             </label>
 
             <label class="card card-white flex align-items-center gap-12 p-12 radius"
-                   [class]="selectedRole() === 'company' ? 'card card-white flex align-items-center gap-12 p-12 radius text-primary' : 'card card-white flex align-items-center gap-12 p-12 radius'">
+                  [class]="selectedRole() === 'company' ? 'card card-white flex align-items-center gap-12 p-12 radius text-primary' : 'card card-white flex align-items-center gap-12 p-12 radius'">
               <input class="sr-only" type="radio" name="role" [checked]="selectedRole() === 'company'" (change)="selectRole('company')" value="company">
               <i class="fas" [class]="selectedRole() === 'company' ? 'fa-dot-circle' : 'fa-circle'"></i>
               <span class="text-sm">Entreprise</span>
@@ -112,6 +113,16 @@ import { Component, signal } from '@angular/core';
   </div>
   </div>
   `,
+  styles: `
+    @media screen and (max-width: 920px) {
+      .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+      }
+    }
+  `
 })
 export class RegisterComponent {
   selectedRole = signal<'standard' | 'student' | 'company'>('standard');
