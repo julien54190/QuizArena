@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.19.0] - 2025-09-07
+
+### 🚀 Features
+
+- *(back/auth)* :sparkles: Back : modèle Back : POST /auth/register (hash password avec bcrypt)
+- *(back/auth)* :sparkles: Back : POST /auth/login (JWT signé)
+- *(back/auth)* :sparkles: Back : Guard JwtAuthGuard pour routes protégées
+- *(auth)* :sparkles: front connexion  back front
+
 ## [0.18.0] - 2025-09-04
 
 ### 🚀 Features
