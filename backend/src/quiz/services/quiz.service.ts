@@ -12,11 +12,9 @@ export class QuizService {
   constructor(private prisma: PrismaService) {}
 
   async create(createQuizDto: CreateQuizDto, authorId: string) {
-    const { categoryId, ...rest } = createQuizDto;
     return this.prisma.quiz.create({
       data: {
-        ...rest,
-        category: categoryId,
+        ...createQuizDto,
         authorId,
       },
       include: {
@@ -115,7 +113,7 @@ export class QuizService {
 
   async findByCategory(categoryId: string) {
     return this.prisma.quiz.findMany({
-      where: { category: categoryId },
+      where: { categoryId },
       include: {
         author: {
           select: {

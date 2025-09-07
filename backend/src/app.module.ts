@@ -1,14 +1,12 @@
 import { Module } from '@nestjs/common';
-
-import { AppService } from './app.service';
+import { BadgeController } from './badge/controllers/badge.controller';
+import { BadgeService } from './badge/services/badge.service';
 import { PrismaModule } from './prisma/prisma.module';
-import { AuthModule } from './auth/auth.module';
-import { AppController } from './app.controller';
-import { QuestionModule } from './question/question.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, QuestionModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [PrismaModule],
+  controllers: [BadgeController],
+  providers: [BadgeService],
+  exports: [BadgeService],
 })
-export class AppModule {}
+export class BadgeModule {}
