@@ -68,67 +68,67 @@ import { AuthService, RegisterPayload } from '../../services/auth.service';
           <legend id="role-legend" class="text-semibold my-2">Type de compte</legend>
           <div class="flex flex-wrap gap-16" role="radiogroup" aria-labelledby="role-legend">
             <label class="card card-white flex align-items-center gap-12 p-12 radius"
-                  [class]="selectedRole() === 'standard' ? 'card card-white flex align-items-center gap-12 p-12 radius text-primary' : 'card card-white flex align-items-center gap-12 p-12 radius'">
-              <input class="sr-only" type="radio" name="role" [checked]="selectedRole() === 'standard'" (change)="selectRole('standard')" value="standard" aria-checked="selectedRole() === 'standard'" aria-labelledby="role-legend">
-              <i class="fas" [class]="selectedRole() === 'standard' ? 'fa-dot-circle' : 'fa-circle'"></i>
+                  [class]="selectedRole() === 'STANDARD' ? 'card card-white flex align-items-center gap-12 p-12 radius text-primary' : 'card card-white flex align-items-center gap-12 p-12 radius'">
+              <input class="sr-only" type="radio" name="role" [checked]="selectedRole() === 'STANDARD'" (change)="selectRole('STANDARD')" value="STANDARD" aria-checked="selectedRole() === 'STANDARD'" aria-labelledby="role-legend">
+              <i class="fas" [class]="selectedRole() === 'STANDARD' ? 'fa-dot-circle' : 'fa-circle'"></i>
               <span class="text-sm">Standard</span>
             </label>
 
             <label class="card card-white flex align-items-center gap-12 p-12 radius"
-                  [class]="selectedRole() === 'student' ? 'card card-white flex align-items-center gap-12 p-12 radius text-primary' : 'card card-white flex align-items-center gap-12 p-12 radius'">
-              <input class="sr-only" type="radio" name="role" [checked]="selectedRole() === 'student'" (change)="selectRole('student')" value="student" aria-checked="selectedRole() === 'student'" aria-labelledby="role-legend">
-              <i class="fas" [class]="selectedRole() === 'student' ? 'fa-dot-circle' : 'fa-circle'"></i>
+                  [class]="selectedRole() === 'STUDENT' ? 'card card-white flex align-items-center gap-12 p-12 radius text-primary' : 'card card-white flex align-items-center gap-12 p-12 radius'">
+              <input class="sr-only" type="radio" name="role" [checked]="selectedRole() === 'STUDENT'" (change)="selectRole('STUDENT')" value="STUDENT" aria-checked="selectedRole() === 'STUDENT'" aria-labelledby="role-legend">
+              <i class="fas" [class]="selectedRole() === 'STUDENT' ? 'fa-dot-circle' : 'fa-circle'"></i>
               <span class="text-sm">Étudiant</span>
             </label>
 
             <label class="card card-white flex align-items-center gap-12 p-12 radius"
-                  [class]="selectedRole() === 'company' ? 'card card-white flex align-items-center gap-12 p-12 radius text-primary' : 'card card-white flex align-items-center gap-12 p-12 radius'">
-              <input class="sr-only" type="radio" name="role" [checked]="selectedRole() === 'company'" (change)="selectRole('company')" value="company" aria-checked="selectedRole() === 'company'" aria-labelledby="role-legend">
-              <i class="fas" [class]="selectedRole() === 'company' ? 'fa-dot-circle' : 'fa-circle'"></i>
+                  [class]="selectedRole() === 'COMPANY' ? 'card card-white flex align-items-center gap-12 p-12 radius text-primary' : 'card card-white flex align-items-center gap-12 p-12 radius'">
+              <input class="sr-only" type="radio" name="role" [checked]="selectedRole() === 'COMPANY'" (change)="selectRole('COMPANY')" value="COMPANY" aria-checked="selectedRole() === 'COMPANY'" aria-labelledby="role-legend">
+              <i class="fas" [class]="selectedRole() === 'COMPANY' ? 'fa-dot-circle' : 'fa-circle'"></i>
               <span class="text-sm">Entreprise</span>
             </label>
           </div>
         </fieldset>
 
-        @if (selectedRole() === 'student') {
+        @if (selectedRole() === 'STUDENT') {
           <div class="card card-white">
             <div class="field w-full">
               <label>Adresse e-mail étudiante</label>
-              <input #studentEmail class="w-full p-12 radius" id="studentEmail" name="studentEmail" type="email" placeholder="prenom.nom@ecole.fr" [required]="selectedRole() === 'student'" (blur)="touchedStudentEmail.set(true)" [style.borderColor]="touchedStudentEmail() && selectedRole() === 'student' && !studentEmail.validity.valid ? 'var(--danger)' : undefined">
-              @if (touchedStudentEmail() && selectedRole() === 'student' && !studentEmail.validity.valid) {
+              <input #studentEmail class="w-full p-12 radius" id="studentEmail" name="studentEmail" type="email" placeholder="prenom.nom@ecole.fr" [required]="selectedRole() === 'STUDENT'" (blur)="touchedStudentEmail.set(true)" [style.borderColor]="touchedStudentEmail() && selectedRole() === 'STUDENT' && !studentEmail.validity.valid ? 'var(--danger)' : undefined">
+              @if (touchedStudentEmail() && selectedRole() === 'STUDENT' && !studentEmail.validity.valid) {
                 <p class="error">Veuillez renseigner un e-mail étudiant valide.</p>
               }
             </div>
             <div class="field w-full">
               <label>Nom de l'école</label>
-              <input #school class="w-full p-12 radius" id="school" name="school" type="text" placeholder="Université de ..." [required]="selectedRole() === 'student'" (blur)="touchedSchool.set(true)" [style.borderColor]="touchedSchool() && selectedRole() === 'student' && !school.value.trim() ? 'var(--danger)' : undefined">
-              @if (touchedSchool() && selectedRole() === 'student' && !school.value.trim()) {
+              <input #school class="w-full p-12 radius" id="school" name="school" type="text" placeholder="Université de ..." [required]="selectedRole() === 'STUDENT'" (blur)="touchedSchool.set(true)" [style.borderColor]="touchedSchool() && selectedRole() === 'STUDENT' && !school.value.trim() ? 'var(--danger)' : undefined">
+              @if (touchedSchool() && selectedRole() === 'STUDENT' && !school.value.trim()) {
                 <p class="error">Le nom de l'école est requis.</p>
               }
             </div>
           </div>
         }
 
-        @if (selectedRole() === 'company') {
+        @if (selectedRole() === 'COMPANY') {
           <div class="card card-white">
             <div class="field w-full">
               <label>SIRET de l'entreprise</label>
-              <input #siret class="w-full p-12 radius" id="siret" name="siret" type="text" inputmode="numeric" placeholder="123 456 789 00010" [required]="selectedRole() === 'company'" (blur)="touchedSiret.set(true)" [style.borderColor]="touchedSiret() && selectedRole() === 'company' && !siret.value.trim() ? 'var(--danger)' : undefined">
-              @if (touchedSiret() && selectedRole() === 'company' && !siret.value.trim()) {
+              <input #siret class="w-full p-12 radius" id="siret" name="siret" type="text" inputmode="numeric" placeholder="123 456 789 00010" [required]="selectedRole() === 'COMPANY'" (blur)="touchedSiret.set(true)" [style.borderColor]="touchedSiret() && selectedRole() === 'COMPANY' && !siret.value.trim() ? 'var(--danger)' : undefined">
+              @if (touchedSiret() && selectedRole() === 'COMPANY' && !siret.value.trim()) {
                 <p class="error">Le SIRET est requis.</p>
               }
             </div>
             <div class="field w-full">
               <label>Numéro de téléphone</label>
-              <input #phone class="w-full p-12 radius" id="phone" name="phone" type="tel" autocomplete="tel" placeholder="06 12 34 56 78" [required]="selectedRole() === 'company'" (blur)="touchedPhone.set(true)" [style.borderColor]="touchedPhone() && selectedRole() === 'company' && !phone.value.trim() ? 'var(--danger)' : undefined">
-              @if (touchedPhone() && selectedRole() === 'company' && !phone.value.trim()) {
+              <input #phone class="w-full p-12 radius" id="phone" name="phone" type="tel" autocomplete="tel" placeholder="06 12 34 56 78" [required]="selectedRole() === 'COMPANY'" (blur)="touchedPhone.set(true)" [style.borderColor]="touchedPhone() && selectedRole() === 'COMPANY' && !phone.value.trim() ? 'var(--danger)' : undefined">
+              @if (touchedPhone() && selectedRole() === 'COMPANY' && !phone.value.trim()) {
                 <p class="error">Le numéro de téléphone est requis.</p>
               }
             </div>
             <div class="field w-full">
               <label>Adresse de l'entreprise</label>
-              <input #companyAddress class="w-full p-12 radius" id="companyAddress" name="companyAddress" type="text" autocomplete="street-address" placeholder="10 rue Exemple, Paris" [required]="selectedRole() === 'company'" (blur)="touchedCompanyAddress.set(true)" [style.borderColor]="touchedCompanyAddress() && selectedRole() === 'company' && !companyAddress.value.trim() ? 'var(--danger)' : undefined">
-              @if (touchedCompanyAddress() && selectedRole() === 'company' && !companyAddress.value.trim()) {
+              <input #companyAddress class="w-full p-12 radius" id="companyAddress" name="companyAddress" type="text" autocomplete="street-address" placeholder="10 rue Exemple, Paris" [required]="selectedRole() === 'COMPANY'" (blur)="touchedCompanyAddress.set(true)" [style.borderColor]="touchedCompanyAddress() && selectedRole() === 'COMPANY' && !companyAddress.value.trim() ? 'var(--danger)' : undefined">
+              @if (touchedCompanyAddress() && selectedRole() === 'COMPANY' && !companyAddress.value.trim()) {
                 <p class="error">L'adresse de l'entreprise est requise.</p>
               }
             </div>
@@ -160,7 +160,7 @@ import { AuthService, RegisterPayload } from '../../services/auth.service';
   `
 })
 export class RegisterComponent implements OnInit, OnDestroy {
-  selectedRole = signal<'standard' | 'student' | 'company'>('standard');
+  selectedRole = signal<'STANDARD' | 'STUDENT' | 'COMPANY'>('STANDARD');
   private seo = inject(SeoService);
   private auth = inject(AuthService);
   private router = inject(Router);
@@ -176,7 +176,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   touchedPhone = signal(false);
   touchedCompanyAddress = signal(false);
 
-  selectRole(role: 'standard' | 'student' | 'company') {
+  selectRole(role: 'STANDARD' | 'STUDENT' | 'COMPANY') {
     this.selectedRole.set(role);
   }
 
@@ -195,18 +195,26 @@ export class RegisterComponent implements OnInit, OnDestroy {
   async onSubmit(event: Event) {
     event.preventDefault();
     const form = event.target as HTMLFormElement;
-    const payload: RegisterPayload = {
-      firstname: (form.querySelector('#firstname') as HTMLInputElement)?.value?.trim() || '',
-      lastname: (form.querySelector('#lastname') as HTMLInputElement)?.value?.trim() || '',
-      email: (form.querySelector('#email') as HTMLInputElement)?.value?.trim() || '',
-      password: (form.querySelector('#password') as HTMLInputElement)?.value?.trim() || '',
-      role: this.selectedRole(),
-      studentEmail: (form.querySelector('#studentEmail') as HTMLInputElement)?.value?.trim() || undefined,
-      school: (form.querySelector('#school') as HTMLInputElement)?.value?.trim() || undefined,
-      siret: (form.querySelector('#siret') as HTMLInputElement)?.value?.trim() || undefined,
-      phone: (form.querySelector('#phone') as HTMLInputElement)?.value?.trim() || undefined,
-      companyAddress: (form.querySelector('#companyAddress') as HTMLInputElement)?.value?.trim() || undefined,
+
+    // Helper function to get value or undefined if empty
+    const getValue = (selector: string): string | undefined => {
+      const value = (form.querySelector(selector) as HTMLInputElement)?.value?.trim();
+      return value && value.length > 0 ? value : undefined;
     };
+
+    const payload: RegisterPayload = {
+      firstname: getValue('#firstname') || '',
+      lastname: getValue('#lastname') || '',
+      email: getValue('#email') || '',
+      password: getValue('#password') || '',
+      role: this.selectedRole(),
+      studentEmail: getValue('#studentEmail'),
+      school: getValue('#school'),
+      siret: getValue('#siret'),
+      phone: getValue('#phone'),
+      companyAddress: getValue('#companyAddress'),
+    };
+
     const res = await this.auth.register(payload);
     if (res.success) {
       this.router.navigate(['/auth', 'connexion']);
@@ -225,12 +233,12 @@ export class RegisterComponent implements OnInit, OnDestroy {
     }
 
     const role = this.selectedRole();
-    if (role === 'student') {
+    if (role === 'STUDENT') {
       const studentEmail = (document.getElementById('studentEmail') as HTMLInputElement);
       const school = (document.getElementById('school') as HTMLInputElement)?.value?.trim();
       if (!studentEmail?.validity?.valid || !school) return false;
     }
-    if (role === 'company') {
+    if (role === 'COMPANY') {
       const siret = (document.getElementById('siret') as HTMLInputElement)?.value?.trim();
       const phone = (document.getElementById('phone') as HTMLInputElement)?.value?.trim();
       const companyAddress = (document.getElementById('companyAddress') as HTMLInputElement)?.value?.trim();

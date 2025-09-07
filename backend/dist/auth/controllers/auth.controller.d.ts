@@ -5,7 +5,6 @@ export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
     register(dto: RegisterDto): Promise<Partial<{
-        id: string;
         email: string;
         password: string;
         firstname: string;
@@ -16,6 +15,7 @@ export declare class AuthController {
         siret: string | null;
         phone: string | null;
         companyAddress: string | null;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
     }>>;

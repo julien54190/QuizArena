@@ -1,11 +1,13 @@
 import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 export interface RegisterPayload {
   firstname: string;
   lastname: string;
   email: string;
   password: string;
-  role: 'standard' | 'student' | 'company';
+  role: 'STANDARD' | 'STUDENT' | 'COMPANY';
   studentEmail?: string;
   school?: string;
   siret?: string;
@@ -18,8 +20,11 @@ export class AuthService {
   readonly isAuthenticated = signal<boolean>(false);
   readonly currentUserEmail = signal<string>('');
   readonly jwtToken = signal<string>('');
+  readonly authError = signal<string>('');
 
-  constructor() {
+  private readonly API_URL = 'http://localhost:3000';
+
+  constructor(private http: HttpClient) {
     const storage = this.getStorage();
     if (storage) {
       const saved = storage.getItem('qa_auth');
@@ -40,48 +45,62 @@ export class AuthService {
     }
   }
 
-  async login(email: string, password: string): Promise<{ success: boolean; message?: string; token?: string }>
-  {
-    // Démo débutant: on accepte tout email/password non vides après une petite attente
-    await this.delay(400);
-    if (!email || !password) {
-      return { success: false, message: 'Email ou mot de passe manquant' };
+  async login(email: string, password: string): Promise<{ success: boolean; message?: string; token?: string }> {
+    this.authError.set('');
+
+    try {
+      const response = await firstValueFrom(
+        this.http.post<{ user: any; token: string }>(
+          `${this.API_URL}/auth/login`,
+          { email, password }
+        )
+      );
+
+      if (response?.token) {
+        this.currentUserEmail.set(email);
+        this.isAuthenticated.set(true);
+        this.jwtToken.set(response.token);
+        this.persist();
+        return { success: true, token: response.token };
+      }
+
+      return { success: false, message: 'Erreur de connexion' };
+    } catch (error: any) {
+      const message = error?.error?.message || 'Erreur de connexion';
+      this.authError.set(message);
+      return { success: false, message };
     }
-    // Mini validation pour pouvoir afficher un message d'erreur côté UI
-    const isEmailValid = /.+@.+\..+/.test(email);
-    const isPasswordValid = password.length >= 6;
-    if (!isEmailValid || !isPasswordValid) {
-      return { success: false, message: 'Adresse e-mail ou mot de passe incorrect' };
-    }
-    // Démo: on simule un JWT
-    const token = this.generateMockJwt(email);
-    this.currentUserEmail.set(email);
-    this.isAuthenticated.set(true);
-    this.jwtToken.set(token);
-    this.persist();
-    return { success: true, token };
   }
 
-  async register(payload: RegisterPayload): Promise<{ success: boolean; message?: string; token?: string }>
-  {
-    await this.delay(500);
-    if (!payload.email || !payload.password || !payload.firstname || !payload.lastname) {
-      return { success: false, message: 'Champs requis manquants' };
+  async register(payload: RegisterPayload): Promise<{ success: boolean; message?: string; token?: string }> {
+    this.authError.set('');
+
+    try {
+      const response = await firstValueFrom(
+        this.http.post<any>(
+          `${this.API_URL}/auth/register`,
+          payload
+        )
+      );
+
+      if (response?.id) {
+        // Inscription réussie, on redirige vers login
+        return { success: true, message: 'Inscription réussie ! Vous pouvez maintenant vous connecter.' };
+      }
+
+      return { success: false, message: 'Erreur lors de l\'inscription' };
+    } catch (error: any) {
+      const message = error?.error?.message || 'Erreur lors de l\'inscription';
+      this.authError.set(message);
+      return { success: false, message };
     }
-    // Démo: on considère l'inscription réussie et on connecte l'utilisateur
-    // Démo: on simule un JWT
-    const token = this.generateMockJwt(payload.email);
-    this.currentUserEmail.set(payload.email);
-    this.isAuthenticated.set(true);
-    this.jwtToken.set(token);
-    this.persist();
-    return { success: true, token };
   }
 
   logout(): void {
     this.currentUserEmail.set('');
     this.isAuthenticated.set(false);
     this.jwtToken.set('');
+    this.authError.set('');
     const storage = this.getStorage();
     storage?.removeItem('qa_auth');
   }
@@ -91,9 +110,6 @@ export class AuthService {
     storage?.setItem('qa_auth', JSON.stringify({ email: this.currentUserEmail(), token: this.jwtToken() }));
   }
 
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
 
   private getStorage(): Storage | null {
     try {
@@ -108,14 +124,4 @@ export class AuthService {
   getToken(): string | null {
     return this.jwtToken() || null;
   }
-
-  private generateMockJwt(email: string): string {
-    // Simple token factice pour démo uniquement
-    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-    const payload = btoa(JSON.stringify({ sub: email, iat: Date.now() / 1000 }));
-    const signature = 'mock-signature';
-    return `${header}.${payload}.${signature}`;
-  }
 }
-
-
