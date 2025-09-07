@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/services/prisma.service';
 import { BadgeService } from '../../badge/services/badge.service';
+import { ExperienceService } from '../../experience/services/experience.service';
 import { SubmitAnswerDto } from '../dto/submit-answer.dto';
 import { CreateQuizSessionDto } from '../dto/create-quiz.dto';
 
@@ -18,6 +19,7 @@ export class QuizSessionService {
   constructor(
     private prisma: PrismaService,
     private badgeService: BadgeService,
+    private experienceService: ExperienceService,
   ) {}
 
   async createSession(
@@ -202,6 +204,20 @@ export class QuizSessionService {
         },
       },
     });
+
+    // Calculer le temps total passé
+    const totalTimeSpent = session.answers.reduce(
+      (sum, answer) => sum + answer.timeSpent,
+      0,
+    );
+
+    // Mettre à jour l'expérience et les statistiques
+    await this.experienceService.updateUserStatsAfterQuiz(
+      userId,
+      score,
+      totalTimeSpent,
+      session.quiz.difficulty,
+    );
 
     // Vérifier et débloquer des badges
     await this.badgeService.checkAndUnlockBadges(userId, {
