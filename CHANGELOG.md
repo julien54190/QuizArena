@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.20.1] - 2025-09-08
+
+### ⚙️ Miscellaneous Tasks
+
+- *(seed)* Ajout des seed et migration bdd
+
 ## [0.20.0] - 2025-09-08
 
 ### 🚀 Features
