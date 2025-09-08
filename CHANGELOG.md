@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.20.0] - 2025-09-08
+
+### 🚀 Features
+
+- *(back/quiz)* :sparkles: Back : implementation quiz
+- *(back/quiz)* :sparkles: Back : implementation question
+- *(back/quiz)* :sparkles: Back : implementation badges
+- *(back/quiz)* :sparkles: Back : implementation quizz-session
+- *(back/quiz)* :sparkles: Back : implementation experience
+- *(back/quiz)* :sparkles: Back : implementation category
+
 ## [0.19.0] - 2025-09-07
 
 ### 🚀 Features
