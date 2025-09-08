@@ -16,6 +16,14 @@ export declare class AuthController {
         phone: string | null;
         companyAddress: string | null;
         id: string;
+        username: string;
+        avatar: string | null;
+        status: import("@prisma/client").$Enums.UserStatus;
+        plan: import("@prisma/client").$Enums.UserPlan;
+        totalXp: number;
+        currentLevel: number;
+        totalPlays: number;
+        averageScore: number;
         createdAt: Date;
         updatedAt: Date;
     }>>;

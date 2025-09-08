@@ -34,19 +34,19 @@ export class BadgeController {
   @Get('my-badges')
   @UseGuards(JwtAuthGuard)
   findMyBadges(@Request() req) {
-    return this.badgeService.findByUser(req.user.id);
+    return this.badgeService.findByUser(req.user.userId);
   }
 
   @Get('unlocked')
   @UseGuards(JwtAuthGuard)
   getUnlockedBadges(@Request() req) {
-    return this.badgeService.findByUser(req.user.id);
+    return this.badgeService.findByUser(req.user.userId);
   }
 
   @Get('locked')
   @UseGuards(JwtAuthGuard)
   getLockedBadges(@Request() req) {
-    return this.badgeService.getAvailableBadges(req.user.id);
+    return this.badgeService.getAvailableBadges(req.user.userId);
   }
 
   @Get(':id')
@@ -57,7 +57,7 @@ export class BadgeController {
   @Post(':id/unlock')
   @UseGuards(JwtAuthGuard)
   unlockBadge(@Param('id') id: string, @Request() req) {
-    return this.badgeService.unlockBadge(req.user.id, {});
+    return this.badgeService.unlockBadge(req.user.userId, {});
   }
 
   @Patch(':id')

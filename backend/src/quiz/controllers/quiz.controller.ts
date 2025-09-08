@@ -23,7 +23,7 @@ export class QuizController {
   @Post()
   @UseGuards(JwtAuthGuard)
   create(@Body() createQuizDto: CreateQuizDto, @Request() req) {
-    return this.quizService.create(createQuizDto, req.user.id);
+    return this.quizService.create(createQuizDto, req.user.userId);
   }
 
   @Get()
@@ -34,7 +34,7 @@ export class QuizController {
   @Get('my-quizzes')
   @UseGuards(JwtAuthGuard)
   findMyQuizzes(@Request() req) {
-    return this.quizService.findByAuthor(req.user.id);
+    return this.quizService.findByAuthor(req.user.userId);
   }
 
   @Get('category/:categoryId')
@@ -54,12 +54,12 @@ export class QuizController {
     @Body() updateQuizDto: UpdateQuizDto,
     @Request() req,
   ) {
-    return this.quizService.update(id, updateQuizDto, req.user.id);
+    return this.quizService.update(id, updateQuizDto, req.user.userId);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string, @Request() req) {
-    return this.quizService.remove(id, req.user.id);
+    return this.quizService.remove(id, req.user.userId);
   }
 }

@@ -12,12 +12,27 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const prisma_module_1 = require("./prisma/prisma.module");
 const auth_module_1 = require("./auth/auth.module");
+const quiz_module_1 = require("./quiz/quiz.module");
+const question_module_1 = require("./question/question.module");
+const badge_module_1 = require("./badge/badge.module");
+const quiz_session_module_1 = require("./quiz-session/quiz-session.module");
+const experience_module_1 = require("./experience/experience.module");
+const category_module_1 = require("./category/category.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, auth_module_1.AuthModule],
+        imports: [
+            prisma_module_1.PrismaModule,
+            auth_module_1.AuthModule,
+            quiz_module_1.QuizModule,
+            question_module_1.QuestionModule,
+            badge_module_1.BadgeModule,
+            quiz_session_module_1.QuizSessionModule,
+            experience_module_1.ExperienceModule,
+            category_module_1.CategoryModule,
+        ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

@@ -24,7 +24,7 @@ export class QuestionController {
   @Post()
   @UseGuards(JwtAuthGuard)
   create(@Body() createQuestionDto: CreateQuestionDto, @Request() req) {
-    return this.questionService.create(createQuestionDto, req.user.id);
+    return this.questionService.create(createQuestionDto, req.user.userId);
   }
 
   @Get()
@@ -47,12 +47,12 @@ export class QuestionController {
     @Body() updateQuestionDto: UpdateQuestionDto,
     @Request() req,
   ) {
-    return this.questionService.update(id, updateQuestionDto, req.user.id);
+    return this.questionService.update(id, updateQuestionDto, req.user.userId);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string, @Request() req) {
-    return this.questionService.remove(id, req.user.id);
+    return this.questionService.remove(id, req.user.userId);
   }
 }

@@ -76,23 +76,13 @@ async function seedCategories() {
   console.log('🌱 Seeding categories...');
 
   for (const category of categories) {
-    // Vérifier si la catégorie existe déjà
-    const existingCategory = await prisma.category.findUnique({
-      where: { id: category.id },
+    // Ne jamais forcer l'id: on se base sur l'unicité du name
+    const { id: _ignoreId, ...data } = category;
+    await prisma.category.upsert({
+      where: { name: category.name },
+      update: data,
+      create: data,
     });
-
-    if (existingCategory) {
-      // Mettre à jour la catégorie existante
-      await prisma.category.update({
-        where: { id: category.id },
-        data: category,
-      });
-    } else {
-      // Créer une nouvelle catégorie
-      await prisma.category.create({
-        data: category,
-      });
-    }
     console.log(`✅ Catégorie "${category.name}" créée/mise à jour`);
   }
 

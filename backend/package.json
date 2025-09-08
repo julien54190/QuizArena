@@ -17,7 +17,14 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "prisma:generate": "prisma generate --schema prisma/schema.prisma",
+    "prisma:deploy": "prisma migrate deploy --schema prisma/schema.prisma",
+    "seed:categories": "ts-node src/scripts/seed-categories.ts",
+    "seed:badges": "ts-node src/scripts/seed-badges.ts",
+    "seed:users": "ts-node src/scripts/seed-user.ts",
+    "seed:all": "ts-node src/scripts/seed-all-quiz-data.ts",
+    "db:setup": "npm run prisma:deploy && npm run seed:categories && npm run seed:badges && npm run seed:users && npm run seed:all"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

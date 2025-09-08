@@ -28,7 +28,7 @@ export class QuizSessionController {
   ) {
     return this.quizSessionService.createSession(
       createQuizSessionDto,
-      req.user.id,
+      req.user.userId,
     );
   }
 
@@ -42,27 +42,27 @@ export class QuizSessionController {
     return this.quizSessionService.submitAnswer(
       sessionId,
       submitAnswerDto,
-      req.user.id,
+      req.user.userId,
     );
   }
 
   @Post(':id/complete')
   @UseGuards(JwtAuthGuard)
   completeSession(@Param('id') sessionId: string, @Request() req) {
-    return this.quizSessionService.completeSession(sessionId, req.user.id);
+    return this.quizSessionService.completeSession(sessionId, req.user.userId);
   }
 
   @Get('my-sessions')
   @UseGuards(JwtAuthGuard)
   getMySessions(@Request() req, @Query('limit') limit?: string) {
     const limitNumber = limit ? parseInt(limit, 10) : 10;
-    return this.quizSessionService.getUserSessions(req.user.id, limitNumber);
+    return this.quizSessionService.getUserSessions(req.user.userId, limitNumber);
   }
 
   @Get('my-stats')
   @UseGuards(JwtAuthGuard)
   getMyStats(@Request() req) {
-    return this.quizSessionService.getSessionStats(req.user.id);
+    return this.quizSessionService.getSessionStats(req.user.userId);
   }
 
   @Get('leaderboard')
