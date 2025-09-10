@@ -1,19 +1,20 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { IPlayQuiz } from '../interfaces/quiz';
 import { IUser } from '../interfaces/user';
 import { ICategory } from '../interfaces/category';
-import { PLAY_QUIZZES_DATA } from '../data/quiz.data';
-import { USERS_DATA } from '../data/users.data';
-import { CATEGORIES_DATA } from '../data/categories.data';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HomeService {
+  private http = inject(HttpClient);
+  private readonly api = 'http://localhost:3000';
+
   // Données brutes
-  private _quizzes = signal<IPlayQuiz[]>(PLAY_QUIZZES_DATA);
-  private _users = signal<IUser[]>(USERS_DATA);
-  private _categories = signal<ICategory[]>(CATEGORIES_DATA);
+  private _quizzes = signal<IPlayQuiz[]>([]);
+  private _users = signal<IUser[]>([]);
+  private _categories = signal<ICategory[]>([]);
 
   // Filtres de recherche
   private _searchTerm = signal('');
@@ -31,10 +32,16 @@ export class HomeService {
     const categoriesData = this._categories();
     const quizzesData = this._quizzes();
 
-    return categoriesData.map(category => ({
-      ...category,
-      quizCount: quizzesData.filter(quiz => quiz.categories.includes(category.name)).length
-    }));
+    return categoriesData.map((category: any) => {
+      const count = quizzesData.filter((quiz: any) => {
+        const list = Array.isArray(quiz?.categories) ? quiz.categories : [];
+        const byList = list.includes?.(category?.name);
+        const byName = (quiz?.category?.name && category?.name) ? quiz.category.name === category.name : false;
+        const byId = (quiz?.categoryId && category?.id) ? String(quiz.categoryId) === String(category.id) : false;
+        return !!(byList || byName || byId);
+      }).length;
+      return { ...category, quizCount: count };
+    });
   });
 
   // Filtres exposés
@@ -50,14 +57,14 @@ export class HomeService {
   totalUsers = computed(() => this._users().filter(user => user.status === 'active').length);
 
   averageScore = computed(() => {
-    const scores = this._quizzes().map(quiz => quiz.averageScore);
+    const scores = this._quizzes().map(quiz => quiz.averageScore || 0).filter(score => !isNaN(score));
     if (scores.length === 0) return 0;
     const total = scores.reduce((acc, score) => acc + score, 0);
     return Math.round(total / scores.length);
   });
 
   totalPlays = computed(() => {
-    return this._quizzes().reduce((sum, quiz) => sum + quiz.totalPlays, 0);
+    return this._quizzes().reduce((sum, quiz) => sum + (quiz.totalPlays || 0), 0);
   });
 
   // Méthodes pour mettre à jour les filtres
@@ -81,5 +88,17 @@ export class HomeService {
     this._difficultyFilter.set('');
     this._minQuestions.set(0);
     this._minScore.set(0);
+  }
+
+  // Chargement initial depuis l'API backend
+  loadHomeData(): void {
+    this.http.get<ICategory[]>(`${this.api}/category`).subscribe((categories) => {
+      this._categories.set(categories);
+    });
+    this.http.get<IPlayQuiz[]>(`${this.api}/quiz`).subscribe((quizzes) => {
+      this._quizzes.set(quizzes);
+    });
+    // Optionnel: charger des stats utilisateurs si un endpoint existe
+    // this.http.get<IUser[]>(`${this.api}/user`).subscribe((users) => this._users.set(users));
   }
 }

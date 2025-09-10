@@ -1,6 +1,7 @@
 import { AuthService } from '../services/auth.service';
 import { RegisterDto } from '../dto/register.dto';
 import { LoginDto } from '../dto/login.dto';
+import { UpdateProfileDto } from '../dto/update-profile.dto';
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
@@ -15,7 +16,15 @@ export declare class AuthController {
         siret: string | null;
         phone: string | null;
         companyAddress: string | null;
+        username: string;
         id: string;
+        avatar: string | null;
+        status: import("@prisma/client").$Enums.UserStatus;
+        plan: import("@prisma/client").$Enums.UserPlan;
+        totalXp: number;
+        currentLevel: number;
+        totalPlays: number;
+        averageScore: number;
         createdAt: Date;
         updatedAt: Date;
     }>>;
@@ -23,4 +32,50 @@ export declare class AuthController {
         user: Partial<import("@prisma/client").User>;
         token: string;
     }>;
+    me(req: any): Promise<Partial<{
+        email: string;
+        password: string;
+        firstname: string;
+        lastname: string;
+        role: import("@prisma/client").$Enums.UserRole;
+        studentEmail: string | null;
+        school: string | null;
+        siret: string | null;
+        phone: string | null;
+        companyAddress: string | null;
+        username: string;
+        id: string;
+        avatar: string | null;
+        status: import("@prisma/client").$Enums.UserStatus;
+        plan: import("@prisma/client").$Enums.UserPlan;
+        totalXp: number;
+        currentLevel: number;
+        totalPlays: number;
+        averageScore: number;
+        createdAt: Date;
+        updatedAt: Date;
+    }>>;
+    updateMe(req: any, dto: UpdateProfileDto): Promise<Partial<{
+        email: string;
+        password: string;
+        firstname: string;
+        lastname: string;
+        role: import("@prisma/client").$Enums.UserRole;
+        studentEmail: string | null;
+        school: string | null;
+        siret: string | null;
+        phone: string | null;
+        companyAddress: string | null;
+        username: string;
+        id: string;
+        avatar: string | null;
+        status: import("@prisma/client").$Enums.UserStatus;
+        plan: import("@prisma/client").$Enums.UserPlan;
+        totalXp: number;
+        currentLevel: number;
+        totalPlays: number;
+        averageScore: number;
+        createdAt: Date;
+        updatedAt: Date;
+    }>>;
 }

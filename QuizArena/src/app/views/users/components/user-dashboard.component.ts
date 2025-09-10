@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { DashboardService } from '../../../services/dashboard.service';
+import { UserService } from '../../../services/user.service';
 import { SeoService } from '../../../services/seo.service';
 
 @Component({
@@ -177,9 +178,12 @@ import { SeoService } from '../../../services/seo.service';
 export class UserDashboardComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   protected dashboardService = inject(DashboardService);
+  private userService = inject(UserService);
   private seo = inject(SeoService);
 
   ngOnInit(): void {
+    this.userService.loadCurrentUser();
+    this.dashboardService.loadFromApi();
     const firstName = this.dashboardService.currentUser()?.firstName || 'Utilisateur';
     this.seo.updateSEO({
       title: `Tableau de bord - ${firstName} | QuizArena`,

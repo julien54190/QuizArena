@@ -1,5 +1,5 @@
 export interface IQuestion {
-  id: number;
+  id: string;
   question: string;
   options: string[];
   correctAnswer: number; // Index de la bonne réponse dans options
@@ -7,14 +7,14 @@ export interface IQuestion {
 }
 
 export interface IQuizAnswer {
-  questionId: number;
+  questionId: string;
   selectedAnswer: number;
   isCorrect: boolean;
   timeSpent: number; // en secondes
 }
 
 export interface IPlayQuiz {
-  id: number;
+  id: string;
   title: string;
   description: string;
   categories: string[];
@@ -29,7 +29,7 @@ export interface IPlayQuiz {
 }
 
 export interface IQuizSession {
-  quizId: number;
+  quizId: string;
   startTime: Date;
   endTime?: Date;
   answers: IQuizAnswer[];

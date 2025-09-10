@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, inject, OnInit } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { HeaderMenuComponent } from './components/header-menu.component';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-header',
@@ -16,10 +19,16 @@ import { HeaderMenuComponent } from './components/header-menu.component';
           <ul class="flex align-items-center gap-12" role="list">
             <li role="listitem"><a routerLink="/accueil" routerLinkActive="active-link" aria-label="Aller à la page d'accueil">Accueil</a></li>
             <li role="listitem"><a routerLink="/jouer" routerLinkActive="active-link" aria-label="Commencer à jouer">Jouer</a></li>
-            <li role="listitem"><a routerLink="users/tableau-de-bord" routerLinkActive="active-link" aria-label="Accéder à mon espace personnel">Mon espace</a></li>
+            <li role="listitem"><a routerLink="/users/tableau-de-bord" routerLinkActive="active-link" aria-label="Accéder à mon espace personnel">Mon espace</a></li>
             <li role="listitem"><a routerLink="/admin/tableau-de-bord" routerLinkActive="active-link" aria-label="Accéder à l'administration">Admin</a></li>
-            <li role="listitem"><a class="btn btn-outline-primary" routerLink="auth/connexion" routerLinkActive="active-link" aria-label="Se connecter">Connexion</a></li>
-            <li role="listitem"><a class="btn btn-primary" routerLink="auth/inscription" routerLinkActive="active-link" aria-label="Créer un compte">Inscription</a></li>
+            @if (!isAuth()) {
+              <li role="listitem"><a class="btn btn-outline-primary" routerLink="/auth/connexion" routerLinkActive="active-link" aria-label="Se connecter">Connexion</a></li>
+              <li role="listitem"><a class="btn btn-primary" routerLink="/auth/inscription" routerLinkActive="active-link" aria-label="Créer un compte">Inscription</a></li>
+            } @else {
+              <li role="listitem">
+                <button class="btn btn-outline-primary" (click)="logout()" aria-label="Se déconnecter">Déconnexion</button>
+              </li>
+            }
           </ul>
         </nav>
         <app-header-menu class="hide xs-show" aria-label="Menu de navigation mobile"></app-header-menu>
@@ -51,6 +60,20 @@ import { HeaderMenuComponent } from './components/header-menu.component';
 
   `
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
+  private userService = inject(UserService);
+  private router = inject(Router);
+  private platformId = inject(PLATFORM_ID);
+  isBrowser = isPlatformBrowser(this.platformId);
+  ngOnInit() {
+    if (this.isBrowser) {
+      setTimeout(() => this.userService.loadCurrentUser());
+    }
+  }
 
+  isAuth(): boolean { return this.isBrowser && this.userService.isAuthenticated(); }
+  logout() {
+    this.userService.logout();
+    this.router.navigate(['/accueil']);
+  }
 }

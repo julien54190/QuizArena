@@ -167,13 +167,13 @@ export class PublicProfileComponent implements OnInit {
   private route = inject(ActivatedRoute);
   protected publicProfileService = inject(PublicProfileService);
 
-  @Input() userId?: number;
-  private routeUserId?: number;
+  @Input() userId?: string;
+  private routeUserId?: string;
 
   ngOnInit() {
     // Récupérer l'ID utilisateur depuis les paramètres de route
     this.route.params.subscribe(params => {
-      this.routeUserId = +params['userId'];
+      this.routeUserId = params['userId'];
       if (this.routeUserId) {
         this.publicProfileService.setSelectedUser(this.routeUserId);
       }

@@ -1,7 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { IUser } from '../../../../interfaces/user';
 import { UserService } from '../../../../services/user.service';
 
 @Component({
@@ -31,12 +30,22 @@ import { UserService } from '../../../../services/user.service';
     >
       <div class="p-25 sidebar-header">
         <div class="flex align-items-center gap-16">
-          <div class="flex justify-content-center align-items-center avatar" role="img">
-            <img [src]="currentUser()?.avatar" alt="Avatar de {{ currentUser()?.firstName }} {{ currentUser()?.lastName }}">
+          <div class="avatar-wrapper">
+            @if (currentUser()?.avatar) {
+              <img class="avatar-img" [src]="currentUser()!.avatar" alt="Avatar de {{ currentUser()?.firstName }} {{ currentUser()?.lastName }}">
+            } @else {
+              <svg class="avatar-img" viewBox="0 0 100 100" aria-label="Avatar par défaut">
+                <circle cx="50" cy="50" r="50" fill="#ECECEC" />
+                <path d="M50 54c11 0 20 9 20 20H30c0-11 9-20 20-20zm0-6a12 12 0 1 0 0-24 12 12 0 0 0 0 24z" fill="#B0B0B0" />
+              </svg>
+            }
+            <button class="avatar-add" (click)="onAddPhoto()" aria-label="Ajouter une photo de profil">+</button>
           </div>
           <div class="text-semibold">
             <h3 id="user-name">{{ currentUser()?.firstName }} {{ currentUser()?.lastName }}</h3>
-            <p id="user-role">{{ currentUser()?.role }}</p>
+            <p id="user-role">{{ (currentUser()?.role || '').toString().toUpperCase() }}
+              <span class="badge badge-light ml-8">{{ (currentUser()?.status || '').toString().toUpperCase() }}</span>
+            </p>
           </div>
         </div>
         <button class="btn sidebar-close" (click)="closeSidebar()" aria-label="Fermer le menu">
@@ -132,6 +141,10 @@ import { UserService } from '../../../../services/user.service';
       background: none; border: none; color: var(--text-color); cursor: pointer; padding: 8px;
     }
 
+    .avatar-wrapper { position: relative; width: 64px; height: 64px; }
+    .avatar-img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; }
+    .avatar-add { position: absolute; right: -6px; bottom: -6px; width: 24px; height: 24px; border-radius: 50%; border: none; background: var(--primary); color: #fff; font-size: 16px; line-height: 24px; text-align: center; cursor: pointer; }
+
     @media (min-width: 921px) {
       :host { display: none; }
     }
@@ -141,30 +154,22 @@ export class SideBarMobileComponent {
   private userService = inject(UserService);
   private router = inject(Router);
 
-  currentUser = signal<IUser | null>(null);
+  readonly currentUser = this.userService.currentUser;
   isOpen = signal(false);
 
   constructor() {
-    this.currentUser.set({
-      id: 1,
-      firstName: 'Jean',
-      lastName: 'Dupont',
-      username: 'jeandupont',
-      avatar:'https://mockmind-api.uifaces.co/content/human/80.jpg',
-      email: 'jean.dupont@email.com',
-      role: 'user',
-      status: 'active',
-      plan: 'gratuit',
-      quizzesCreated: 5,
-      totalPlays: 42,
-      averageScore: 78
-    });
+    this.userService.loadCurrentUser();
   }
 
   toggleSidebar() { this.isOpen.update(v => !v); }
   closeSidebar() { this.isOpen.set(false); }
 
+  onAddPhoto() {
+    alert('Ajout de photo prochainement');
+  }
+
   logout() {
+    this.userService.logout();
     this.router.navigate(['/accueil']);
   }
 }

@@ -1,4 +1,4 @@
-import { Component, Input, inject, computed } from '@angular/core';
+import { Component, Input, inject, computed, OnInit, OnChanges, SimpleChanges, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { QuizService } from '../../../../services/quiz.service';
 import { IPlayQuiz } from '../../../../interfaces/quiz';
@@ -32,7 +32,7 @@ import { CommonModule } from '@angular/common';
               class="card card-white mt-10 card-size text-center flex flex-col justify-content-between card-hover"
               role="listitem"
               tabindex="0"
-              [attr.aria-label]="'Quiz ' + quiz.title + ' - ' + quiz.categories.join(', ') + ' - Difficulté ' + quiz.difficulty"
+              [attr.aria-label]="'Quiz ' + quiz.title + ' - ' + getQuizCategories(quiz) + ' - Difficulté ' + quiz.difficulty"
               [attr.aria-describedby]="'quiz-desc-' + quiz.id + ' quiz-stats-' + quiz.id">
 
               <div>
@@ -66,25 +66,25 @@ import { CommonModule } from '@angular/common';
   `,
   styles: ``
 })
-export class QuizListComponent {
+export class QuizListComponent implements OnInit, OnChanges {
   @Input() categoryId!: string;
 
   private quizService = inject(QuizService);
   private router = inject(Router);
 
-  // Données exposées
-  quizzes = this.quizService.allQuizzes;
-
-  // Computed pour filtrer les quiz par catégorie
-  filteredQuizzes = computed(() => {
-    const categoryId = parseInt(this.categoryId);
-    return this.quizService.getQuizzesByCategoryId(categoryId);
-  });
+  // Données locales chargées depuis l'API
+  private _list = signal<IPlayQuiz[]>([]);
+  filteredQuizzes = computed(() => this._list());
 
   // Statistiques de la catégorie
   categoryStats = computed(() => {
-    const categoryId = parseInt(this.categoryId);
-    return this.quizService.getCategoryStatsById(categoryId);
+    const list = this._list();
+    return {
+      totalQuizzes: list.length,
+      totalQuestions: (list as any[]).reduce((a, q) => a + (q.questionCount ?? 0), 0),
+      totalPlays: (list as any[]).reduce((a, q) => a + (q.totalPlays ?? 0), 0),
+      averageScore: list.length > 0 ? Math.round((list as any[]).reduce((a, q) => a + (q.averageScore ?? 0), 0) / list.length) : 0,
+    } as any;
   });
 
 
@@ -102,7 +102,33 @@ export class QuizListComponent {
 
   // Obtenir le nom de la catégorie
   getCategoryName(): string {
-    const categoryId = parseInt(this.categoryId);
-    return this.quizService.getCategoryNameById(categoryId);
+    return this.quizService.getCategoryNameById(this.categoryId);
+  }
+
+  // Obtenir les catégories de manière sécurisée
+  getQuizCategories(quiz: any): string {
+    if (!quiz) return '';
+    if (Array.isArray(quiz.categories)) {
+      return quiz.categories.join(', ');
+    }
+    if (quiz.category?.name) {
+      return quiz.category.name;
+    }
+    return '';
+  }
+
+  ngOnInit(): void {
+    this.load();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['categoryId']) {
+      this.load();
+    }
+  }
+
+  private load(): void {
+    const cat = String(this.categoryId);
+    this.quizService.getQuizzesByCategory(cat).subscribe((qs) => this._list.set(qs ?? []));
   }
 }

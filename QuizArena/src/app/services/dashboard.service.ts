@@ -1,5 +1,7 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, signal, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { IUser } from '../interfaces/user';
+import { UserService } from './user.service';
 
 import { DASHBOARD_BADGES, DASHBOARD_ACTIONS, LEVEL_TITLES, XP_REQUIREMENTS } from '../data/dashboard.data';
 import { IBadge, IDashboardAction, IUserActivity, IUserExperience, IUserStats } from '../interfaces/dashoard';
@@ -8,74 +10,23 @@ import { IBadge, IDashboardAction, IUserActivity, IUserExperience, IUserStats } 
   providedIn: 'root'
 })
 export class DashboardService {
-  // Données utilisateur (normalement viendraient d'un service d'authentification)
-  private currentUserSignal = signal<IUser | null>({
-    id: 1,
-    firstName: 'Jean',
-    lastName: 'Dupont',
-    username: 'jeandupont',
-    email: 'jean.dupont@email.com',
-    role: 'user',
-    status: 'active',
-    plan: 'gratuit',
-    quizzesCreated: 5,
-    totalPlays: 42,
-    averageScore: 78
-  });
+  private http = inject(HttpClient);
+  private userService = inject(UserService);
+  private readonly api = 'http://localhost:3000';
+
+  // Données utilisateur (chargées depuis l'API)
+  private currentUserSignal = signal<IUser | null>(null);
 
   // Activités récentes
-  private activitiesSignal = signal<IUserActivity[]>([
-    {
-      id: '1',
-      type: 'quiz_completed',
-      icon: 'fas fa-gamepad',
-      text: 'Vous avez terminé le quiz "Culture Générale" avec un score de 85%',
-      time: 'Il y a 2 heures',
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      metadata: {
-        quizName: 'Culture Générale',
-        score: 85
-      }
-    },
-    {
-      id: '2',
-      type: 'quiz_created',
-      icon: 'fas fa-plus-circle',
-      text: 'Vous avez créé un nouveau quiz "Histoire de France"',
-      time: 'Il y a 1 jour',
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
-      metadata: {
-        quizName: 'Histoire de France'
-      }
-    },
-    {
-      id: '3',
-      type: 'badge_unlocked',
-      icon: 'fas fa-trophy',
-      text: 'Félicitations ! Vous avez débloqué le badge "Quiz Master"',
-      time: 'Il y a 3 jours',
-      timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-      metadata: {
-        badgeName: 'Quiz Master'
-      }
-    },
-    {
-      id: '4',
-      type: 'score_improved',
-      icon: 'fas fa-chart-line',
-      text: 'Votre score moyen a augmenté de 5% ce mois-ci',
-      time: 'Il y a 1 semaine',
-      timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-    }
-  ]);
+  private activitiesSignal = signal<IUserActivity[]>([]);
 
   // Computed properties
-  currentUser = computed(() => this.currentUserSignal());
+  currentUser = computed(() => this.userService.currentUser());
   activities = computed(() => this.activitiesSignal());
 
   // Statistiques utilisateur
   userStats = computed(() => {
-    const user = this.currentUserSignal();
+    const user = this.currentUser();
     if (!user) return null;
 
     const level = this.calculateLevel(user.totalPlays * 10 + user.averageScore * 5);
@@ -139,6 +90,68 @@ export class DashboardService {
   });
 
   // Méthodes publiques
+  async loadFromApi(): Promise<void> {
+    if (!this.userService.isAuthenticated()) {
+      return;
+    }
+
+    // S'assurer que l'utilisateur courant est chargé avant de calculer des stats
+    await this.userService.loadCurrentUser();
+
+    const token = localStorage.getItem('auth_token');
+    const headers = token ? { Authorization: `Bearer ${token}` } as any : undefined;
+    const { firstValueFrom } = await import('rxjs');
+
+    try {
+      const [stats, myBadges, sessions, myQuizzes] = await Promise.all([
+        firstValueFrom(this.http.get<any>(`${this.api}/quiz-session/my-stats`, { headers })),
+        firstValueFrom(this.http.get<any[]>(`${this.api}/badge/my-badges`, { headers })),
+        firstValueFrom(this.http.get<any[]>(`${this.api}/quiz-session/my-sessions`, { headers })),
+        firstValueFrom(this.http.get<any[]>(`${this.api}/quiz/my-quizzes`, { headers })),
+      ]);
+
+      // Mettre à jour stats utilisateur
+      this.userService.updateCurrentUser({
+        totalPlays: stats?.totalSessions ?? 0,
+        averageScore: Math.round(stats?.averageScore ?? 0),
+        quizzesCreated: Array.isArray(myQuizzes) ? myQuizzes.length : 0,
+      });
+
+      // Badges
+      const unlockedIds = new Set((myBadges || []).map(b => String(b.id)));
+      for (const b of DASHBOARD_BADGES) {
+        (b as any).unlocked = unlockedIds.has(String(b.id));
+      }
+
+      // Activités
+      const completedActivities: IUserActivity[] = (sessions || []).slice(0, 10).map((s: any, idx: number) => ({
+        id: `completed-${String(s.id ?? idx)}`,
+        type: 'quiz_completed',
+        icon: 'fas fa-gamepad',
+        text: `Vous avez terminé le quiz "${s.quiz?.title ?? 'Quiz'}" avec un score de ${Math.round(s.score ?? 0)}%`,
+        time: new Date(s.endTime ?? s.startTime ?? Date.now()).toLocaleString(),
+        timestamp: new Date(s.endTime ?? s.startTime ?? Date.now()),
+        metadata: { quizName: s.quiz?.title ?? 'Quiz', score: Math.round(s.score ?? 0) }
+      }));
+
+      const createdActivities: IUserActivity[] = (myQuizzes || []).slice(0, 10).map((q: any, idx: number) => ({
+        id: `created-${String(q.id ?? idx)}`,
+        type: 'quiz_created',
+        icon: 'fas fa-plus-circle',
+        text: `Vous avez créé le quiz "${q.title ?? 'Nouveau quiz'}"`,
+        time: new Date(q.createdAt ?? Date.now()).toLocaleString(),
+        timestamp: new Date(q.createdAt ?? Date.now()),
+        metadata: { quizName: q.title ?? 'Quiz' }
+      }));
+
+      const all = [...completedActivities, ...createdActivities]
+        .sort((a, b) => (b.timestamp as any) - (a.timestamp as any))
+        .slice(0, 10);
+      this.activitiesSignal.set(all);
+    } catch (error) {
+      console.error('Erreur chargement dashboard:', error);
+    }
+  }
   getUnlockedBadges(): IBadge[] {
     return this.unlockedBadges();
   }

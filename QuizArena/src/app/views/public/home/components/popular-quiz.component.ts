@@ -20,11 +20,11 @@ import { QuizService } from '../../../../services/quiz.service';
           class="card card-white mt-10 card-size text-center flex flex-col justify-content-between card-hover"
           role="listitem"
           tabindex="0"
-          [attr.aria-label]="'Quiz ' + quiz.title + ' - ' + quiz.categories.join(', ') + ' - Difficulté ' + quiz.difficulty"
+          [attr.aria-label]="'Quiz ' + quiz.title + ' - ' + getPrimaryCategory(quiz) + ' - Difficulté ' + quiz.difficulty"
           [attr.aria-describedby]="'quiz-desc-' + quiz.id">
           <div class="flex flex-col justify-content-between h-full">
             <div>
-              <div class="text-lg mb-10" role="img" [attr.aria-label]="'Icône ' + quiz.categories[0]">{{ getCategoryIcon(quiz.categories[0]) }}</div>
+              <div class="text-lg mb-10" role="img" [attr.aria-label]="'Icône ' + getPrimaryCategory(quiz)">{{ getCategoryIcon(getPrimaryCategory(quiz)) }}</div>
               <h3 class="text-bold mb-10">{{ quiz.title }}</h3>
               <p id="quiz-desc-{{ quiz.id }}" class="text-sm">{{ quiz.description }}</p>
             </div>
@@ -79,5 +79,13 @@ export class PopularQuizComponent {
   // Obtenir l'icône selon la catégorie
   getCategoryIcon(category: string): string {
     return this.quizService.getCategoryIcon(category);
+  }
+
+  // Catégorie principale (compat données API)
+  getPrimaryCategory(quiz: any): string {
+    if (!quiz) return '';
+    if (quiz?.category?.name) return quiz.category.name as string;
+    const arr = Array.isArray(quiz?.categories) ? quiz.categories : [];
+    return (arr[0] as string) ?? '';
   }
 }

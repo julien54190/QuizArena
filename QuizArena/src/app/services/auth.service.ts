@@ -36,6 +36,7 @@ export class AuthService {
             this.isAuthenticated.set(true);
             if (parsed.token) {
               this.jwtToken.set(parsed.token);
+              try { localStorage.setItem('auth_token', parsed.token); } catch {}
             }
           }
         } catch {
@@ -103,11 +104,19 @@ export class AuthService {
     this.authError.set('');
     const storage = this.getStorage();
     storage?.removeItem('qa_auth');
+    try {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_email');
+    } catch {}
   }
 
   private persist(): void {
     const storage = this.getStorage();
     storage?.setItem('qa_auth', JSON.stringify({ email: this.currentUserEmail(), token: this.jwtToken() }));
+    try {
+      localStorage.setItem('auth_token', this.jwtToken());
+      localStorage.setItem('user_email', this.currentUserEmail());
+    } catch {}
   }
 
 

@@ -1,7 +1,8 @@
-import { Component, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { UserService } from '../../../services/user.service';
 import { SeoService } from '../../../services/seo.service';
 
 @Component({
@@ -44,14 +45,7 @@ import { SeoService } from '../../../services/seo.service';
 							<label>Catégorie</label>
 							<select class="w-full p-12 radius" [ngModel]="quizData().category" (ngModelChange)="updateQuizData('category', $event)">
 								<option value="">Sélectionner une catégorie</option>
-								<option value="culture-generale">Culture Générale</option>
-								<option value="histoire">Histoire</option>
-								<option value="geographie">Géographie</option>
-								<option value="sciences">Sciences</option>
-								<option value="litterature">Littérature</option>
-								<option value="sport">Sport</option>
-								<option value="cinema">Cinéma</option>
-								<option value="musique">Musique</option>
+								<option *ngFor="let cat of categories()" [value]="cat.id">{{ cat.name }}</option>
 							</select>
 						</div>
 
@@ -70,7 +64,7 @@ import { SeoService } from '../../../services/seo.service';
 				<section class="card card-shadow mt-20">
 					<h2 class="text-lg text-bold mb-20">Questions</h2>
 					<div class="flex flex-col gap-16">
-						<div class="card card-white" *ngFor="let question of quizData().questions; let i = index">
+						<div class="card card-white" *ngFor="let question of quizData().questions; let i = index; trackBy: trackByIndex">
 							<div class="flex justify-content-between align-items-center mb-20">
 								<h3 class="text-semibold">Question {{ i + 1 }}</h3>
 								<button class="btn btn-danger btn-sm" (click)="removeQuestion(i)">
@@ -114,7 +108,7 @@ import { SeoService } from '../../../services/seo.service';
 								<div class="w-full" *ngIf="question.type !== 'ordre'">
 									<label>Réponses possibles</label>
 									<div class="flex flex-col gap-12">
-										<div class="flex align-items-center gap-12" *ngFor="let answer of question.answers; let j = index">
+										<div class="flex align-items-center gap-12" *ngFor="let answer of question.answers; let j = index; trackBy: trackByIndex">
 											<input class="flex-1 p-12 radius" type="text" [ngModel]="answer.text" (ngModelChange)="updateAnswer(i, j, 'text', $event)" placeholder="Réponse...">
 											<label class="flex align-items-center gap-8">
 												<input type="radio" [name]="'correct-' + i" [checked]="answer.isCorrect" (change)="setCorrectAnswer(i, j)">
@@ -169,8 +163,11 @@ import { SeoService } from '../../../services/seo.service';
 
 				<section class="mt-20">
 					<div class="flex gap-16 justify-content-center">
-						<button class="btn btn-outline-primary py-12 px-24" (click)="saveDraft()">Sauvegarder brouillon</button>
-						<button class="btn btn-primary py-12 px-24" (click)="publishQuiz()">Publier le quiz</button>
+						<button class="btn btn-outline-primary py-12 px-24" (click)="saveDraft()" [disabled]="isLoading()">Sauvegarder brouillon</button>
+						<button class="btn btn-primary py-12 px-24" (click)="publishQuiz()" [disabled]="isLoading()">
+							<span *ngIf="isLoading()">Publication en cours...</span>
+							<span *ngIf="!isLoading()">Publier le quiz</span>
+						</button>
 					</div>
 				</section>
 					</div>
@@ -178,6 +175,13 @@ import { SeoService } from '../../../services/seo.service';
 })
 export class UserCreateQuizComponent implements OnInit, OnDestroy {
 	private seo = inject(SeoService);
+	private http = inject(HttpClient);
+	private userService = inject(UserService);
+	private readonly api = 'http://localhost:3000';
+
+	categories = signal<any[]>([]);
+	isLoading = signal(false);
+
 	quizData = signal({
 		title: '',
 		description: '',
@@ -201,11 +205,21 @@ export class UserCreateQuizComponent implements OnInit, OnDestroy {
 		]
 	});
 
+	trackByIndex = (_: number, item: any) => item?.id ?? _;
+
 	ngOnInit(): void {
+		this.loadCategories();
 		this.seo.updateSEO({
 			title: 'Créer un quiz - QuizArena',
 			description: 'Créez et partagez vos propres quiz sur QuizArena. Ajoutez des questions, des médias et des réponses pour tester les connaissances de la communauté.',
 			keywords: 'créer quiz, créer questionnaire, partager connaissances, quiz personnalisé, questions médias'
+		});
+	}
+
+	private loadCategories() {
+		this.http.get<any[]>(`${this.api}/category`).subscribe({
+			next: (cats) => this.categories.set(cats),
+			error: (e) => console.error('Erreur chargement catégories:', e)
 		});
 	}
 
@@ -315,7 +329,117 @@ export class UserCreateQuizComponent implements OnInit, OnDestroy {
 	}
 
 	publishQuiz() {
-		console.log('Quiz publié:', this.quizData());
+		const token = localStorage.getItem('auth_token');
+		if (!token) { alert('Vous devez être connecté pour publier un quiz.'); return; }
+
+		// Validation basique
+		const q = this.quizData();
+		if (!q.title.trim()) { alert('Le titre est requis'); return; }
+		if (!q.description.trim()) { alert('La description est requise'); return; }
+		if (!q.category) { alert('La catégorie est requise'); return; }
+		if (!q.difficulty) { alert('La difficulté est requise'); return; }
+		if (q.questions.length === 0) { alert('Au moins une question est requise'); return; }
+
+		// Vérifier que chaque question a au moins une bonne réponse
+		for (let i = 0; i < q.questions.length; i++) {
+			const question = q.questions[i];
+			if (!question.text.trim()) { alert(`Question ${i + 1}: le texte est requis`); return; }
+			if (question.type !== 'ordre' && !question.answers.some(a => a.isCorrect && a.text.trim())) {
+				alert(`Question ${i + 1}: au moins une bonne réponse est requise`); return;
+			}
+		}
+
+		this.isLoading.set(true);
+		const headers = { Authorization: `Bearer ${token}` } as any;
+		const payload = this.mapToCreateQuizDto();
+
+		// Créer le quiz d'abord
+		this.http.post(`${this.api}/quiz`, payload, { headers }).subscribe({
+			next: (quiz: any) => {
+				// Puis créer les questions et réponses
+				this.createQuestionsAndAnswers(quiz.id, headers);
+			},
+			error: (e) => {
+				console.error('Erreur création quiz', e);
+				alert('Erreur lors de la publication du quiz');
+				this.isLoading.set(false);
+			}
+		});
+	}
+
+	private createQuestionsAndAnswers(quizId: string, headers: any) {
+		const questions = this.quizData().questions;
+		let completed = 0;
+		let hasError = false;
+
+		if (questions.length === 0) {
+			this.finishQuizCreation();
+			return;
+		}
+
+		questions.forEach((question, index) => {
+			const questionPayload = {
+				text: question.text,
+				type: question.type.toUpperCase(),
+				mediaUrl: question.mediaUrl || undefined,
+				orderItems: question.type === 'ordre' ? question.orderItems : undefined,
+				quizId: quizId,
+				answers: question.type !== 'ordre' ? question.answers.filter(a => a.text.trim()) : []
+			};
+
+			this.http.post(`${this.api}/question`, questionPayload, { headers }).subscribe({
+				next: () => {
+					completed++;
+					if (completed === questions.length && !hasError) {
+						this.finishQuizCreation();
+					}
+				},
+				error: (e) => {
+					console.error(`Erreur création question ${index + 1}:`, e);
+					hasError = true;
+					alert(`Erreur lors de la création de la question ${index + 1}`);
+					this.isLoading.set(false);
+				}
+			});
+		});
+	}
+
+	private finishQuizCreation() {
 		alert('Quiz publié avec succès !');
+		this.resetForm();
+		this.isLoading.set(false);
+	}
+
+	private mapToCreateQuizDto() {
+		const q = this.quizData();
+		const difficulty = (q.difficulty || '').toString().toUpperCase();
+		const difficultyEnum = difficulty.includes('FAC') ? 'FACILE' : difficulty.includes('DIFF') ? 'DIFFICILE' : 'MOYEN';
+		return {
+			title: q.title,
+			description: q.description,
+			categoryId: q.category || 'general',
+			difficulty: difficultyEnum,
+			isPublic: !!q.isPublic,
+			allowComments: !!q.allowComments,
+		};
+	}
+
+	private resetForm() {
+		this.quizData.set({
+			title: '',
+			description: '',
+			category: '',
+			difficulty: '',
+			isPublic: true,
+			allowComments: true,
+			questions: [
+				{ text: '', type: 'simple', mediaUrl: '', orderItems: [], answers: [
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false },
+					{ text: '', isCorrect: false },
+				] }
+			]
+		});
 	}
 }

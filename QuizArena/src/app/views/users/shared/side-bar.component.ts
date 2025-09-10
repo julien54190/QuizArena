@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { IUser } from '../../../interfaces/user';
 import { UserService } from '../../../services/user.service';
@@ -12,12 +12,22 @@ import { RouterModule } from '@angular/router';
       <aside class="flex flex-col h-screen sidebar" role="complementary" aria-label="Menu de navigation utilisateur">
         <div class="p-25 sidebar-header">
           <div class="flex align-items-center gap-16">
-            <div class="flex justify-content-center align-items-center avatar" role="img">
-              <img [src]="currentUser()?.avatar" alt="Avatar de {{ currentUser()?.firstName }} {{ currentUser()?.lastName }}">
+            <div class="avatar-wrapper" role="img">
+              @if (currentUser()?.avatar) {
+                <img class="avatar-img" [src]="currentUser()!.avatar" alt="Avatar de {{ currentUser()?.firstName }} {{ currentUser()?.lastName }}">
+              } @else {
+                <svg class="avatar-img" viewBox="0 0 100 100" aria-label="Avatar par défaut">
+                  <circle cx="50" cy="50" r="50" fill="#ECECEC" />
+                  <path d="M50 54c11 0 20 9 20 20H30c0-11 9-20 20-20zm0-6a12 12 0 1 0 0-24 12 12 0 0 0 0 24z" fill="#B0B0B0" />
+                </svg>
+              }
+              <button class="avatar-add" (click)="onAddPhoto()" aria-label="Ajouter une photo de profil">+</button>
             </div>
             <div class="text-semibold">
               <h3 id="user-name">{{ currentUser()?.firstName }} {{ currentUser()?.lastName }}</h3>
-              <p id="user-role">{{ currentUser()?.role }}</p>
+              <p id="user-role">{{ (currentUser()?.role || '').toString().toUpperCase() }}
+                <span class="badge badge-light ml-8">{{ (currentUser()?.status || '').toString().toUpperCase() }}</span>
+              </p>
             </div>
           </div>
         </div>
@@ -93,6 +103,9 @@ import { RouterModule } from '@angular/router';
       </aside>
   `,
   styles: [`
+    .avatar-wrapper { position: relative; width: 72px; height: 72px; }
+    .avatar-img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; }
+    .avatar-add { position: absolute; right: -6px; bottom: -6px; width: 28px; height: 28px; border-radius: 50%; border: none; background: var(--primary); color: #fff; font-size: 18px; line-height: 28px; text-align: center; cursor: pointer; }
     @media (max-width: 920px) {
       :host { display: none; }
     }
@@ -102,28 +115,18 @@ export class SideBarComponent {
   private userService = inject(UserService);
 	private router = inject(Router);
 
-	currentUser = signal<IUser | null>(null);
+	currentUser = this.userService.currentUser;
 
 	constructor() {
-		// Simuler un utilisateur connecté pour le moment
-		this.currentUser.set({
-			id: 1,
-			firstName: 'Jean',
-			lastName: 'Dupont',
-			username: 'jeandupont',
-      avatar:'https://mockmind-api.uifaces.co/content/human/80.jpg',
-			email: 'jean.dupont@email.com',
-			role: 'user',
-			status: 'active',
-			plan: 'gratuit',
-			quizzesCreated: 5,
-			totalPlays: 42,
-			averageScore: 78
-		});
+		this.userService.loadCurrentUser();
 	}
 
 	logout() {
-		// Logique de déconnexion
+		this.userService.logout();
 		this.router.navigate(['/accueil']);
+	}
+
+	onAddPhoto() {
+		alert('Ajout de photo prochainement');
 	}
 }
