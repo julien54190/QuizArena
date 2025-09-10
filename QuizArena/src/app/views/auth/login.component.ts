@@ -3,6 +3,7 @@ import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +22,7 @@ import { AuthService } from '../../services/auth.service';
       <form class="flex flex-col gap-16" aria-labelledby="login-title" (submit)="onSubmit($event)">
         <div class="field w-full">
           <label for="email">Adresse e-mail</label>
-          <input #emailRef class="w-full p-12 radius" id="email" name="email" type="email" autocomplete="email" placeholder="exemple@domaine.com" required (blur)="touchedEmail.set(true)" [style.borderColor]="touchedEmail() && !(emailRef?.validity?.valid) ? 'var(--danger)' : undefined">
+          <input #emailRef class="w-full p-12 radius" id="email" name="email" type="email" autocomplete="email" placeholder="exemple@domaine.com" required (input)="touchedEmail.set(true)" (blur)="touchedEmail.set(true)" (keydown.enter)="onLogin(emailRef.value, passwordRef.value)" [style.borderColor]="touchedEmail() && !(emailRef?.value?.trim()) ? 'var(--danger)' : undefined">
           @if (touchedEmail() && !(emailRef?.validity?.valid)) {
             <p class="error">Veuillez renseigner une adresse e-mail valide.</p>
           }
@@ -29,7 +30,7 @@ import { AuthService } from '../../services/auth.service';
 
         <div class="field w-full">
           <label for="password">Mot de passe</label>
-          <input #passwordRef class="w-full p-12 radius" id="password" name="password" type="password" autocomplete="current-password" placeholder="********" required (blur)="touchedPassword.set(true)" [style.borderColor]="touchedPassword() && !passwordRef.value.trim() ? 'var(--danger)' : undefined">
+          <input #passwordRef class="w-full p-12 radius" id="password" name="password" type="password" autocomplete="current-password" placeholder="********" required (input)="touchedPassword.set(true)" (blur)="touchedPassword.set(true)" (keydown.enter)="onLogin(emailRef.value, passwordRef.value)" [style.borderColor]="touchedPassword() && !passwordRef.value.trim() ? 'var(--danger)' : undefined">
           @if (touchedPassword() && !passwordRef.value.trim()) {
             <p class="error">Le mot de passe est requis.</p>
           }
@@ -40,7 +41,7 @@ import { AuthService } from '../../services/auth.service';
         }
 
         <div class="mt-20">
-          <button class="btn btn-primary py-12 px-24 w-full" type="submit" [disabled]="!(emailRef?.validity?.valid) || !(passwordRef?.value?.trim())">Connexion</button>
+          <button class="btn btn-primary py-12 px-24 w-full" type="button" (click)="onLogin(emailRef.value, passwordRef.value)" [disabled]="!(emailRef?.value?.trim()) || !(passwordRef?.value?.trim())">Connexion</button>
         </div>
 
         <div class="flex justify-content-center align-items-center gap-12 mt-20">
@@ -68,6 +69,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   private seo = inject(SeoService);
   private auth = inject(AuthService);
   private router = inject(Router);
+  private userService = inject(UserService);
   touchedEmail = signal(false);
   touchedPassword = signal(false);
   authError = signal<string>('');
@@ -95,6 +97,24 @@ export class LoginComponent implements OnInit, OnDestroy {
       const res = await this.auth.login(email, password);
       this.authError.set(res.success ? '' : (res.message || 'Adresse e-mail ou mot de passe incorrect'));
       if (res.success) {
+        await this.userService.loadCurrentUser();
+        this.router.navigate(['/users', 'tableau-de-bord']);
+      }
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  async onLogin(email: string, password: string) {
+    email = (email || '').trim();
+    password = (password || '').trim();
+    if (!email || !password) return;
+    this.isLoading.set(true);
+    try {
+      const res = await this.auth.login(email, password);
+      this.authError.set(res.success ? '' : (res.message || 'Adresse e-mail ou mot de passe incorrect'));
+      if (res.success) {
+        await this.userService.loadCurrentUser();
         this.router.navigate(['/users', 'tableau-de-bord']);
       }
     } finally {

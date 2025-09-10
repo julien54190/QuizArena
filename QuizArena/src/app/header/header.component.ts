@@ -1,6 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { PLATFORM_ID } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { HeaderMenuComponent } from './components/header-menu.component';
 import { UserService } from '../services/user.service';
@@ -20,7 +18,9 @@ import { UserService } from '../services/user.service';
             <li role="listitem"><a routerLink="/accueil" routerLinkActive="active-link" aria-label="Aller à la page d'accueil">Accueil</a></li>
             <li role="listitem"><a routerLink="/jouer" routerLinkActive="active-link" aria-label="Commencer à jouer">Jouer</a></li>
             <li role="listitem"><a routerLink="/users/tableau-de-bord" routerLinkActive="active-link" aria-label="Accéder à mon espace personnel">Mon espace</a></li>
-            <li role="listitem"><a routerLink="/admin/tableau-de-bord" routerLinkActive="active-link" aria-label="Accéder à l'administration">Admin</a></li>
+            @if (isAdmin()) {
+              <li role="listitem"><a routerLink="/admin/tableau-de-bord" routerLinkActive="active-link" aria-label="Accéder à l'administration">Admin</a></li>
+            }
             @if (!isAuth()) {
               <li role="listitem"><a class="btn btn-outline-primary" routerLink="/auth/connexion" routerLinkActive="active-link" aria-label="Se connecter">Connexion</a></li>
               <li role="listitem"><a class="btn btn-primary" routerLink="/auth/inscription" routerLinkActive="active-link" aria-label="Créer un compte">Inscription</a></li>
@@ -60,18 +60,12 @@ import { UserService } from '../services/user.service';
 
   `
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
   private userService = inject(UserService);
   private router = inject(Router);
-  private platformId = inject(PLATFORM_ID);
-  isBrowser = isPlatformBrowser(this.platformId);
-  ngOnInit() {
-    if (this.isBrowser) {
-      setTimeout(() => this.userService.loadCurrentUser());
-    }
-  }
 
-  isAuth(): boolean { return this.isBrowser && this.userService.isAuthenticated(); }
+  isAuth(): boolean { return this.userService.isAuthenticated(); }
+  isAdmin(): boolean { return (this.userService.currentUser()?.role || '').toString().toLowerCase() === 'admin'; }
   logout() {
     this.userService.logout();
     this.router.navigate(['/accueil']);
