@@ -19,9 +19,14 @@ import { SeoService } from '../../../services/seo.service';
         Relevez le défi et améliorez votre score.</p>
       </div>
 
-      @if (selectedQuizId()) {
+      @if (selectedQuizId() && getQuizById(selectedQuizId()!)) {
         <!-- Affichage du jeu -->
         <app-quiz-game [quizId]="selectedQuizId()!"></app-quiz-game>
+      } @else if (selectedQuizId() && !getQuizById(selectedQuizId()!)) {
+        <!-- Quiz en cours de chargement -->
+        <div class="card card-white text-center p-25">
+          <p class="text-lg text-semibold">Chargement du quiz...</p>
+        </div>
       } @else if (selectedCategoryId()) {
         <!-- Affichage des quiz de la catégorie sélectionnée -->
         <div class="text-center mb-20">
@@ -52,7 +57,7 @@ export class PlayComponent implements OnInit {
 
   // Signaux pour la gestion de l'état
   selectedCategoryId = signal<string | null>(null);
-  selectedQuizId = signal<number | null>(null);
+  selectedQuizId = signal<string | null>(null);
 
   // Données exposées
   categories = this.homeService.categories;
@@ -67,6 +72,12 @@ export class PlayComponent implements OnInit {
   ngOnInit(): void {
     // SEO par défaut pour la page play
     this.seoService.setPlayPage();
+
+    // Charger tous les quiz pour s'assurer qu'ils sont disponibles
+    this.quizService.loadAllQuizzes();
+
+    // Charger les catégories et quiz via le service home
+    this.homeService.loadHomeData();
   }
 
   constructor() {
@@ -76,7 +87,7 @@ export class PlayComponent implements OnInit {
       this.selectedCategoryId.set(categoryId || null);
 
       const quizIdParam = params['quizId'];
-      this.selectedQuizId.set(quizIdParam ? Number(quizIdParam) : null);
+      this.selectedQuizId.set(quizIdParam || null);
 
       // Mettre à jour le SEO selon les paramètres
       if (categoryId && !quizIdParam) {
@@ -89,6 +100,10 @@ export class PlayComponent implements OnInit {
   }
 
   // Méthodes
+  getQuizById(id: string): any {
+    return this.quizService.getQuizById(id);
+  }
+
   goBack(): void {
     this.router.navigate(
       this.selectedQuizId() && this.selectedCategoryId()

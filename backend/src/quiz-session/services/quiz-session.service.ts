@@ -112,22 +112,21 @@ export class QuizSessionService {
       throw new NotFoundException('Question non trouvée');
     }
 
-    const correctAnswer = question.answers.find((a) => a.isCorrect);
-    if (!correctAnswer) {
+    const correctIndex = question.answers.findIndex((a) => a.isCorrect);
+    if (correctIndex < 0) {
       throw new NotFoundException(
         'Aucune réponse correcte trouvée pour cette question',
       );
     }
 
-    const isCorrect =
-      correctAnswer.id === submitAnswerDto.selectedAnswer.toString();
+    const isCorrect = correctIndex === Number(submitAnswerDto.selectedAnswer);
 
     // Enregistrer la réponse
     const answer = await this.prisma.quizAnswer.create({
       data: {
         sessionId,
         questionId: submitAnswerDto.questionId,
-        selectedAnswer: submitAnswerDto.selectedAnswer,
+        selectedAnswer: Number(submitAnswerDto.selectedAnswer),
         isCorrect,
         timeSpent: submitAnswerDto.timeSpent,
       },
@@ -320,44 +319,57 @@ export class QuizSessionService {
   }
 
   async getLeaderboard(limit: number = 10) {
-    const userStats = await this.prisma.quizSession.groupBy({
-      by: ['userId'],
-      where: {
-        isCompleted: true,
-      },
-      _avg: {
-        score: true,
-      },
-      _count: {
-        id: true,
-      },
-      orderBy: {
-        _avg: {
-          score: 'desc',
-        },
-      },
+    // Nouveau: inclure tous les utilisateurs (même sans session complétée)
+    // en triant par averageScore puis totalPlays (champs présents sur User)
+    const users = await this.prisma.user.findMany({
+      orderBy: [
+        { averageScore: 'desc' },
+        { totalPlays: 'desc' },
+        { createdAt: 'asc' },
+      ],
       take: limit,
+      select: {
+        id: true,
+        firstname: true,
+        lastname: true,
+        avatar: true,
+        averageScore: true,
+      },
     });
 
     const leaderboard = await Promise.all(
-      userStats.map(async (stat) => {
-        const user = await this.prisma.user.findUnique({
-          where: { id: stat.userId },
-          select: {
-            id: true,
-            firstname: true,
-            lastname: true,
-          },
+      users.map(async (u) => {
+        const totalSessions = await this.prisma.quizSession.count({
+          where: { userId: u.id, isCompleted: true },
         });
-
         return {
-          user,
-          averageScore: Math.round(stat._avg.score || 0),
-          totalSessions: stat._count.id,
+          user: {
+            id: u.id,
+            firstname: u.firstname,
+            lastname: u.lastname,
+            avatar: u.avatar ?? null,
+          },
+          averageScore: Math.round(u.averageScore || 0),
+          totalSessions,
         };
       }),
     );
 
     return leaderboard;
+  }
+
+  // Méthode pour créer une session d'invité (sans authentification)
+  async createGuestSession(createQuizSessionDto: CreateQuizSessionDto) {
+    // Trouver le premier utilisateur actif comme utilisateur par défaut
+    const defaultUser = await this.prisma.user.findFirst({
+      where: { status: 'ACTIVE' },
+    });
+
+    if (!defaultUser) {
+      throw new NotFoundException('Aucun utilisateur actif trouvé');
+    }
+
+    // Utiliser la méthode createSession existante avec l'utilisateur par défaut
+    return this.createSession(createQuizSessionDto, defaultUser.id);
   }
 }

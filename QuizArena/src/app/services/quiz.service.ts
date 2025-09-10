@@ -1,454 +1,265 @@
-import { Injectable, computed, signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { IPlayQuiz, IQuestion, IQuizAnswer, IQuizSession } from '../interfaces/quiz';
+import { Injectable, inject, signal, computed } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/operators';
+import { IPlayQuiz, IQuestion } from '../interfaces/quiz';
 import { HomeService } from './home.service';
-import { getQuizQuestions as getQuestionsFromData } from '../data/questions.data';
 
-@Injectable({
-  providedIn: 'root'
-})
+import { DashboardService } from './dashboard.service';
+import { LeaderboardService } from './leaderbord.service';
+
+@Injectable({ providedIn: 'root' })
 export class QuizService {
-  constructor(
-    private homeService: HomeService,
-    private router?: Router
-  ) {}
+  private http = inject(HttpClient);
+  private readonly api = 'http://localhost:3000';
+  private homeService = inject(HomeService);
+  private leaderboardService = inject(LeaderboardService);
+  private dashboardService = inject(DashboardService);
+  // Etat local pour compatibilité avec les composants existants
+  private _quizzes = signal<IPlayQuiz[]>([]);
+  public allQuizzes = this._quizzes.asReadonly();
 
-  // Signal pour la session de quiz actuelle
-  private currentSession = signal<IQuizSession | null>(null);
+  // Session locale minimale (compat front)
+  private _session = signal<{
+    quizId: string;
+    index: number;
+    start: number;
+    isCompleted?: boolean;
+    score?: number;
+    questions: IQuestion[];
+    answers: { questionId: string; selected: number; isCorrect: boolean; timeSpent: number }[];
+    backendSessionId?: string;
+  } | null>(null);
 
-  // Tous les quiz
-  allQuizzes = computed(() => this.homeService.quizzes());
-
-  // Quiz par catégorie
-  quizzesByCategory = computed(() => {
-    const quizzes = this.homeService.quizzes();
-    const categories = this.homeService.categories();
-
-    return categories.map(category => ({
-      category: category.name,
-      quizzes: quizzes.filter(quiz => quiz.categories.includes(category.name))
-    }));
-  });
-
-  // Quiz par difficulté
-  quizzesByDifficulty = computed(() => {
-    const quizzes = this.homeService.quizzes();
-    const difficulties = ['facile', 'moyen', 'difficile'];
-
-    return difficulties.map(difficulty => ({
-      difficulty,
-      quizzes: quizzes.filter(quiz => quiz.difficulty === difficulty)
-    }));
-  });
-
-  // Statistiques des quiz
-  quizStats = computed(() => {
-    const quizzes = this.homeService.quizzes();
-
-    return {
-      total: quizzes.length,
-      byDifficulty: {
-        facile: quizzes.filter(q => q.difficulty === 'facile').length,
-        moyen: quizzes.filter(q => q.difficulty === 'moyen').length,
-        difficile: quizzes.filter(q => q.difficulty === 'difficile').length
-      },
-      averageQuestions: quizzes.length > 0 ? Math.round(
-        quizzes.reduce((sum, quiz) => sum + quiz.questionCount, 0) / quizzes.length
-      ) : 0,
-      averageScore: quizzes.length > 0 ? Math.round(
-        quizzes.reduce((sum, quiz) => sum + quiz.averageScore, 0) / quizzes.length
-      ) : 0
-    };
-  });
-
-  // Méthode pour obtenir l'icône de catégorie
-  getCategoryIcon(category: string): string {
-    switch (category.toLowerCase()) {
-      case 'histoire': return '🏛️';
-      case 'géographie': return '🌍';
-      case 'sciences': return '🔬';
-      case 'littérature': return '📚';
-      case 'sport': return '⚽';
-      case 'musique': return '🎵';
-      case 'cinéma': return '🎬';
-      case 'technologie': return '💻';
-      case 'art': return '🎨';
-      case 'cuisine': return '👨‍🍳';
-      case 'nature': return '🌱';
-      default: return '🎯';
-    }
+  private getAuthHeaders() {
+    const token = (typeof localStorage !== 'undefined') ? localStorage.getItem('auth_token') : null;
+    return token ? { Authorization: `Bearer ${token}` } as any : undefined;
   }
 
-  // Méthode pour obtenir la classe CSS de difficulté
-  getDifficultyClass(difficulty: string): string {
-    switch (difficulty) {
-      case 'facile': return 'badge-success';
-      case 'moyen': return 'badge-warning';
-      case 'difficile': return 'badge-danger';
-      default: return 'badge-info';
-    }
+  getAllQuizzes() {
+    return this.http.get<IPlayQuiz[]>(`${this.api}/quiz`);
   }
 
-  // Méthode pour jouer à un quiz
-  playQuiz(quiz: IPlayQuiz, navigate: boolean = false) {
-    console.log('Jouer au quiz:', quiz.title);
-
-    if (navigate && this.router) {
-      this.router.navigate(['/jouer/quiz', quiz.id]);
-    }
-
-    return quiz.id;
+  getQuizzesByCategory(categoryId: string | number) {
+    const id = String(categoryId);
+    return this.http.get<IPlayQuiz[]>(`${this.api}/quiz/category/${id}`);
   }
 
-  // Méthode pour obtenir un quiz par ID
-  getQuizById(id: number): IPlayQuiz | undefined {
-    return this.allQuizzes().find(quiz => quiz.id === id);
-  }
-
-  // Méthode pour obtenir le nom de catégorie par ID
-  getCategoryNameById(id: number): string {
-    const categories = [
-      { id: 1, name: 'Histoire' },
-      { id: 2, name: 'Géographie' },
-      { id: 3, name: 'Sciences' },
-      { id: 4, name: 'Culture Générale' },
-      { id: 5, name: 'Sport' },
-      { id: 6, name: 'Technologie' },
-      { id: 7, name: 'Cuisine' },
-      { id: 8, name: 'Nature' },
-      { id: 9, name: 'Cinéma' }
-    ];
-    return categories.find(cat => cat.id === id)?.name || '';
-  }
-
-  // Méthode pour obtenir les quiz d'une catégorie par ID
-  getQuizzesByCategoryId(categoryId: number): IPlayQuiz[] {
-    const categoryName = this.getCategoryNameById(categoryId);
-    return this.allQuizzes().filter(quiz => quiz.categories.includes(categoryName));
-  }
-
-  // Méthode pour obtenir les statistiques d'une catégorie par ID
-  getCategoryStatsById(categoryId: number) {
-    const categoryName = this.getCategoryNameById(categoryId);
-    const categoryQuizzes = this.allQuizzes().filter(quiz =>
-      quiz.categories.includes(categoryName)
+  getQuestionsByQuiz(quizId: string) {
+    return this.http.get<any[]>(`${this.api}/question`, {
+      params: { quizId },
+    }).pipe(
+      map(questions => questions.map(q => ({
+        id: q.id,
+        question: q.text,
+        options: q.answers.map((a: any) => a.text),
+        correctAnswer: q.answers.findIndex((a: any) => a.isCorrect),
+        explanation: q.explanation || ''
+      })))
     );
+  }
 
-    if (categoryQuizzes.length === 0) {
-      return null;
-    }
+  // --- Compatibilité méthodes attendues par les composants ---
 
-    const totalQuestions = categoryQuizzes.reduce((sum, quiz) => sum + quiz.questionCount, 0);
-    const totalPlays = categoryQuizzes.reduce((sum, quiz) => sum + quiz.totalPlays, 0);
-    const averageScore = Math.round(
-      categoryQuizzes.reduce((sum, quiz) => sum + quiz.averageScore, 0) / categoryQuizzes.length
-    );
+  // Chargement mémoire
+  loadAllQuizzes(): void {
+    this.getAllQuizzes().subscribe(qs => this._quizzes.set(qs));
+  }
 
+  getQuizzesByCategoryId(categoryId: string | number) {
+    return this.getQuizzesByCategory(categoryId);
+  }
+
+  getCategoryStatsById(_categoryId: string | number) {
+    const qs = this._quizzes();
     return {
-      categoryName,
-      totalQuizzes: categoryQuizzes.length,
-      totalQuestions,
-      totalPlays,
-      averageScore,
-      averageQuestionsPerQuiz: Math.round(totalQuestions / categoryQuizzes.length)
-    };
+      totalQuizzes: qs.length,
+      totalQuestions: (qs as any[]).reduce((a, q) => a + (q.questionCount ?? 0), 0),
+      totalPlays: (qs as any[]).reduce((a, q) => a + (q.totalPlays ?? 0), 0),
+      averageScore: Math.round(qs.reduce((a, q) => a + (((q as any).averageScore) ? (q as any).averageScore : 0), 0) / (qs.length || 1)),
+    } as any;
   }
 
-  // === NOUVELLES MÉTHODES POUR LES SESSIONS DE QUIZ ===
-
-  // Démarrer une nouvelle session de quiz
-  startQuizSession(quizId: number): IQuizSession {
-    const session: IQuizSession = {
-      quizId,
-      startTime: new Date(),
-      answers: [],
-      currentQuestionIndex: 0,
-      isCompleted: false
-    };
-
-    this.currentSession.set(session);
-    return session;
+  getCategoryNameById(categoryId: string | number) {
+    return String(categoryId);
   }
 
-  // Obtenir les statistiques détaillées d'un quiz
-  getQuizDetailedStats(quizId: number) {
-    const quiz = this.getQuizById(quizId);
-    if (!quiz) return null;
+  getDifficultyClass(difficulty: string | undefined) {
+    const d = (difficulty ?? '').toString().toLowerCase();
+    if (d.includes('facile') || d.includes('facile'.toLowerCase()) || d.includes('facile') || d.includes('facile')) return 'badge badge-success';
+    if (d.includes('diffic')) return 'badge badge-danger';
+    return 'badge badge-warning';
+  }
 
-    const questions = this.getQuizQuestions(quizId);
-    const totalQuestions = questions.length;
+  getCategoryIcon(_category: string) {
+    return '📘';
+  }
 
-    // Calculer la difficulté basée sur les questions
-    const difficultyScores = questions.map(q => {
-      // Logique simple : plus d'options = plus difficile
-      return q.options.length > 4 ? 3 : q.options.length > 3 ? 2 : 1;
+  playQuiz(_quiz: IPlayQuiz) {
+    // Laisser au composant/router la navigation; ici no-op pour compat
+  }
+
+  getQuizById(id: string | number) {
+    const key = String(id);
+    return this._quizzes().find((q: any) => String(q.id) === key || q.slug === key || q.title === key) ?? null;
+  }
+
+  // Gestion de session locale (front-only) pour compat
+  startQuizSession(quizId: string | number) {
+    const qid = String(quizId);
+    this.getQuestionsByQuiz(qid).subscribe((questions) => {
+      const base = { quizId: qid, index: 0, start: Date.now(), questions, answers: [] as any[] };
+      const headers = this.getAuthHeaders();
+      if (headers) {
+        // Créer une session côté backend pour l'utilisateur connecté
+        this.http.post<any>(`${this.api}/quiz-session`, { quizId: qid }, { headers }).subscribe({
+          next: (s) => this._session.set({ ...base, backendSessionId: s?.id }),
+          error: () => this._session.set(base),
+        });
+      } else {
+        this._session.set(base);
+      }
     });
-
-    const averageDifficulty = Math.round(
-      difficultyScores.reduce((sum, score) => sum + score, 0) / totalQuestions
-    );
-
-    return {
-      quizId,
-      title: quiz.title,
-      totalQuestions,
-      averageDifficulty,
-      estimatedTime: Math.round(totalQuestions * 1.5), // 1.5 min par question
-      categories: quiz.categories,
-      difficulty: quiz.difficulty,
-      creator: quiz.creator,
-      createdAt: quiz.createdAt
-    };
   }
 
-  // Obtenir les questions par difficulté
-  getQuestionsByDifficulty(quizId: number) {
-    const questions = this.getQuizQuestions(quizId);
-    const easyQuestions = questions.filter(q => q.options.length <= 3);
-    const mediumQuestions = questions.filter(q => q.options.length === 4);
-    const hardQuestions = questions.filter(q => q.options.length > 4);
-
-    return {
-      facile: easyQuestions,
-      moyen: mediumQuestions,
-      difficile: hardQuestions
-    };
+  getCurrentSession() {
+    return this._session();
   }
 
-  // Obtenir des questions aléatoires d'un quiz
-  getRandomQuestions(quizId: number, count: number = 10): IQuestion[] {
-    const questions = this.getQuizQuestions(quizId);
-    const shuffled = [...questions].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, Math.min(count, questions.length));
+  getCurrentQuestion() {
+    const s = this._session();
+    if (!s) return null;
+    return s.questions[s.index] ?? null;
   }
 
-  // Vérifier si un quiz a des questions
-  hasQuestions(quizId: number): boolean {
-    const questions = this.getQuizQuestions(quizId);
-    return questions.length > 0;
+  getSessionProgress() {
+    const s = this._session();
+    if (!s) return { current: 0, total: 0 };
+    const current = Math.min(s.index + 1, s.questions.length);
+    const total = s.questions.length;
+    const percentage = total > 0 ? Math.round((current / total) * 100) : 0;
+    return { current, total, percentage } as any;
   }
 
-  // Obtenir le temps estimé pour un quiz
-  getEstimatedTime(quizId: number): number {
-    const questions = this.getQuizQuestions(quizId);
-    return Math.round(questions.length * 1.5); // 1.5 minutes par question
+  getQuizDetailedStats(_quizId: string | number) {
+    const s = this._session();
+    if (!s) return { correct: 0, total: 0, time: 0 };
+    const correct = s.answers.filter(a => a.isCorrect).length;
+    const total = s.questions.length;
+    const time = Math.floor((Date.now() - s.start) / 1000);
+    return { correct, total, time };
   }
 
-  // Obtenir la session actuelle
-  getCurrentSession(): IQuizSession | null {
-    return this.currentSession();
+  getUserPerformanceStats(_quizId: string | number, _answers: any[]) {
+    const total = _answers?.length ?? 0;
+    const correct = (_answers ?? []).filter(a => a.isCorrect).length;
+    const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
+    const averageTime = total > 0 ? Math.round((_answers ?? []).reduce((a, x) => a + (x.timeSpent ?? 0), 0) / total) : 0;
+    return { accuracy, averageTime } as any;
   }
 
-  // Répondre à une question
-  answerQuestion(questionId: number, selectedAnswer: number, timeSpent: number): void {
-    const session = this.currentSession();
-    if (!session) return;
+  getImprovementSuggestions(_quizId: string | number, _answers: any[]) {
+    return [] as string[];
+  }
 
-    const quiz = this.getQuizById(session.quizId);
-    if (!quiz?.questions) return;
+  getQuizQuestions(quizId: string | number) {
+    // Pour compat dans le template/composant qui attend un tableau synchronement
+    const s = this._session();
+    if (s && String(s.quizId) === String(quizId)) return s.questions;
+    return [] as IQuestion[];
+  }
 
-    const question = quiz.questions.find(q => q.id === questionId);
-    if (!question) return;
+  // Utilisé par les templates qui attendent un tableau directement
+  filteredQuizzes() {
+    return this._quizzes();
+  }
 
-    const isCorrect = selectedAnswer === question.correctAnswer;
-
-    const answer: IQuizAnswer = {
-      questionId,
-      selectedAnswer,
-      isCorrect,
-      timeSpent
-    };
-
-    session.answers.push(answer);
-    session.currentQuestionIndex++;
-
-    // Vérifier si le quiz est terminé
-    if (session.currentQuestionIndex >= quiz.questions.length) {
-      this.completeQuizSession();
+  answerQuestion(selectedIndex: number, correctIndexOrTime: number, timeSpentOpt?: number) {
+    const s = this._session();
+    if (!s) return;
+    const q = s.questions[s.index];
+    const providedCorrectIndex = (timeSpentOpt !== undefined) ? correctIndexOrTime : undefined;
+    const timeSpentSec = (timeSpentOpt !== undefined) ? timeSpentOpt : (correctIndexOrTime ?? 0);
+    const isCorrect = providedCorrectIndex !== undefined
+      ? selectedIndex === providedCorrectIndex
+      : selectedIndex === (q as any).correctAnswer;
+    s.answers.push({ questionId: (q as any).id?.toString?.() ?? `${s.index}`, selected: selectedIndex, isCorrect, timeSpent: timeSpentSec });
+    // Envoyer la réponse au backend si une session existe et que l'utilisateur est connecté
+    if (s.backendSessionId) {
+      const headers = this.getAuthHeaders();
+      if (headers) {
+        this.http.post(`${this.api}/quiz-session/${s.backendSessionId}/answer`, {
+          questionId: (q as any).id,
+          selectedAnswer: selectedIndex,
+          timeSpent: timeSpentSec,
+        }, { headers }).subscribe({ next: () => {}, error: () => {} });
+      }
     }
+    s.index = Math.min(s.index + 1, s.questions.length);
+    if (s.index >= s.questions.length) {
+      s.isCompleted = true;
+      const correct = s.answers.filter(a => a.isCorrect).length;
+      s.score = Math.round((correct / (s.questions.length || 1)) * 100);
+      // Si session backend, marquer comme complétée pour l'utilisateur connecté
+      if (s.backendSessionId) {
+        const headers = this.getAuthHeaders();
+        if (headers) {
+          this.http.post(`${this.api}/quiz-session/${s.backendSessionId}/complete`, {}, { headers }).subscribe({ next: () => {}, error: () => {} });
+        }
+      }
+      // Sauvegarder la session en base de données
+      this.saveSessionToDatabase(s);
 
-    this.currentSession.set({ ...session });
-  }
-
-  // Terminer la session de quiz
-  completeQuizSession(): void {
-    const session = this.currentSession();
-    if (!session) return;
-
-    session.endTime = new Date();
-    session.isCompleted = true;
-    session.score = this.calculateScore(session);
-
-    this.currentSession.set({ ...session });
-  }
-
-  // Calculer le score d'une session
-  calculateScore(session: IQuizSession): number {
-    if (session.answers.length === 0) return 0;
-
-    const correctAnswers = session.answers.filter(answer => answer.isCorrect).length;
-    return Math.round((correctAnswers / session.answers.length) * 100);
-  }
-
-  // Obtenir les questions d'un quiz
-  getQuizQuestions(quizId: number): IQuestion[] {
-    return getQuestionsFromData(quizId);
-  }
-
-  // Obtenir la question actuelle
-  getCurrentQuestion(): IQuestion | null {
-    const session = this.currentSession();
-    if (!session) return null;
-
-    const quiz = this.getQuizById(session.quizId);
-    if (!quiz?.questions) return null;
-
-    return quiz.questions[session.currentQuestionIndex] || null;
-  }
-
-  // Obtenir le progrès de la session
-  getSessionProgress(): { current: number; total: number; percentage: number } {
-    const session = this.currentSession();
-    if (!session) return { current: 0, total: 0, percentage: 0 };
-
-    const quiz = this.getQuizById(session.quizId);
-    if (!quiz?.questions) return { current: 0, total: 0, percentage: 0 };
-
-    const total = quiz.questions.length;
-    const current = session.currentQuestionIndex;
-    const percentage = Math.round((current / total) * 100);
-
-    return { current, total, percentage };
-  }
-
-  // Réinitialiser la session
-  resetSession(): void {
-    this.currentSession.set(null);
-  }
-
-  // === MÉTHODES POUR L'ANALYSE ET LES STATISTIQUES ===
-
-  // Obtenir les statistiques de performance d'un utilisateur
-  getUserPerformanceStats(quizId: number, answers: IQuizAnswer[]) {
-    if (answers.length === 0) return null;
-
-    const correctAnswers = answers.filter(a => a.isCorrect).length;
-    const totalTime = answers.reduce((sum, a) => sum + a.timeSpent, 0);
-    const averageTime = Math.round(totalTime / answers.length);
-
-    // Analyser les questions les plus difficiles
-    const questionStats = answers.map(answer => ({
-      questionId: answer.questionId,
-      isCorrect: answer.isCorrect,
-      timeSpent: answer.timeSpent
-    }));
-
-    return {
-      quizId,
-      totalQuestions: answers.length,
-      correctAnswers,
-      accuracy: Math.round((correctAnswers / answers.length) * 100),
-      totalTime,
-      averageTime,
-      questionStats
-    };
-  }
-
-  // Obtenir des suggestions d'amélioration
-  getImprovementSuggestions(quizId: number, answers: IQuizAnswer[]) {
-    const stats = this.getUserPerformanceStats(quizId, answers);
-    if (!stats) return [];
-
-    const suggestions = [];
-
-    if (stats.accuracy < 50) {
-      suggestions.push("Considérez revoir les bases de ce sujet");
-    } else if (stats.accuracy < 70) {
-      suggestions.push("Continuez à pratiquer pour améliorer votre score");
-    } else if (stats.accuracy < 90) {
-      suggestions.push("Excellent travail ! Quelques erreurs mineures à corriger");
-    } else {
-      suggestions.push("Parfait ! Vous maîtrisez parfaitement ce sujet");
+      // Rafraîchir stats d'accueil et leaderboard
+      this.homeService.loadHomeData();
+      this.leaderboardService.load(3);
+      // Rafraîchir le tableau de bord utilisateur
+      this.dashboardService.loadFromApi();
     }
+    this._session.set({ ...s });
+  }
 
-    if (stats.averageTime > 120) {
-      suggestions.push("Essayez de répondre plus rapidement aux questions");
+  private saveSessionToDatabase(session: any) {
+    const headers = this.getAuthHeaders();
+    if (headers && session.backendSessionId) {
+      // Déjà stocké pour l'utilisateur connecté via endpoints dédiés
+      return;
     }
-
-    return suggestions;
-  }
-
-  // === MÉTHODES UTILES POUR SCORES ET TEMPS ===
-
-  // Nombre de réponses correctes pour une session donnée
-  getCorrectAnswersCount(session: IQuizSession | null): number {
-    if (!session) return 0;
-    return session.answers.filter(answer => answer.isCorrect).length;
-  }
-
-  // Libellé du temps total écoulé pour une session donnée
-  getTotalTimeLabel(session: IQuizSession | null): string {
-    if (!session?.endTime) return '0 min';
-
-    const totalSeconds = Math.round(
-      (session.endTime.getTime() - session.startTime.getTime()) / 1000
-    );
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes} min ${seconds} s`;
-  }
-
-  // Classe CSS (nom logique) selon le score
-  getScoreClass(score: number): string {
-    if (score >= 80) return 'score-excellent';
-    if (score >= 60) return 'score-good';
-    if (score >= 40) return 'score-average';
-    return 'score-poor';
-  }
-
-  // Message utilisateur selon le score
-  getScoreMessage(score: number): string {
-    if (score >= 80) return 'Excellent ! Vous maîtrisez parfaitement ce sujet.';
-    if (score >= 60) return 'Bien joué ! Vous avez de bonnes connaissances.';
-    if (score >= 40) return 'Pas mal ! Continuez à vous améliorer.';
-    return "N'abandonnez pas ! La pratique rend parfait.";
-  }
-
-  // Vérifier si un quiz est recommandé pour un utilisateur
-  isQuizRecommended(quizId: number, userLevel: 'débutant' | 'intermédiaire' | 'expert' = 'intermédiaire'): boolean {
-    const quiz = this.getQuizById(quizId);
-    if (!quiz) return false;
-
-    const difficultyMap = {
-      'facile': 1,
-      'moyen': 2,
-      'difficile': 3
+    // Sinon: session invité (fallback)
+    const sessionData = {
+      quizId: session.quizId,
+      startTime: new Date(session.start).toISOString(),
+      endTime: new Date().toISOString(),
+      isCompleted: true,
+      score: session.score
     };
-
-    const levelMap = {
-      'débutant': 1,
-      'intermédiaire': 2,
-      'expert': 3
-    };
-
-    return difficultyMap[quiz.difficulty] <= levelMap[userLevel];
+    this.http.post(`${this.api}/quiz-session/guest`, sessionData).subscribe({ next: () => {}, error: () => {} });
   }
 
-  // Obtenir des quiz similaires
-  getSimilarQuizzes(quizId: number, limit: number = 5): IPlayQuiz[] {
-    const quiz = this.getQuizById(quizId);
-    if (!quiz) return [];
+  resetSession() {
+    this._session.set(null);
+  }
 
-    const allQuizzes = this.allQuizzes();
+  getCorrectAnswersCount(curr: { answers: { isCorrect: boolean }[] } | null) {
+    return curr?.answers?.filter(a => a.isCorrect).length ?? 0;
+  }
 
-    return allQuizzes
-      .filter(q => q.id !== quizId && q.categories.some(cat => quiz.categories.includes(cat)))
-      .sort((a, b) => {
-        // Priorité aux quiz avec plus de catégories communes
-        const aCommonCategories = a.categories.filter(cat => quiz.categories.includes(cat)).length;
-        const bCommonCategories = b.categories.filter(cat => quiz.categories.includes(cat)).length;
-        return bCommonCategories - aCommonCategories;
-      })
-      .slice(0, limit);
+  getTotalTimeLabel(curr: { start: number } | null) {
+    if (!curr) return '00:00';
+    const sec = Math.floor((Date.now() - curr.start) / 1000);
+    const m = Math.floor(sec / 60).toString().padStart(2, '0');
+    const s = (sec % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  }
+
+  getScoreClass(score: number) {
+    if (score >= 80) return 'text-success';
+    if (score >= 50) return 'text-warning';
+    return 'text-danger';
+  }
+
+  getScoreMessage(score: number) {
+    if (score >= 80) return 'Excellent !';
+    if (score >= 50) return 'Bien joué, continue !';
+    return 'Tu peux faire mieux, réessaie !';
   }
 }

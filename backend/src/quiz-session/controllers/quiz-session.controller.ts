@@ -10,11 +10,10 @@ import {
   Request,
   Query,
 } from '@nestjs/common';
-import { QuizSessionService } from '../services/quiz-session.service';
-
-import { SubmitAnswerDto } from '../dto/submit-answer.dto';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { CreateQuizSessionDto } from '../dto/create-quiz.dto';
+import { SubmitAnswerDto } from '../dto/submit-answer.dto';
+import { QuizSessionService } from '../services/quiz-session.service';
 
 @Controller('quiz-session')
 export class QuizSessionController {
@@ -30,6 +29,13 @@ export class QuizSessionController {
       createQuizSessionDto,
       req.user.userId,
     );
+  }
+
+  // Endpoint temporaire pour créer des sessions sans authentification (pour les tests)
+  @Post('guest')
+  createGuestSession(@Body() createQuizSessionDto: CreateQuizSessionDto) {
+    // Utiliser le premier utilisateur actif comme utilisateur par défaut
+    return this.quizSessionService.createGuestSession(createQuizSessionDto);
   }
 
   @Post(':id/answer')
@@ -56,7 +62,10 @@ export class QuizSessionController {
   @UseGuards(JwtAuthGuard)
   getMySessions(@Request() req, @Query('limit') limit?: string) {
     const limitNumber = limit ? parseInt(limit, 10) : 10;
-    return this.quizSessionService.getUserSessions(req.user.userId, limitNumber);
+    return this.quizSessionService.getUserSessions(
+      req.user.userId,
+      limitNumber,
+    );
   }
 
   @Get('my-stats')

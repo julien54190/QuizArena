@@ -9,8 +9,8 @@ import { IBadge, IPublicUserProfile, IUserActivity, IUserExperience, IUserStats 
   providedIn: 'root'
 })
 export class PublicProfileService {
-  private currentUserId = signal<number | null>(1); // Normalement viendrait d'un service d'auth
-  private selectedUserId = signal<number | null>(null);
+  private currentUserId = signal<string | null>(null); // devrait venir d'un service d'auth
+  private selectedUserId = signal<string | null>(null);
 
   constructor(private homeService: HomeService) {}
 
@@ -19,7 +19,7 @@ export class PublicProfileService {
   selectedUserIdSignal = computed(() => this.selectedUserId());
 
   // Méthodes publiques
-  setSelectedUser(userId: number) {
+  setSelectedUser(userId: string) {
     this.selectedUserId.set(userId);
   }
 
@@ -27,18 +27,18 @@ export class PublicProfileService {
     this.selectedUserId.set(null);
   }
 
-  getPublicProfile(userId: number): IPublicUserProfile | null {
-    const user = this.homeService.users().find(u => u.id === userId);
+  getPublicProfile(userId: string): IPublicUserProfile | null {
+    const user = this.homeService.users().find(u => String(u.id) === String(userId));
     if (!user) return null;
 
-    const isOwnProfile = userId === this.currentUserId();
+    const isOwnProfile = String(userId) === String(this.currentUserId());
     const stats = this.calculateUserStats(user);
     const experience = this.calculateUserExperience(user);
     const unlockedBadges = this.getUnlockedBadgesForUser(user);
     const recentActivities = this.getRecentActivitiesForUser(user);
 
     return {
-      id: user.id,
+      id: String(user.id),
       firstName: user.firstName,
       lastName: user.lastName,
       username: user.username,

@@ -51,11 +51,11 @@ export declare class QuizSessionService {
         createdAt: Date;
         updatedAt: Date;
         userId: string;
+        isCompleted: boolean;
         quizId: string;
         startTime: Date;
         endTime: Date | null;
         score: number | null;
-        isCompleted: boolean;
     }>;
     submitAnswer(sessionId: string, submitAnswerDto: SubmitAnswerDto, userId: string): Promise<{
         id: string;
@@ -93,11 +93,11 @@ export declare class QuizSessionService {
         createdAt: Date;
         updatedAt: Date;
         userId: string;
+        isCompleted: boolean;
         quizId: string;
         startTime: Date;
         endTime: Date | null;
         score: number | null;
-        isCompleted: boolean;
     }>;
     getUserSessions(userId: string, limit?: number): Promise<({
         quiz: {
@@ -128,11 +128,11 @@ export declare class QuizSessionService {
         createdAt: Date;
         updatedAt: Date;
         userId: string;
+        isCompleted: boolean;
         quizId: string;
         startTime: Date;
         endTime: Date | null;
         score: number | null;
-        isCompleted: boolean;
     })[]>;
     getSessionStats(userId: string): Promise<{
         totalSessions: number;
@@ -148,11 +148,61 @@ export declare class QuizSessionService {
     }>;
     getLeaderboard(limit?: number): Promise<{
         user: {
+            id: string;
             firstname: string;
             lastname: string;
-            id: string;
-        } | null;
+            avatar: string | null;
+        };
         averageScore: number;
         totalSessions: number;
     }[]>;
+    createGuestSession(createQuizSessionDto: CreateQuizSessionDto): Promise<{
+        user: {
+            firstname: string;
+            lastname: string;
+            id: string;
+        };
+        quiz: {
+            questions: ({
+                answers: {
+                    id: string;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    text: string;
+                    isCorrect: boolean;
+                    questionId: string;
+                }[];
+            } & {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                text: string;
+                type: import("@prisma/client").$Enums.QuestionType;
+                mediaUrl: string | null;
+                orderItems: string[];
+                quizId: string;
+            })[];
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            title: string;
+            description: string;
+            categoryId: string;
+            difficulty: import("@prisma/client").$Enums.Difficulty;
+            isPublic: boolean;
+            allowComments: boolean;
+            authorId: string;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string;
+        isCompleted: boolean;
+        quizId: string;
+        startTime: Date;
+        endTime: Date | null;
+        score: number | null;
+    }>;
 }

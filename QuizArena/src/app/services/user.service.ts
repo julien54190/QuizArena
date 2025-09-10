@@ -1,100 +1,100 @@
-import { Injectable, computed } from '@angular/core';
+import { Injectable, computed, signal, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { IUser } from '../interfaces/user';
-import { HomeService } from './home.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  constructor(private homeService: HomeService) {}
+  private http = inject(HttpClient);
+  private router = inject(Router);
+  private platformId = inject(PLATFORM_ID);
+  private readonly api = 'http://localhost:3000';
 
-  // Tous les utilisateurs
-  allUsers = computed(() => this.homeService.users());
+  // Etat réactif d'authentification
+  private _isAuth = signal<boolean>(false);
+  isAuthenticatedSignal() { return this._isAuth(); }
 
-  // Utilisateurs actifs uniquement
-  activeUsers = computed(() =>
-    this.homeService.users().filter(user => user.status === 'active')
-  );
+  // Signal pour l'utilisateur courant
+  private currentUserSignal = signal<IUser | null>(null);
 
-  // Top 3 des meilleurs joueurs par score moyen
-  topPlayers = computed(() => {
-    return this.activeUsers()
-      .sort((a, b) => b.averageScore - a.averageScore)
-      .slice(0, 3);
-  });
+  // Computed property pour l'utilisateur courant
+  currentUser = computed(() => this.currentUserSignal());
 
-  // Top 10 des joueurs les plus actifs (par nombre de parties)
-  mostActivePlayers = computed(() => {
-    return this.activeUsers()
-      .sort((a, b) => b.totalPlays - a.totalPlays)
-      .slice(0, 10);
-  });
+  // Charger l'utilisateur courant depuis l'API
+  async loadCurrentUser(): Promise<IUser | null> {
+    const token = isPlatformBrowser(this.platformId) ? localStorage.getItem('auth_token') : null;
+    if (!token) {
+      this.currentUserSignal.set(null);
+      this._isAuth.set(false);
+      return null;
+    }
 
-  // Top créateurs de quiz
-  topQuizCreators = computed(() => {
-    return this.activeUsers()
-      .sort((a, b) => b.quizzesCreated - a.quizzesCreated)
-      .slice(0, 5);
-  });
-
-  // Statistiques des utilisateurs
-  userStats = computed(() => {
-    const users = this.homeService.users();
-    const activeUsers = this.activeUsers();
-
-    return {
-      total: users.length,
-      active: activeUsers.length,
-      suspended: users.filter(u => u.status === 'suspended').length,
-      banned: users.filter(u => u.status === 'banned').length,
-      averageScore: activeUsers.length > 0 ? Math.round(
-        activeUsers.reduce((sum, user) => sum + user.averageScore, 0) / activeUsers.length
-      ) : 0,
-      averagePlays: activeUsers.length > 0 ? Math.round(
-        activeUsers.reduce((sum, user) => sum + user.totalPlays, 0) / activeUsers.length
-      ) : 0,
-      averageQuizzesCreated: activeUsers.length > 0 ? Math.round(
-        activeUsers.reduce((sum, user) => sum + user.quizzesCreated, 0) / activeUsers.length
-      ) : 0
-    };
-  });
-
-  // Utilisateurs par rôle
-  usersByRole = computed(() => {
-    const users = this.homeService.users();
-    const roles = ['user', 'moderator', 'admin'];
-
-    return roles.map(role => ({
-      role,
-      count: users.filter(user => user.role === role).length,
-      users: users.filter(user => user.role === role)
-    }));
-  });
-
-  // Utilisateurs par plan
-  usersByPlan = computed(() => {
-    const users = this.homeService.users();
-    const plans = ['gratuit', 'etudiant', 'entreprise'];
-
-    return plans.map(plan => ({
-      plan,
-      count: users.filter(user => user.plan === plan).length,
-      users: users.filter(user => user.plan === plan)
-    }));
-  });
-
-  // Méthode pour obtenir l'icône de médaille selon le classement
-  getMedalIcon(index: number): string {
-    switch (index) {
-      case 0: return '🥇'; 
-      case 1: return '🥈';
-      case 2: return '🥉';
-      default: return '🏆';
+    const headers = { Authorization: `Bearer ${token}` };
+    try {
+      const user = await (await import('rxjs')).firstValueFrom(
+        this.http.get<any>(`${this.api}/auth/me`, { headers })
+      );
+      const mapped: IUser = {
+        id: user.id,
+        firstName: user.firstname || '',
+        lastName: user.lastname || '',
+        username: user.username || user.email?.split('@')[0] || '',
+        email: user.email,
+        role: (user.role || 'user').toString().toLowerCase(),
+        status: (user.status || 'active').toString().toLowerCase(),
+        plan: (user.plan || 'gratuit').toString().toLowerCase(),
+        quizzesCreated: 0,
+        totalPlays: 0,
+        averageScore: 0,
+        avatar: user.avatar || ''
+      };
+      this.currentUserSignal.set(mapped);
+      this._isAuth.set(true);
+      return mapped;
+    } catch (error: any) {
+      console.error('Erreur lors du chargement de l\'utilisateur:', error);
+      this.currentUserSignal.set(null);
+      if (error?.status === 401 && isPlatformBrowser(this.platformId)) {
+        // Token invalide/expiré: nettoyer silencieusement sans rediriger
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('user_email');
+      }
+      this._isAuth.set(false);
+      return null;
     }
   }
 
-  // Méthode pour obtenir le nom complet d'un utilisateur
-  getFullName(user: IUser): string {
-    return `${user.firstName} ${user.lastName}`;
+  // Mettre à jour l'utilisateur courant
+  updateCurrentUser(updates: Partial<IUser>): void {
+    const currentUser = this.currentUserSignal();
+    if (currentUser) {
+      this.currentUserSignal.set({ ...currentUser, ...updates });
+    }
+  }
+
+  // Déconnexion
+  logout(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_email');
+    }
+    this.currentUserSignal.set(null);
+    this._isAuth.set(false);
+  }
+
+  // Vérifier si l'utilisateur est connecté
+  isAuthenticated(): boolean {
+    // Par défaut: non authentifié côté serveur
+    if (!isPlatformBrowser(this.platformId)) return false;
+    // Côté client: on se base sur l'état réactif mis à jour par loadCurrentUser()/logout()
+    return this._isAuth();
+  }
+
+  // Obtenir l'email de l'utilisateur connecté
+  getCurrentUserEmail(): string | null {
+    return isPlatformBrowser(this.platformId) ? localStorage.getItem('user_email') : null;
   }
 }

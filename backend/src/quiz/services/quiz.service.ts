@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
 import {
   Injectable,
   NotFoundException,
@@ -12,9 +13,11 @@ export class QuizService {
   constructor(private prisma: PrismaService) {}
 
   async create(createQuizDto: CreateQuizDto, authorId: string) {
+    const { categoryId, ...rest } = createQuizDto;
     return this.prisma.quiz.create({
       data: {
-        ...createQuizDto,
+        ...rest,
+        categoryId,
         authorId,
       },
       include: {
@@ -25,6 +28,7 @@ export class QuizService {
             lastname: true,
           },
         },
+        category: true,
         questions: {
           include: {
             answers: true,
@@ -35,7 +39,7 @@ export class QuizService {
   }
 
   async findAll() {
-    return this.prisma.quiz.findMany({
+    const quizzes = await this.prisma.quiz.findMany({
       where: {
         isPublic: true,
       },
@@ -47,9 +51,19 @@ export class QuizService {
             lastname: true,
           },
         },
+        category: true,
         questions: {
           include: {
             answers: true,
+          },
+        },
+        _count: {
+          select: {
+            sessions: {
+              where: {
+                isCompleted: true,
+              },
+            },
           },
         },
       },
@@ -57,6 +71,47 @@ export class QuizService {
         createdAt: 'desc',
       },
     });
+
+    // Calculer les statistiques pour chaque quiz
+    type SessionScore = { score: number | null };
+    type QuizStats = { totalPlays: number; averageScore: number };
+
+    const quizzesWithStats: Array<(typeof quizzes)[number] & QuizStats> =
+      await Promise.all(
+        quizzes.map(async (quiz) => {
+          const sessions: SessionScore[] =
+            await this.prisma.quizSession.findMany({
+              where: {
+                quizId: quiz.id,
+                isCompleted: true,
+              },
+              select: {
+                score: true,
+              },
+            });
+
+          const totalPlays: number = sessions.length;
+          const averageScore: number =
+            totalPlays > 0
+              ? Math.round(
+                  sessions.reduce(
+                    (sum: number, session: SessionScore) =>
+                      sum + (session.score ?? 0),
+                    0,
+                  ) / totalPlays,
+                )
+              : 0;
+
+          const withStats: (typeof quizzes)[number] & QuizStats = {
+            ...quiz,
+            totalPlays,
+            averageScore,
+          };
+          return withStats;
+        }),
+      );
+
+    return quizzesWithStats;
   }
 
   async findOne(id: string) {
@@ -122,6 +177,7 @@ export class QuizService {
             lastname: true,
           },
         },
+        category: true,
         questions: {
           include: {
             answers: true,

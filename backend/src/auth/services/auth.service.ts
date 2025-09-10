@@ -10,6 +10,7 @@ import * as jwt from 'jsonwebtoken';
 import { RegisterDto } from '../dto/register.dto';
 import { LoginDto } from '../dto/login.dto';
 import { User } from '@prisma/client';
+import { UpdateProfileDto } from '../dto/update-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -27,13 +28,23 @@ export class AuthService {
 
     const hashed: string = await bcrypt.hash(dto.password, 10);
 
+    // Normaliser le rôle reçu (ex: STANDARD -> USER)
+    const normalizedRole = (dto.role ?? 'USER')
+      .toString()
+      .trim()
+      .toUpperCase()
+      .replace('STANDARD', 'USER')
+      .replace('ETUDIANT', 'USER')
+      .replace('GRATUIT', 'USER');
+
     const user = await this.prismaClient.user.create({
       data: {
         email: dto.email,
         password: hashed,
         firstname: dto.firstname,
         lastname: dto.lastname,
-        role: dto.role,
+        username: dto.email.split('@')[0], // Générer username à partir de l'email
+        role: normalizedRole,
         studentEmail: dto.studentEmail ?? null,
         school: dto.school ?? null,
         siret: dto.siret ?? null,
@@ -85,5 +96,55 @@ export class AuthService {
       user: userWithoutPassword,
       token,
     };
+  }
+
+  async me(userId: string): Promise<Partial<User>> {
+    const user = await this.prismaClient.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        firstname: true,
+        lastname: true,
+        role: true,
+        username: true,
+        status: true,
+        plan: true,
+        createdAt: true,
+      },
+    });
+    return user;
+  }
+
+  async updateProfile(
+    userId: string,
+    dto: UpdateProfileDto,
+  ): Promise<Partial<User>> {
+    const data: any = {};
+    if (dto.firstname !== undefined) data.firstname = dto.firstname;
+    if (dto.lastname !== undefined) data.lastname = dto.lastname;
+    if (dto.username !== undefined) data.username = dto.username;
+    if (dto.email !== undefined) data.email = dto.email;
+    if (dto.password !== undefined) {
+      const hashed: string = await bcrypt.hash(dto.password, 10);
+      data.password = hashed;
+    }
+
+    const user = await this.prismaClient.user.update({
+      where: { id: userId },
+      data,
+      select: {
+        id: true,
+        email: true,
+        firstname: true,
+        lastname: true,
+        role: true,
+        username: true,
+        status: true,
+        plan: true,
+        createdAt: true,
+      },
+    });
+    return user;
   }
 }

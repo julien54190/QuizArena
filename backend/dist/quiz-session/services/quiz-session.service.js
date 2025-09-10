@@ -90,16 +90,16 @@ let QuizSessionService = class QuizSessionService {
         if (!question) {
             throw new common_1.NotFoundException('Question non trouvée');
         }
-        const correctAnswer = question.answers.find((a) => a.isCorrect);
-        if (!correctAnswer) {
+        const correctIndex = question.answers.findIndex((a) => a.isCorrect);
+        if (correctIndex < 0) {
             throw new common_1.NotFoundException('Aucune réponse correcte trouvée pour cette question');
         }
-        const isCorrect = correctAnswer.id === submitAnswerDto.selectedAnswer.toString();
+        const isCorrect = correctIndex === Number(submitAnswerDto.selectedAnswer);
         const answer = await this.prisma.quizAnswer.create({
             data: {
                 sessionId,
                 questionId: submitAnswerDto.questionId,
-                selectedAnswer: submitAnswerDto.selectedAnswer,
+                selectedAnswer: Number(submitAnswerDto.selectedAnswer),
                 isCorrect,
                 timeSpent: submitAnswerDto.timeSpent,
             },
@@ -243,40 +243,46 @@ let QuizSessionService = class QuizSessionService {
         };
     }
     async getLeaderboard(limit = 10) {
-        const userStats = await this.prisma.quizSession.groupBy({
-            by: ['userId'],
-            where: {
-                isCompleted: true,
-            },
-            _avg: {
-                score: true,
-            },
-            _count: {
-                id: true,
-            },
-            orderBy: {
-                _avg: {
-                    score: 'desc',
-                },
-            },
+        const users = await this.prisma.user.findMany({
+            orderBy: [
+                { averageScore: 'desc' },
+                { totalPlays: 'desc' },
+                { createdAt: 'asc' },
+            ],
             take: limit,
+            select: {
+                id: true,
+                firstname: true,
+                lastname: true,
+                avatar: true,
+                averageScore: true,
+            },
         });
-        const leaderboard = await Promise.all(userStats.map(async (stat) => {
-            const user = await this.prisma.user.findUnique({
-                where: { id: stat.userId },
-                select: {
-                    id: true,
-                    firstname: true,
-                    lastname: true,
-                },
+        const leaderboard = await Promise.all(users.map(async (u) => {
+            const totalSessions = await this.prisma.quizSession.count({
+                where: { userId: u.id, isCompleted: true },
             });
             return {
-                user,
-                averageScore: Math.round(stat._avg.score || 0),
-                totalSessions: stat._count.id,
+                user: {
+                    id: u.id,
+                    firstname: u.firstname,
+                    lastname: u.lastname,
+                    avatar: u.avatar ?? null,
+                },
+                averageScore: Math.round(u.averageScore || 0),
+                totalSessions,
             };
         }));
         return leaderboard;
+    }
+    async createGuestSession(createQuizSessionDto) {
+        const defaultUser = await this.prisma.user.findFirst({
+            where: { status: 'ACTIVE' },
+        });
+        if (!defaultUser) {
+            throw new common_1.NotFoundException('Aucun utilisateur actif trouvé');
+        }
+        return this.createSession(createQuizSessionDto, defaultUser.id);
     }
 };
 exports.QuizSessionService = QuizSessionService;

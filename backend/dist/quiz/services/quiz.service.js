@@ -18,9 +18,11 @@ let QuizService = class QuizService {
         this.prisma = prisma;
     }
     async create(createQuizDto, authorId) {
+        const { categoryId, ...rest } = createQuizDto;
         return this.prisma.quiz.create({
             data: {
-                ...createQuizDto,
+                ...rest,
+                categoryId,
                 authorId,
             },
             include: {
@@ -31,6 +33,7 @@ let QuizService = class QuizService {
                         lastname: true,
                     },
                 },
+                category: true,
                 questions: {
                     include: {
                         answers: true,
@@ -40,7 +43,7 @@ let QuizService = class QuizService {
         });
     }
     async findAll() {
-        return this.prisma.quiz.findMany({
+        const quizzes = await this.prisma.quiz.findMany({
             where: {
                 isPublic: true,
             },
@@ -52,9 +55,19 @@ let QuizService = class QuizService {
                         lastname: true,
                     },
                 },
+                category: true,
                 questions: {
                     include: {
                         answers: true,
+                    },
+                },
+                _count: {
+                    select: {
+                        sessions: {
+                            where: {
+                                isCompleted: true,
+                            },
+                        },
                     },
                 },
             },
@@ -62,6 +75,28 @@ let QuizService = class QuizService {
                 createdAt: 'desc',
             },
         });
+        const quizzesWithStats = await Promise.all(quizzes.map(async (quiz) => {
+            const sessions = await this.prisma.quizSession.findMany({
+                where: {
+                    quizId: quiz.id,
+                    isCompleted: true,
+                },
+                select: {
+                    score: true,
+                },
+            });
+            const totalPlays = sessions.length;
+            const averageScore = totalPlays > 0
+                ? Math.round(sessions.reduce((sum, session) => sum + (session.score ?? 0), 0) / totalPlays)
+                : 0;
+            const withStats = {
+                ...quiz,
+                totalPlays,
+                averageScore,
+            };
+            return withStats;
+        }));
+        return quizzesWithStats;
     }
     async findOne(id) {
         const quiz = await this.prisma.quiz.findUnique({
@@ -122,6 +157,7 @@ let QuizService = class QuizService {
                         lastname: true,
                     },
                 },
+                category: true,
                 questions: {
                     include: {
                         answers: true,

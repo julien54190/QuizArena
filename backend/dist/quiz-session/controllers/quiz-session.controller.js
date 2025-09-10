@@ -14,10 +14,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.QuizSessionController = void 0;
 const common_1 = require("@nestjs/common");
-const quiz_session_service_1 = require("../services/quiz-session.service");
-const submit_answer_dto_1 = require("../dto/submit-answer.dto");
 const jwt_auth_guard_1 = require("../../auth/guard/jwt-auth.guard");
 const create_quiz_dto_1 = require("../dto/create-quiz.dto");
+const submit_answer_dto_1 = require("../dto/submit-answer.dto");
+const quiz_session_service_1 = require("../services/quiz-session.service");
 let QuizSessionController = class QuizSessionController {
     quizSessionService;
     constructor(quizSessionService) {
@@ -25,6 +25,9 @@ let QuizSessionController = class QuizSessionController {
     }
     createSession(createQuizSessionDto, req) {
         return this.quizSessionService.createSession(createQuizSessionDto, req.user.userId);
+    }
+    createGuestSession(createQuizSessionDto) {
+        return this.quizSessionService.createGuestSession(createQuizSessionDto);
     }
     submitAnswer(sessionId, submitAnswerDto, req) {
         return this.quizSessionService.submitAnswer(sessionId, submitAnswerDto, req.user.userId);
@@ -57,6 +60,13 @@ __decorate([
     __metadata("design:paramtypes", [create_quiz_dto_1.CreateQuizSessionDto, Object]),
     __metadata("design:returntype", void 0)
 ], QuizSessionController.prototype, "createSession", null);
+__decorate([
+    (0, common_1.Post)('guest'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [create_quiz_dto_1.CreateQuizSessionDto]),
+    __metadata("design:returntype", void 0)
+], QuizSessionController.prototype, "createGuestSession", null);
 __decorate([
     (0, common_1.Post)(':id/answer'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

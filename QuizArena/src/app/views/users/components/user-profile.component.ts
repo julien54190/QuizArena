@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy, inject, effect } from '@angular/core';
 import { IUser } from '../../../interfaces/user';
 import { FormsModule } from '@angular/forms';
-import { inject } from '@angular/core';
+import { UserService } from '../../../services/user.service';
 import { SeoService } from '../../../services/seo.service';
 
 @Component({
@@ -27,8 +27,8 @@ import { SeoService } from '../../../services/seo.service';
 								class="w-full p-12"
 								autocomplete="given-name"
 								type="text"
-								[ngModel]="user().firstName"
-								(ngModelChange)="updateUser('firstName', $event)"
+								[value]="user().firstName"
+								(input)="updateUser('firstName', $any($event.target).value)"
 							>
 						</div>
 						<div class="field">
@@ -38,8 +38,8 @@ import { SeoService } from '../../../services/seo.service';
 								class="w-full p-12"
 								autocomplete="family-name"
 								type="text"
-								[ngModel]="user().lastName"
-								(ngModelChange)="updateUser('lastName', $event)"
+								[value]="user().lastName"
+								(input)="updateUser('lastName', $any($event.target).value)"
 							>
 						</div>
 						<div class="field">
@@ -49,8 +49,8 @@ import { SeoService } from '../../../services/seo.service';
 								class="w-full p-12"
 								autocomplete="username"
 								type="text"
-								[ngModel]="user().username"
-								(ngModelChange)="updateUser('username', $event)"
+								[value]="user().username"
+								(input)="updateUser('username', $any($event.target).value)"
 							>
 						</div>
 						<div class="field">
@@ -60,8 +60,8 @@ import { SeoService } from '../../../services/seo.service';
 								class="w-full p-12"
 								autocomplete="email"
 								type="email"
-								[ngModel]="user().email"
-								(ngModelChange)="updateUser('email', $event)"
+								[value]="user().email"
+								(input)="updateUser('email', $any($event.target).value)"
 							>
 						</div>
 					</div>
@@ -109,28 +109,43 @@ import { SeoService } from '../../../services/seo.service';
 			</div>
 				</main>
 	`,
+  styles: [`
+    input.w-full { color: var(--text-color, #222); background: #fff; border: 1px solid rgba(0,0,0,0.15); border-radius: 8px; }
+    input.w-full::placeholder { color: rgba(0,0,0,0.4); }
+  `]
 })
 export class UserProfileComponent implements OnInit, OnDestroy {
 	private seo = inject(SeoService);
+	private userService = inject(UserService);
 	user = signal<IUser>({
-		id: 1,
-		firstName: 'Jean',
-		lastName: 'Dupont',
-		username: 'jeandupont',
-		email: 'jean.dupont@email.com',
+		id: '',
+		firstName: '',
+		lastName: '',
+		username: '',
+		email: '',
 		role: 'user',
 		status: 'active',
 		plan: 'gratuit',
-		quizzesCreated: 5,
-		totalPlays: 42,
-		averageScore: 78
+		quizzesCreated: 0,
+		totalPlays: 0,
+		averageScore: 0
 	});
 
+	constructor() {
+		// Réagir lorsque l'utilisateur courant est chargé/actualisé
+		effect(() => {
+			const cu = this.userService.currentUser();
+			if (cu) {
+				this.user.set(cu);
+			}
+		});
+	}
+
 	ngOnInit(): void {
-		const currentUser = this.user();
+		this.userService.loadCurrentUser();
 		this.seo.updateSEO({
-			title: `Mon profil - ${currentUser.firstName} ${currentUser.lastName} | QuizArena`,
-			description: `Gérez vos informations personnelles, votre plan (${currentUser.plan}) et vos préférences sur QuizArena.`,
+			title: `Mon profil - ${this.user().firstName} ${this.user().lastName} | QuizArena`,
+			description: `Gérez vos informations personnelles, votre plan (${this.user().plan}) et vos préférences sur QuizArena.`,
 			keywords: 'profil utilisateur, paramètres, compte, sécurité, préférences'
 		});
 	}
@@ -147,8 +162,13 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 	}
 
 	saveProfile() {
-		// Logique pour sauvegarder le profil
-		console.log('Profil sauvegardé:', this.user());
+		const u = this.user();
+		this.userService.updateCurrentUser({
+			firstName: u.firstName,
+			lastName: u.lastName,
+			username: u.username,
+			email: u.email,
+		});
 		alert('Profil sauvegardé avec succès !');
 	}
 

@@ -5,6 +5,15 @@ export declare class QuizService {
     private prisma;
     constructor(prisma: PrismaService);
     create(createQuizDto: CreateQuizDto, authorId: string): Promise<{
+        category: {
+            name: string;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+            icon: string;
+            color: string;
+        };
         author: {
             firstname: string;
             lastname: string;
@@ -42,6 +51,15 @@ export declare class QuizService {
         authorId: string;
     }>;
     findAll(): Promise<({
+        category: {
+            name: string;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+            icon: string;
+            color: string;
+        };
         author: {
             firstname: string;
             lastname: string;
@@ -66,6 +84,9 @@ export declare class QuizService {
             orderItems: string[];
             quizId: string;
         })[];
+        _count: {
+            sessions: number;
+        };
     } & {
         id: string;
         createdAt: Date;
@@ -77,6 +98,9 @@ export declare class QuizService {
         isPublic: boolean;
         allowComments: boolean;
         authorId: string;
+    } & {
+        totalPlays: number;
+        averageScore: number;
     })[]>;
     findOne(id: string): Promise<{
         author: {
@@ -153,6 +177,15 @@ export declare class QuizService {
         authorId: string;
     })[]>;
     findByCategory(categoryId: string): Promise<({
+        category: {
+            name: string;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+            icon: string;
+            color: string;
+        };
         author: {
             firstname: string;
             lastname: string;

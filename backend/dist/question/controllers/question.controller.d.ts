@@ -12,39 +12,39 @@ export declare class QuestionController {
         };
         answers: {
             id: string;
-            text: string;
             createdAt: Date;
             updatedAt: Date;
+            text: string;
             isCorrect: boolean;
             questionId: string;
         }[];
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         text: string;
         type: import("@prisma/client").$Enums.QuestionType;
         mediaUrl: string | null;
         orderItems: string[];
-        createdAt: Date;
-        updatedAt: Date;
         quizId: string;
     }>;
     findAll(quizId?: string): Promise<({
         answers: {
             id: string;
-            text: string;
             createdAt: Date;
             updatedAt: Date;
+            text: string;
             isCorrect: boolean;
             questionId: string;
         }[];
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         text: string;
         type: import("@prisma/client").$Enums.QuestionType;
         mediaUrl: string | null;
         orderItems: string[];
-        createdAt: Date;
-        updatedAt: Date;
         quizId: string;
     })[]>;
     findOne(id: string): Promise<{
@@ -55,20 +55,20 @@ export declare class QuestionController {
         };
         answers: {
             id: string;
-            text: string;
             createdAt: Date;
             updatedAt: Date;
+            text: string;
             isCorrect: boolean;
             questionId: string;
         }[];
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         text: string;
         type: import("@prisma/client").$Enums.QuestionType;
         mediaUrl: string | null;
         orderItems: string[];
-        createdAt: Date;
-        updatedAt: Date;
         quizId: string;
     }>;
     update(id: string, updateQuestionDto: UpdateQuestionDto, req: any): Promise<{
@@ -79,30 +79,30 @@ export declare class QuestionController {
         };
         answers: {
             id: string;
-            text: string;
             createdAt: Date;
             updatedAt: Date;
+            text: string;
             isCorrect: boolean;
             questionId: string;
         }[];
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         text: string;
         type: import("@prisma/client").$Enums.QuestionType;
         mediaUrl: string | null;
         orderItems: string[];
-        createdAt: Date;
-        updatedAt: Date;
         quizId: string;
     }>;
     remove(id: string, req: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         text: string;
         type: import("@prisma/client").$Enums.QuestionType;
         mediaUrl: string | null;
         orderItems: string[];
-        createdAt: Date;
-        updatedAt: Date;
         quizId: string;
     }>;
 }

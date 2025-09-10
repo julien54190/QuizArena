@@ -31,8 +31,8 @@ export declare class CategoryController {
             author: {
                 firstname: string;
                 lastname: string;
-                id: string;
                 username: string;
+                id: string;
             };
             _count: {
                 questions: number;

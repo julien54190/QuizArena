@@ -161,10 +161,24 @@ import { CommonModule } from '@angular/common';
       }
     </section>
   `,
-  styles: ``
+  styles: `
+    .score-circle {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--side, #f2f2f7);
+      color: var(--text-color, #222);
+      border: 2px solid rgba(0,0,0,0.08);
+    }
+    .correct-feedback { border-left: 4px solid #22c55e; }
+    .incorrect-feedback { border-left: 4px solid #ef4444; }
+  `
 })
 export class QuizGameComponent implements OnInit, OnDestroy {
-  @Input() quizId!: number;
+  @Input() quizId!: string;
 
   private quizService = inject(QuizService);
   private router = inject(Router);
@@ -210,13 +224,8 @@ export class QuizGameComponent implements OnInit, OnDestroy {
     this.showFeedback.set(false);
     this.lastAnswer.set(null);
 
-    // Charger les questions pour ce quiz
-    const quiz = this.currentQuiz();
-    if (quiz && !quiz.questions) {
-      quiz.questions = this.quizService.getQuizQuestions(this.quizId);
-    }
-
     // SEO: titre/meta
+    const quiz = this.currentQuiz();
     if (quiz) {
       this.seoService.setQuizPage(quiz.title, quiz.description, quiz.categories);
     }
@@ -251,8 +260,8 @@ export class QuizGameComponent implements OnInit, OnDestroy {
     const timeSpent = Math.round((Date.now() - this.startTime()) / 1000);
 
     this.quizService.answerQuestion(
-      question.id,
       this.lastAnswer()?.selected || 0,
+      question.correctAnswer,
       timeSpent
     );
 
@@ -299,6 +308,6 @@ export class QuizGameComponent implements OnInit, OnDestroy {
     const session = this.currentSession();
     const progress = this.sessionProgress();
     if (!session) return 0;
-    return session.isCompleted ? progress.total : progress.current + 1;
+    return session.isCompleted ? progress.total : progress.current;
   }
 }

@@ -5,10 +5,19 @@ export declare class QuizController {
     private readonly quizService;
     constructor(quizService: QuizService);
     create(createQuizDto: CreateQuizDto, req: any): Promise<{
-        author: {
+        category: {
+            name: string;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+            icon: string;
+            color: string;
+        };
+        author: {
             firstname: string;
             lastname: string;
+            id: string;
         };
         questions: ({
             answers: {
@@ -31,21 +40,30 @@ export declare class QuizController {
         })[];
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         title: string;
         description: string;
+        categoryId: string;
         difficulty: import("@prisma/client").$Enums.Difficulty;
         isPublic: boolean;
         allowComments: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         authorId: string;
-        categoryId: string;
     }>;
     findAll(): Promise<({
-        author: {
+        category: {
+            name: string;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+            icon: string;
+            color: string;
+        };
+        author: {
             firstname: string;
             lastname: string;
+            id: string;
         };
         questions: ({
             answers: {
@@ -66,23 +84,29 @@ export declare class QuizController {
             orderItems: string[];
             quizId: string;
         })[];
+        _count: {
+            sessions: number;
+        };
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         title: string;
         description: string;
+        categoryId: string;
         difficulty: import("@prisma/client").$Enums.Difficulty;
         isPublic: boolean;
         allowComments: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         authorId: string;
-        categoryId: string;
+    } & {
+        totalPlays: number;
+        averageScore: number;
     })[]>;
     findMyQuizzes(req: any): Promise<({
         author: {
-            id: string;
             firstname: string;
             lastname: string;
+            id: string;
         };
         questions: ({
             answers: {
@@ -105,21 +129,30 @@ export declare class QuizController {
         })[];
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         title: string;
         description: string;
+        categoryId: string;
         difficulty: import("@prisma/client").$Enums.Difficulty;
         isPublic: boolean;
         allowComments: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         authorId: string;
-        categoryId: string;
     })[]>;
     findByCategory(categoryId: string): Promise<({
-        author: {
+        category: {
+            name: string;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+            icon: string;
+            color: string;
+        };
+        author: {
             firstname: string;
             lastname: string;
+            id: string;
         };
         questions: ({
             answers: {
@@ -142,21 +175,21 @@ export declare class QuizController {
         })[];
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         title: string;
         description: string;
+        categoryId: string;
         difficulty: import("@prisma/client").$Enums.Difficulty;
         isPublic: boolean;
         allowComments: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         authorId: string;
-        categoryId: string;
     })[]>;
     findOne(id: string): Promise<{
         author: {
-            id: string;
             firstname: string;
             lastname: string;
+            id: string;
         };
         questions: ({
             answers: {
@@ -179,21 +212,21 @@ export declare class QuizController {
         })[];
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         title: string;
         description: string;
+        categoryId: string;
         difficulty: import("@prisma/client").$Enums.Difficulty;
         isPublic: boolean;
         allowComments: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         authorId: string;
-        categoryId: string;
     }>;
     update(id: string, updateQuizDto: UpdateQuizDto, req: any): Promise<{
         author: {
-            id: string;
             firstname: string;
             lastname: string;
+            id: string;
         };
         questions: ({
             answers: {
@@ -216,26 +249,26 @@ export declare class QuizController {
         })[];
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         title: string;
         description: string;
+        categoryId: string;
         difficulty: import("@prisma/client").$Enums.Difficulty;
         isPublic: boolean;
         allowComments: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         authorId: string;
-        categoryId: string;
     }>;
     remove(id: string, req: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         title: string;
         description: string;
+        categoryId: string;
         difficulty: import("@prisma/client").$Enums.Difficulty;
         isPublic: boolean;
         allowComments: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         authorId: string;
-        categoryId: string;
     }>;
 }

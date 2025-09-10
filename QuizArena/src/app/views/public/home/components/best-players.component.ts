@@ -1,7 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { UserService } from '../../../../services/user.service';
+import { LeaderboardService } from '../../../../services/leaderbord.service';
+
 
 @Component({
   selector: 'app-best-players',
@@ -15,17 +16,16 @@ import { UserService } from '../../../../services/user.service';
         <article
           class="card card-white mt-10 card-size text-center flex flex-col justify-content-between card-hover"
           role="listitem"
-          (click)="navigateToProfile(topPlayers()[0].id)"
-          (keydown.enter)="navigateToProfile(topPlayers()[0].id)"
-          (keydown.space)="navigateToProfile(topPlayers()[0].id)"
+          (click)="navigateToProfile(topPlayers()[0].userId)"
+          (keydown.enter)="navigateToProfile(topPlayers()[0].userId)"
+          (keydown.space)="navigateToProfile(topPlayers()[0].userId)"
           tabindex="0"
-          [attr.aria-label]="'Voir le profil de ' + topPlayers()[0].firstName + ' ' + topPlayers()[0].lastName + ' - 1er place'">
+          [attr.aria-label]="'Voir le profil de ' + topPlayers()[0].username + ' - 1er place'">
           <div role="img" aria-label="Médaille d'or - 1er place">🥇</div>
-          <h3>{{ topPlayers()[0].firstName }} {{ topPlayers()[0].lastName }}</h3>
+          <h3>{{ topPlayers()[0].username }}</h3>
           <div>
-            <div>Score moyen: <strong>{{ topPlayers()[0].averageScore }}%</strong></div>
-            <div>Parties jouées: <strong>{{ topPlayers()[0].totalPlays }}</strong></div>
-            <div>Quiz créés: <strong>{{ topPlayers()[0].quizzesCreated }}</strong></div>
+            <div>Score moyen: <strong>{{ topPlayers()[0].avgScore ?? 0 }}%</strong></div>
+            <div>Parties jouées: <strong>{{ topPlayers()[0].totalSessions ?? 0 }}</strong></div>
           </div>
         </article>
       }
@@ -35,17 +35,16 @@ import { UserService } from '../../../../services/user.service';
         <article
           class="card card-white mt-10 card-size text-center flex flex-col justify-content-between card-hover"
           role="listitem"
-          (click)="navigateToProfile(topPlayers()[1].id)"
-          (keydown.enter)="navigateToProfile(topPlayers()[1].id)"
-          (keydown.space)="navigateToProfile(topPlayers()[1].id)"
+          (click)="navigateToProfile(topPlayers()[1].userId)"
+          (keydown.enter)="navigateToProfile(topPlayers()[1].userId)"
+          (keydown.space)="navigateToProfile(topPlayers()[1].userId)"
           tabindex="0"
-          [attr.aria-label]="'Voir le profil de ' + topPlayers()[1].firstName + ' ' + topPlayers()[1].lastName + ' - 2ème place'">
+          [attr.aria-label]="'Voir le profil de ' + topPlayers()[1].username + ' - 2ème place'">
           <div role="img" aria-label="Médaille d'argent - 2ème place">🥈</div>
-          <h3>{{ topPlayers()[1].firstName }} {{ topPlayers()[1].lastName }}</h3>
+          <h3>{{ topPlayers()[1].username }}</h3>
           <div>
-            <div>Score moyen: <strong>{{ topPlayers()[1].averageScore }}%</strong></div>
-            <div>Parties jouées: <strong>{{ topPlayers()[1].totalPlays }}</strong></div>
-            <div>Quiz créés: <strong>{{ topPlayers()[1].quizzesCreated }}</strong></div>
+            <div>Score moyen: <strong>{{ topPlayers()[1].avgScore ?? 0 }}%</strong></div>
+            <div>Parties jouées: <strong>{{ topPlayers()[1].totalSessions ?? 0 }}</strong></div>
           </div>
         </article>
       }
@@ -55,17 +54,16 @@ import { UserService } from '../../../../services/user.service';
         <article
           class="card card-white mt-10 card-size text-center flex flex-col justify-content-between card-hover"
           role="listitem"
-          (click)="navigateToProfile(topPlayers()[2].id)"
-          (keydown.enter)="navigateToProfile(topPlayers()[2].id)"
-          (keydown.space)="navigateToProfile(topPlayers()[2].id)"
+          (click)="navigateToProfile(topPlayers()[2].userId)"
+          (keydown.enter)="navigateToProfile(topPlayers()[2].userId)"
+          (keydown.space)="navigateToProfile(topPlayers()[2].userId)"
           tabindex="0"
-          [attr.aria-label]="'Voir le profil de ' + topPlayers()[2].firstName + ' ' + topPlayers()[2].lastName + ' - 3ème place'">
+          [attr.aria-label]="'Voir le profil de ' + topPlayers()[2].username + ' - 3ème place'">
           <div role="img" aria-label="Médaille de bronze - 3ème place">🥉</div>
-          <h3>{{ topPlayers()[2].firstName }} {{ topPlayers()[2].lastName }}</h3>
+          <h3>{{ topPlayers()[2].username }}</h3>
           <div>
-            <div>Score moyen: <strong>{{ topPlayers()[2].averageScore }}%</strong></div>
-            <div>Parties jouées: <strong>{{ topPlayers()[2].totalPlays }}</strong></div>
-            <div>Quiz créés: <strong>{{ topPlayers()[2].quizzesCreated }}</strong></div>
+            <div>Score moyen: <strong>{{ topPlayers()[2].avgScore ?? 0 }}%</strong></div>
+            <div>Parties jouées: <strong>{{ topPlayers()[2].totalSessions ?? 0 }}</strong></div>
           </div>
         </article>
       }
@@ -90,14 +88,18 @@ import { UserService } from '../../../../services/user.service';
   `]
 })
 export class BestPlayersComponent {
-  private userService = inject(UserService);
+  private leaderboard = inject(LeaderboardService);
   private router = inject(Router);
 
   // Top 3 des meilleurs joueurs depuis le service
-  topPlayers = this.userService.topPlayers;
+  topPlayers = this.leaderboard.entries;
+
+  constructor() {
+    this.leaderboard.load(3);
+  }
 
   // Méthode pour naviguer vers le profil d'un utilisateur
-  navigateToProfile(userId: number) {
+  navigateToProfile(userId: string | number) {
     this.router.navigate(['/profil', userId]);
   }
 }

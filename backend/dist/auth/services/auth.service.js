@@ -62,13 +62,21 @@ let AuthService = class AuthService {
         if (existing)
             throw new common_1.BadRequestException('Email déjà utilisé');
         const hashed = await bcrypt.hash(dto.password, 10);
+        const normalizedRole = (dto.role ?? 'USER')
+            .toString()
+            .trim()
+            .toUpperCase()
+            .replace('STANDARD', 'USER')
+            .replace('ETUDIANT', 'USER')
+            .replace('GRATUIT', 'USER');
         const user = await this.prismaClient.user.create({
             data: {
                 email: dto.email,
                 password: hashed,
                 firstname: dto.firstname,
                 lastname: dto.lastname,
-                role: dto.role,
+                username: dto.email.split('@')[0],
+                role: normalizedRole,
                 studentEmail: dto.studentEmail ?? null,
                 school: dto.school ?? null,
                 siret: dto.siret ?? null,
@@ -107,6 +115,54 @@ let AuthService = class AuthService {
             user: userWithoutPassword,
             token,
         };
+    }
+    async me(userId) {
+        const user = await this.prismaClient.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                email: true,
+                firstname: true,
+                lastname: true,
+                role: true,
+                username: true,
+                status: true,
+                plan: true,
+                createdAt: true,
+            },
+        });
+        return user;
+    }
+    async updateProfile(userId, dto) {
+        const data = {};
+        if (dto.firstname !== undefined)
+            data.firstname = dto.firstname;
+        if (dto.lastname !== undefined)
+            data.lastname = dto.lastname;
+        if (dto.username !== undefined)
+            data.username = dto.username;
+        if (dto.email !== undefined)
+            data.email = dto.email;
+        if (dto.password !== undefined) {
+            const hashed = await bcrypt.hash(dto.password, 10);
+            data.password = hashed;
+        }
+        const user = await this.prismaClient.user.update({
+            where: { id: userId },
+            data,
+            select: {
+                id: true,
+                email: true,
+                firstname: true,
+                lastname: true,
+                role: true,
+                username: true,
+                status: true,
+                plan: true,
+                createdAt: true,
+            },
+        });
+        return user;
     }
 };
 exports.AuthService = AuthService;

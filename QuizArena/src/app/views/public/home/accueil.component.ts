@@ -58,6 +58,7 @@ export class AccueilComponent implements OnInit {
 
   ngOnInit(): void {
     this.seoService.setHomePage();
+    this.homeService.loadHomeData();
   }
 
   // Méthode pour rediriger vers la page jouer
