@@ -1,0 +1,227 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  firstname String
+  lastname  String
+  username  String   @unique
+  avatar    String?
+  role      UserRole @default(USER)
+  status    UserStatus @default(ACTIVE)
+  plan      UserPlan @default(GRATUIT)
+  
+  // Champs spécifiques étudiant
+  studentEmail String?
+  school       String?
+  
+  // Champs spécifiques entreprise
+  siret           String?
+  phone           String?
+  companyAddress  String?
+  
+  // Système d'expérience et niveaux
+  totalXp         Int      @default(0)
+  currentLevel    Int      @default(1)
+  totalPlays      Int      @default(0)
+  averageScore    Float    @default(0)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  quizzes Quiz[]
+  userBadges UserBadge[]
+  quizSessions QuizSession[]
+  
+  @@map("users")
+}
+
+model Quiz {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  difficulty  Difficulty
+  isPublic    Boolean  @default(true)
+  allowComments Boolean @default(true)
+  
+  // Relations
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  questions Question[]
+  sessions QuizSession[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("quizzes")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  icon        String
+  color       String
+  description String?
+  
+  // Relations
+  quizzes Quiz[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("categories")
+}
+
+model Question {
+  id       String     @id @default(cuid())
+  text     String
+  type     QuestionType @default(SIMPLE)
+  mediaUrl String?
+  orderItems String[] // Pour les questions de type "ordre"
+  
+  // Relations
+  quizId String
+  quiz   Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answers Answer[]
+  quizAnswers QuizAnswer[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("questions")
+}
+
+model Answer {
+  id        String @id @default(cuid())
+  text      String
+  isCorrect Boolean @default(false)
+  
+  // Relations
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("answers")
+}
+
+model Badge {
+  id          String   @id @default(cuid())
+  name        String
+  icon        String
+  hint        String?
+  category    BadgeCategory
+  requirement String?
+  isActive    Boolean  @default(true)
+  
+  // Relations
+  userBadges UserBadge[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("badges")
+}
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  unlockedAt DateTime @default(now())
+  
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeId String
+  badge  Badge  @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, badgeId])
+  @@map("user_badges")
+}
+
+model QuizSession {
+  id        String   @id @default(cuid())
+  startTime DateTime @default(now())
+  endTime   DateTime?
+  score     Int?
+  isCompleted Boolean @default(false)
+  
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quizId String
+  quiz   Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answers QuizAnswer[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("quiz_sessions")
+}
+
+model QuizAnswer {
+  id            String @id @default(cuid())
+  selectedAnswer Int
+  isCorrect     Boolean
+  timeSpent     Int    // en secondes
+  
+  // Relations
+  sessionId String
+  session   QuizSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  questionId String
+  question   Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  
+  @@map("quiz_answers")
+}
+
+enum UserRole {
+  USER
+  MODERATOR
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
+}
+
+enum UserPlan {
+  GRATUIT
+  ETUDIANT
+  ENTREPRISE
+}
+
+enum Difficulty {
+  FACILE
+  MOYEN
+  DIFFICILE
+}
+
+enum QuestionType {
+  SIMPLE
+  MUSIQUE
+  PHOTO
+  ORDRE
+}
+
+enum BadgeCategory {
+  ACHIEVEMENT
+  MILESTONE
+  SPECIAL
+}

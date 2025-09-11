@@ -1,0 +1,24 @@
+:root {
+  --font-family: "Montserrat", sans-serif;
+  --text-color: #222;
+  --gray-100: #dfe6e9;
+  --gray-700: #2c3a47;
+  --light: #e9d5ff;
+  --primary: #7e22ce;
+  --side: #a855f7;
+  --dark: #3b0764;
+  --success: #22c55e;
+  --warning: #fcb22b;
+  --danger: #dc2626;
+  --danger-dark: #921515;
+  --info : #2563eb;
+  --white: #ffffff;
+  --incorrect: #FFEBEE;
+
+  --border: 1px solid var(--gray-100);
+  --border-card: 3px solid var(--primary);
+  --border-light: 1px solid var(--light);
+  --box-shadow: 0 10px 30px var(--gray-100);
+  --radius: 24px;
+  --radius-avatar: 50%;
+}

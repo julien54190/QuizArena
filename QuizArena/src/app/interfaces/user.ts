@@ -1,0 +1,15 @@
+export interface IUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  avatar?: string;
+  email: string;
+  role: 'user' | 'moderator' | 'admin';
+  status: 'active' | 'suspended' | 'banned';
+  plan: 'gratuit' | 'etudiant' | 'entreprise';
+  quizzesCreated: number;
+  totalPlays: number;
+  averageScore: number;
+  selected?: boolean;
+}

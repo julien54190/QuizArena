@@ -1,60 +1,90 @@
-# QuizArena
+### QuizArena
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.11.
+Application complète de quiz avec un backend NestJS (API + Prisma) et un frontend Angular (SPA/SSR). Elle permet l’authentification, la gestion des quiz, questions, catégories, badges et des sessions de quiz multi-joueurs.
 
-## Development server
+### Fonctionnalités principales
+- **Authentification JWT**: inscription/connexion, rôles (admin/utilisateur)
+- **Gestion des quiz**: création, édition, suppression, publication
+- **Questions**: création, options de réponses, validation
+- **Catégories**: organisation des quiz par thèmes
+- **Badges & expérience**: attribution de badges et XP selon les performances
+- **Sessions de quiz**: création, participation, suivi des scores
 
-To start a local development server, run:
+### Prérequis
+- **Node.js** 18+ (recommandé LTS)
+- **npm** 9+
+- **Base de données**: PostgreSQL (via Prisma)
 
+### Installation (monorepo)
+1. Installer les dépendances backend et frontend
 ```bash
-ng serve
+cd "backend" && npm install
+cd "../QuizArena" && npm install
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+2. Configurer l’environnement du backend
+- Créer un fichier `.env` dans `backend/` avec au minimum:
 ```bash
-ng generate component component-name
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DBNAME?schema=public"
+JWT_SECRET="votre_secret_jwt"
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
+3. Préparer la base de données (Prisma)
 ```bash
-ng generate --help
+cd "backend"
+npx prisma migrate dev
+npx prisma generate
 ```
 
-## Building
-
-To build the project run:
-
+4. (Optionnel) Seeder des données
 ```bash
-ng build
+# Créer un administrateur (si script disponible)
+npm run seed:admin
+# Autres seeds éventuels: voir `backend/src/scripts/*`
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
+### Lancer en développement
+- Backend (NestJS)
 ```bash
-ng test
+cd "backend"
+npm run start:dev
+# Par défaut: http://localhost:3000
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
+- Frontend (Angular)
 ```bash
-ng e2e
+cd "QuizArena"
+npm start
+# Par défaut: http://localhost:4200
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+### Build et exécution en production
+- Backend
+```bash
+cd "backend"
+npm run build
+npm run start:prod
+```
 
-## Additional Resources
+- Frontend (SPA)
+```bash
+cd "QuizArena"
+npm run build
+# Les fichiers seront générés dans `dist/`
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-# QuizArena
+- Frontend (SSR, si souhaité)
+```bash
+cd "QuizArena"
+npm run build
+npm run serve:ssr:QuizArena
+```
+
+### Structure du projet
+- `backend/`: API NestJS, Prisma, scripts
+- `QuizArena/`: application Angular (client)
+
+### Dépannage rapide
+- Vérifiez que `DATABASE_URL` est correcte et accessible
+- Après modification du schéma Prisma, relancer `npx prisma migrate dev`
+- Ports par défaut: backend `3000`, frontend `4200`
