@@ -1,6 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { PLATFORM_ID } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { UserService } from '../../services/user.service';
 
@@ -18,7 +16,7 @@ import { UserService } from '../../services/user.service';
           </li>
         }
         @if (!isAuth()) {
-          <li><a [routerLink]="'/auth/connexion'" class="btn btn-outline-primary mb-10">Connexion</a></li>
+          <li><a [routerLink]="'/auth/connexion'" class="btn btn-outline-primary">Connexion</a></li>
           <li><a [routerLink]="'/auth/inscription'" class="btn btn-primary">Inscription</a></li>
         } @else {
           <li><button class="btn btn-outline-primary" (click)="logout()">Déconnexion</button></li>
@@ -49,17 +47,10 @@ import { UserService } from '../../services/user.service';
   li a:hover, li a:focus { background-color: var(--dark); color: white; }
   `
 })
-export class HeaderMenuComponent implements OnInit {
+export class HeaderMenuComponent {
   show = signal(false);
   private userService = inject(UserService);
   private router = inject(Router);
-  private platformId = inject(PLATFORM_ID);
-  isBrowser = isPlatformBrowser(this.platformId);
-  ngOnInit(){
-    if (this.isBrowser) {
-      setTimeout(() => this.userService.loadCurrentUser());
-    }
-  }
   navigation = [
     {
       path: '/accueil',
@@ -70,7 +61,7 @@ export class HeaderMenuComponent implements OnInit {
     name: 'jouer',
   },
   {
-    path: '/tableau-de-bord',
+    path: '/users/tableau-de-bord',
     name: 'Mon espace',
   },
   {
@@ -83,7 +74,7 @@ export class HeaderMenuComponent implements OnInit {
   toggleMenu() {
     this.show.update(value => !value);
   }
-  isAuth(): boolean { return this.isBrowser && this.userService.isAuthenticated(); }
+  isAuth(): boolean { return this.userService.isAuthenticated(); }
   logout() {
     this.userService.logout();
     this.router.navigate(['/accueil']);

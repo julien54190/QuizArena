@@ -1,7 +1,7 @@
 import { Injectable, computed, signal, inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
 import { IUser } from '../interfaces/user';
 
 @Injectable({
@@ -12,23 +12,32 @@ export class UserService {
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
   private readonly api = 'http://localhost:3000';
-
-  // Etat réactif d'authentification
-  private _isAuth = signal<boolean>(false);
-  isAuthenticatedSignal() { return this._isAuth(); }
+  private isBrowser = isPlatformBrowser(this.platformId);
 
   // Signal pour l'utilisateur courant
   private currentUserSignal = signal<IUser | null>(null);
+  // Signal d'état d'authentification (pour éviter toute écriture dans des computed externes)
+  private authenticatedSignal = signal<boolean>(false);
 
   // Computed property pour l'utilisateur courant
   currentUser = computed(() => this.currentUserSignal());
+  isAuthenticatedSignal = computed(() => this.authenticatedSignal());
+
+  constructor() {
+    // Init rapide à partir du token pour l'affichage initial (seulement côté navigateur)
+    if (this.isBrowser) {
+      this.authenticatedSignal.set(!!localStorage.getItem('auth_token'));
+    }
+  }
 
   // Charger l'utilisateur courant depuis l'API
   async loadCurrentUser(): Promise<IUser | null> {
-    const token = isPlatformBrowser(this.platformId) ? localStorage.getItem('auth_token') : null;
+    if (!this.isBrowser) return null;
+
+    const token = localStorage.getItem('auth_token');
     if (!token) {
       this.currentUserSignal.set(null);
-      this._isAuth.set(false);
+      this.authenticatedSignal.set(false);
       return null;
     }
 
@@ -52,17 +61,15 @@ export class UserService {
         avatar: user.avatar || ''
       };
       this.currentUserSignal.set(mapped);
-      this._isAuth.set(true);
+      this.authenticatedSignal.set(true);
       return mapped;
     } catch (error: any) {
       console.error('Erreur lors du chargement de l\'utilisateur:', error);
       this.currentUserSignal.set(null);
-      if (error?.status === 401 && isPlatformBrowser(this.platformId)) {
-        // Token invalide/expiré: nettoyer silencieusement sans rediriger
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('user_email');
+      this.authenticatedSignal.set(false);
+      if (error?.status === 401) {
+        this.logout();
       }
-      this._isAuth.set(false);
       return null;
     }
   }
@@ -77,24 +84,25 @@ export class UserService {
 
   // Déconnexion
   logout(): void {
-    if (isPlatformBrowser(this.platformId)) {
+    if (this.isBrowser) {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user_email');
+      // Supprime aussi l'éventuelle persistance utilisée par AuthService
+      try { localStorage.removeItem('qa_auth'); } catch {}
     }
     this.currentUserSignal.set(null);
-    this._isAuth.set(false);
+    this.authenticatedSignal.set(false);
+    this.router.navigate(['/auth/connexion']);
   }
 
   // Vérifier si l'utilisateur est connecté
   isAuthenticated(): boolean {
-    // Par défaut: non authentifié côté serveur
-    if (!isPlatformBrowser(this.platformId)) return false;
-    // Côté client: on se base sur l'état réactif mis à jour par loadCurrentUser()/logout()
-    return this._isAuth();
+    return this.authenticatedSignal();
   }
 
   // Obtenir l'email de l'utilisateur connecté
   getCurrentUserEmail(): string | null {
-    return isPlatformBrowser(this.platformId) ? localStorage.getItem('user_email') : null;
+    if (!this.isBrowser) return null;
+    return localStorage.getItem('user_email');
   }
 }

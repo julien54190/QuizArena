@@ -43,6 +43,14 @@ export class AuthService {
           // ignore
         }
       }
+      // Fallback: si un token existe déjà dans localStorage (après reload), on le remet en mémoire
+      try {
+        const existingToken = localStorage.getItem('auth_token');
+        if (existingToken && !this.jwtToken()) {
+          this.jwtToken.set(existingToken);
+          this.isAuthenticated.set(true);
+        }
+      } catch {}
     }
   }
 
@@ -131,6 +139,9 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return this.jwtToken() || null;
+    // Renvoie le token en mémoire, sinon fallback au localStorage (utile après un rafraîchissement)
+    const inMemory = this.jwtToken();
+    if (inMemory) return inMemory;
+    try { return localStorage.getItem('auth_token'); } catch { return null; }
   }
 }
