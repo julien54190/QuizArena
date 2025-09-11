@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.21.1] - 2025-09-11
+
+### 📚 Documentation
+
+- *(readme)* :memo: ajout du README.md
+
 ## [0.21.0] - 2025-09-11
 
 ### 🚀 Features
