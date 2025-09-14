@@ -1,0 +1,52 @@
+<div class="checkout-container">
+  <div class="checkout-card">
+    <div class="header">
+      <button class="back-btn" (click)="goBack()">
+        ← Retour aux plans
+      </button>
+      <h1>Finaliser votre paiement</h1>
+      <p>Remplissez vos informations de paiement pour activer votre abonnement</p>
+    </div>
+
+    <div class="payment-section" *ngIf="!isLoading; else loadingTemplate">
+      <div class="payment-form">
+        <div id="payment-element">
+          <!-- Stripe Payment Element sera inséré ici -->
+        </div>
+
+        <div class="error-message" *ngIf="error">
+          <span class="error-icon">⚠️</span>
+          {{ error }}
+        </div>
+
+        <div class="payment-actions">
+          <button
+            class="pay-btn"
+            [disabled]="isProcessing"
+            (click)="handleSubmit()"
+          >
+            <span *ngIf="!isProcessing">Payer maintenant</span>
+            <span *ngIf="isProcessing">Traitement...</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="payment-info">
+        <h3>Informations de sécurité</h3>
+        <ul>
+          <li>🔒 Paiement sécurisé par Stripe</li>
+          <li>💳 Toutes les cartes acceptées</li>
+          <li>🛡️ Vos données sont protégées</li>
+          <li>↩️ Annulation possible à tout moment</li>
+        </ul>
+      </div>
+    </div>
+
+    <ng-template #loadingTemplate>
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Configuration du paiement...</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

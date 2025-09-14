@@ -84,7 +84,6 @@ npm run serve:ssr:QuizArena
 - `backend/`: API NestJS, Prisma, scripts
 - `QuizArena/`: application Angular (client)
 
-
 ### Configuration SSL pour production
 
 #### 1. **Certificat SSL (Let's Encrypt recommandé)**
@@ -164,8 +163,45 @@ pm2 startup
 pm2 save
 ```
 
+### Configuration Stripe (Système de paiement)
+
+#### 1. **Variables d'environnement backend**
+```bash
+# backend/.env
+STRIPE_SECRET_KEY="sk_test_..."
+STRIPE_PUBLISHABLE_KEY="pk_test_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+STRIPE_PREMIUM_PRICE_ID="price_..."
+STRIPE_EDUCATION_PRICE_ID="price_..."
+```
+
+#### 2. **Configuration frontend**
+```typescript
+// src/app/services/payment.service.ts
+private stripe = await loadStripe('pk_test_...'); // Clé publique Stripe
+```
+
+#### 3. **Plans de tarification**
+- **Gratuit** : 3 quiz/jour, fonctionnalités de base
+- **Premium** (9.99€/mois) : Quiz illimités, statistiques avancées
+- **Éducation** (4.99€/mois) : Pour écoles/universités
+
+#### 4. **Endpoints API**
+- `POST /payment/customer` - Créer un customer Stripe
+- `POST /payment/subscription` - Créer un abonnement
+- `GET /payment/subscription-status` - Statut de l'abonnement
+- `GET /payment/pricing-plans` - Plans disponibles
+- `POST /payment/webhook` - Webhooks Stripe
+
+#### 5. **Webhooks Stripe**
+```bash
+# Configuration webhook
+stripe listen --forward-to localhost:3000/payment/webhook
+```
+
 ### Dépannage rapide
 - Vérifiez que `DATABASE_URL` est correcte et accessible
 - Après modification du schéma Prisma, relancer `npx prisma migrate dev`
 - Ports par défaut: backend `3000`, frontend `4200`
 - **SSL** : Vérifiez la validité du certificat avec `openssl x509 -in cert.pem -text -noout`
+- **Stripe** : Vérifiez les clés API et les webhooks

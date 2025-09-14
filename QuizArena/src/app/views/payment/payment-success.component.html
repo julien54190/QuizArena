@@ -1,0 +1,23 @@
+<div class="success-container">
+  <div class="success-card">
+    <div class="success-icon">
+      <div class="checkmark">✓</div>
+    </div>
+
+    <h1>Paiement réussi !</h1>
+    <p>Votre abonnement a été activé avec succès.</p>
+
+    <div class="success-details" *ngIf="paymentIntentId">
+      <p><strong>ID de transaction :</strong> {{ paymentIntentId }}</p>
+    </div>
+
+    <div class="success-actions">
+      <button class="primary-btn" (click)="goToDashboard()">
+        Aller au tableau de bord
+      </button>
+      <button class="secondary-btn" (click)="goToPlans()">
+        Voir mes abonnements
+      </button>
+    </div>
+  </div>
+</div>

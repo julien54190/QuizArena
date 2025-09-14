@@ -44,6 +44,7 @@ model User {
   quizzes Quiz[]
   userBadges UserBadge[]
   quizSessions QuizSession[]
+  subscription Subscription?
   
   @@map("users")
 }
@@ -224,4 +225,21 @@ enum BadgeCategory {
   ACHIEVEMENT
   MILESTONE
   SPECIAL
+}
+
+model Subscription {
+  id                   String   @id @default(cuid())
+  stripeCustomerId     String   @unique
+  stripeSubscriptionId String?
+  plan                 String   @default("free")
+  status               String   @default("active")
+  
+  // Relations
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("subscriptions")
 }

@@ -22,6 +22,7 @@ const quiz_session_module_1 = require("./quiz-session/quiz-session.module");
 const experience_module_1 = require("./experience/experience.module");
 const category_module_1 = require("./category/category.module");
 const admin_module_1 = require("./admin/admin.module");
+const payment_module_1 = require("./payment/payment.module");
 const prisma_service_1 = require("./prisma/services/prisma.service");
 let AppModule = class AppModule {
     prisma;
@@ -73,6 +74,7 @@ exports.AppModule = AppModule = __decorate([
             experience_module_1.ExperienceModule,
             category_module_1.CategoryModule,
             admin_module_1.AdminModule,
+            payment_module_1.PaymentModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

@@ -11,6 +11,7 @@ import { QuizSessionModule } from './quiz-session/quiz-session.module';
 import { ExperienceModule } from './experience/experience.module';
 import { CategoryModule } from './category/category.module';
 import { AdminModule } from './admin/admin.module';
+import { PaymentModule } from './payment/payment.module';
 import { PrismaService } from './prisma/services/prisma.service';
 
 @Module({
@@ -24,6 +25,7 @@ import { PrismaService } from './prisma/services/prisma.service';
     ExperienceModule,
     CategoryModule,
     AdminModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

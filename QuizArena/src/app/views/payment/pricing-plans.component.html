@@ -1,0 +1,53 @@
+<div class="pricing-container">
+  <div class="header">
+    <h1>Choisissez votre plan</h1>
+    <p>Débloquez toutes les fonctionnalités de QuizArena</p>
+  </div>
+
+  <div class="plans-grid" *ngIf="!isLoading; else loadingTemplate">
+    <div
+      *ngFor="let plan of plans"
+      class="plan-card"
+      [class.current-plan]="isCurrentPlan(plan.id)"
+      [class.processing]="isProcessing"
+    >
+      <div class="plan-header" [ngClass]="getPlanColor(plan.id)">
+        <div class="plan-icon">{{ getPlanIcon(plan.id) }}</div>
+        <h3>{{ plan.name }}</h3>
+        <div class="plan-price">
+          <span class="amount">{{ formatPrice(plan.amount) }}</span>
+          <span class="period" *ngIf="plan.amount > 0">/mois</span>
+        </div>
+      </div>
+
+      <div class="plan-features">
+        <ul>
+          <li *ngFor="let feature of plan.features">
+            <span class="checkmark">✓</span>
+            {{ feature }}
+          </li>
+        </ul>
+      </div>
+
+      <div class="plan-footer">
+        <button
+          class="select-plan-btn"
+          [class.current]="isCurrentPlan(plan.id)"
+          [disabled]="isProcessing || isCurrentPlan(plan.id)"
+          (click)="selectPlan(plan)"
+        >
+          <span *ngIf="isCurrentPlan(plan.id)">Plan actuel</span>
+          <span *ngIf="!isCurrentPlan(plan.id) && !isProcessing">Choisir ce plan</span>
+          <span *ngIf="!isCurrentPlan(plan.id) && isProcessing">Traitement...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loadingTemplate>
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Chargement des plans...</p>
+    </div>
+  </ng-template>
+</div>

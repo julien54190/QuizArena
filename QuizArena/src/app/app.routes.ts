@@ -23,5 +23,9 @@ export const routes: Routes = [
   {
     path: 'admin',
     loadChildren: () => import('./views/admin/admin.routes').then(m => m.adminRoutes)
+  },
+  {
+    path: 'payment',
+    loadChildren: () => import('./views/payment/payment.routes').then(m => m.paymentRoutes)
   }
 ];
