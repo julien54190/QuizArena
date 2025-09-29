@@ -14,3 +14,5 @@ export const paymentRoutes: Routes = [
     loadComponent: () => import('./payment-success.component').then(m => m.PaymentSuccessComponent)
   }
 ];
+
+

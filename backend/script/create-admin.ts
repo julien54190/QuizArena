@@ -7,10 +7,22 @@ async function main() {
   const email = process.env.ADMIN_EMAIL || 'admin@admin.com';
   const password = process.env.ADMIN_PASSWORD || '123456';
   const baseUsername = (process.env.ADMIN_USERNAME || 'admin').toLowerCase();
+  const shouldReset =
+    (process.env.ADMIN_RESET || '').toLowerCase() === '1' ||
+    (process.env.ADMIN_RESET || '').toLowerCase() === 'true' ||
+    !!process.env.ADMIN_PASSWORD;
 
   const existingByEmail = await prisma.user.findUnique({ where: { email } });
   if (existingByEmail) {
-    console.log(`Admin déjà présent: ${email}`);
+    if (shouldReset) {
+      const hash = await bcrypt.hash(password, 10);
+      await prisma.user.update({ where: { email }, data: { password: hash } });
+      console.log(`Mot de passe admin réinitialisé pour: ${email}`);
+    } else {
+      console.log(
+        `Admin déjà présent: ${email} (aucune réinitialisation demandée)`,
+      );
+    }
     return;
   }
 
@@ -33,11 +45,8 @@ async function main() {
       firstname: 'Admin',
       lastname: 'User',
       username,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       role: UserRole.ADMIN,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       status: UserStatus.ACTIVE,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       plan: UserPlan.GRATUIT,
     },
   });
@@ -45,7 +54,6 @@ async function main() {
   console.log('Admin créé:', {
     id: user.id,
     email: user.email,
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     username: user.username,
     role: user.role,
   });

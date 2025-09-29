@@ -10,9 +10,19 @@ async function main() {
     const email = process.env.ADMIN_EMAIL || 'admin@admin.com';
     const password = process.env.ADMIN_PASSWORD || '123456';
     const baseUsername = (process.env.ADMIN_USERNAME || 'admin').toLowerCase();
+    const shouldReset = (process.env.ADMIN_RESET || '').toLowerCase() === '1' ||
+        (process.env.ADMIN_RESET || '').toLowerCase() === 'true' ||
+        !!process.env.ADMIN_PASSWORD;
     const existingByEmail = await prisma.user.findUnique({ where: { email } });
     if (existingByEmail) {
-        console.log(`Admin déjà présent: ${email}`);
+        if (shouldReset) {
+            const hash = await bcryptjs_1.default.hash(password, 10);
+            await prisma.user.update({ where: { email }, data: { password: hash } });
+            console.log(`Mot de passe admin réinitialisé pour: ${email}`);
+        }
+        else {
+            console.log(`Admin déjà présent: ${email} (aucune réinitialisation demandée)`);
+        }
         return;
     }
     const hash = await bcryptjs_1.default.hash(password, 10);

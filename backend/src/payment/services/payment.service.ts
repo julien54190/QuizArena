@@ -7,7 +7,7 @@ import { CreatePaymentIntentDto } from '../dto/create-payment-intent.dto';
 
 @Injectable()
 export class PaymentService {
-  private readonly stripe: Stripe;
+  private stripe?: Stripe;
   private readonly logger = new Logger(PaymentService.name);
 
   // Plans de tarification
@@ -33,9 +33,21 @@ export class PaymentService {
   };
 
   constructor(private prisma: PrismaService) {
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-      apiVersion: '2025-08-27.basil',
-    });
+    const apiKey = process.env.STRIPE_SECRET_KEY;
+    if (apiKey) {
+      this.stripe = new Stripe(apiKey, {
+        apiVersion: '2025-08-27.basil',
+      });
+    } else {
+      this.logger.warn('Stripe non configuré: STRIPE_SECRET_KEY manquante. Les paiements seront indisponibles.');
+    }
+  }
+
+  private getStripe(): Stripe {
+    if (!this.stripe) {
+      throw new BadRequestException('Stripe non configuré (clé manquante).');
+    }
+    return this.stripe;
   }
 
   async createCustomer(createCustomerDto: CreateCustomerDto) {
@@ -54,7 +66,7 @@ export class PaymentService {
       }
 
       // Créer le customer Stripe
-      const customer = await this.stripe.customers.create({
+      const customer = await this.getStripe().customers.create({
         email: createCustomerDto.email,
         name: createCustomerDto.name,
         metadata: {
@@ -100,7 +112,7 @@ export class PaymentService {
       }
 
       // Créer la subscription Stripe
-      const subscription = await this.stripe.subscriptions.create({
+      const subscription = await this.getStripe().subscriptions.create({
         customer: createSubscriptionDto.customerId,
         items: [{ price: plan.priceId || '' }],
         payment_behavior: 'default_incomplete',
@@ -131,7 +143,7 @@ export class PaymentService {
 
   async createPaymentIntent(createPaymentIntentDto: CreatePaymentIntentDto) {
     try {
-      const paymentIntent = await this.stripe.paymentIntents.create({
+      const paymentIntent = await this.getStripe().paymentIntents.create({
         amount: createPaymentIntentDto.amount,
         currency: createPaymentIntentDto.currency,
         customer: createPaymentIntentDto.customerId,
@@ -183,7 +195,7 @@ export class PaymentService {
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
     
     try {
-      const event = this.stripe.webhooks.constructEvent(payload, signature, webhookSecret || '');
+      const event = this.getStripe().webhooks.constructEvent(payload, signature, webhookSecret || '');
       
       switch (event.type) {
         case 'customer.subscription.updated':

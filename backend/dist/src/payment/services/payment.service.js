@@ -44,9 +44,21 @@ let PaymentService = PaymentService_1 = class PaymentService {
     };
     constructor(prisma) {
         this.prisma = prisma;
-        this.stripe = new stripe_1.default(process.env.STRIPE_SECRET_KEY || '', {
-            apiVersion: '2025-08-27.basil',
-        });
+        const apiKey = process.env.STRIPE_SECRET_KEY;
+        if (apiKey) {
+            this.stripe = new stripe_1.default(apiKey, {
+                apiVersion: '2025-08-27.basil',
+            });
+        }
+        else {
+            this.logger.warn('Stripe non configuré: STRIPE_SECRET_KEY manquante. Les paiements seront indisponibles.');
+        }
+    }
+    getStripe() {
+        if (!this.stripe) {
+            throw new common_1.BadRequestException('Stripe non configuré (clé manquante).');
+        }
+        return this.stripe;
     }
     async createCustomer(createCustomerDto) {
         try {
@@ -60,7 +72,7 @@ let PaymentService = PaymentService_1 = class PaymentService {
                     message: 'Customer déjà existant'
                 };
             }
-            const customer = await this.stripe.customers.create({
+            const customer = await this.getStripe().customers.create({
                 email: createCustomerDto.email,
                 name: createCustomerDto.name,
                 metadata: {
@@ -98,7 +110,7 @@ let PaymentService = PaymentService_1 = class PaymentService {
                 });
                 return { message: 'Plan gratuit activé' };
             }
-            const subscription = await this.stripe.subscriptions.create({
+            const subscription = await this.getStripe().subscriptions.create({
                 customer: createSubscriptionDto.customerId,
                 items: [{ price: plan.priceId || '' }],
                 payment_behavior: 'default_incomplete',
@@ -126,7 +138,7 @@ let PaymentService = PaymentService_1 = class PaymentService {
     }
     async createPaymentIntent(createPaymentIntentDto) {
         try {
-            const paymentIntent = await this.stripe.paymentIntents.create({
+            const paymentIntent = await this.getStripe().paymentIntents.create({
                 amount: createPaymentIntentDto.amount,
                 currency: createPaymentIntentDto.currency,
                 customer: createPaymentIntentDto.customerId,
@@ -172,7 +184,7 @@ let PaymentService = PaymentService_1 = class PaymentService {
     async handleWebhook(payload, signature) {
         const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
         try {
-            const event = this.stripe.webhooks.constructEvent(payload, signature, webhookSecret || '');
+            const event = this.getStripe().webhooks.constructEvent(payload, signature, webhookSecret || '');
             switch (event.type) {
                 case 'customer.subscription.updated':
                     await this.handleSubscriptionUpdated(event.data.object);

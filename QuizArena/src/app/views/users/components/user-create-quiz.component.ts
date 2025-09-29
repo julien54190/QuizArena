@@ -43,10 +43,12 @@ import { SeoService } from '../../../services/seo.service';
 
 						<div class="field">
 							<label>Catégorie</label>
-							<select class="w-full p-12 radius" [ngModel]="quizData().category" (ngModelChange)="updateQuizData('category', $event)">
-								<option value="">Sélectionner une catégorie</option>
-								<option *ngFor="let cat of categories()" [value]="cat.id">{{ cat.name }}</option>
-							</select>
+						<select class="w-full p-12 radius" [ngModel]="quizData().category" (ngModelChange)="updateQuizData('category', $event)">
+							<option value="">Sélectionner une catégorie</option>
+							@for (cat of categories(); track cat.id) {
+								<option [value]="cat.id">{{ cat.name }}</option>
+							}
+						</select>
 						</div>
 
 						<div class="field">

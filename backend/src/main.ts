@@ -33,8 +33,9 @@ async function bootstrap() {
   }));
 
   // Configuration CORS pour autoriser le frontend Angular
+  const isProd = process.env.NODE_ENV === 'production';
   app.enableCors({
-    origin: ['http://localhost:4200', 'http://localhost:4201'],
+    origin: isProd ? ['http://localhost:4200', 'http://localhost:4201'] : [/^http:\/\/localhost:\d+$/],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,

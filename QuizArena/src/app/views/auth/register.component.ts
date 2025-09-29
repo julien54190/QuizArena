@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, OnDestroy, signal, inject, PLATFORM_ID } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { SeoService } from '../../services/seo.service';
 import { AuthService, RegisterPayload } from '../../services/auth.service';
@@ -164,6 +164,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   private seo = inject(SeoService);
   private auth = inject(AuthService);
   private router = inject(Router);
+  private platformId = inject(PLATFORM_ID);
   // Touch signals
   touchedFirstname = signal(false);
   touchedLastname = signal(false);
@@ -222,6 +223,9 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   isFormValid(): boolean {
+    if (!isPlatformBrowser(this.platformId)) {
+      return true;
+    }
     const firstname = (document.getElementById('firstname') as HTMLInputElement)?.value?.trim();
     const lastname = (document.getElementById('lastname') as HTMLInputElement)?.value?.trim();
     const email = (document.getElementById('email') as HTMLInputElement);

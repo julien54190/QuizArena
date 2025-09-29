@@ -4,10 +4,11 @@ import { CreateSubscriptionDto, SubscriptionPlan } from '../dto/create-subscript
 import { CreatePaymentIntentDto } from '../dto/create-payment-intent.dto';
 export declare class PaymentService {
     private prisma;
-    private readonly stripe;
+    private stripe?;
     private readonly logger;
     private readonly PRICING_PLANS;
     constructor(prisma: PrismaService);
+    private getStripe;
     createCustomer(createCustomerDto: CreateCustomerDto): Promise<{
         customerId: string;
         message: string;
